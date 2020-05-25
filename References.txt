@@ -11,4 +11,8 @@ https://www.youtube.com/watch?v=JduFutbcBmE
 ---------------------------------------------------------------------------------------------------------------------------
 RPI GPIO Driver samples:
 https://elinux.org/RPi_GPIO_Code_Samples
+
+Library we used:
+The pigpio library for RPi4 >> http://abyz.me.uk/rpi/pigpio/index.html#Type_3
+
 ---------------------------------------------------------------------------------------------------------------------------
