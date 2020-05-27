@@ -22,7 +22,7 @@ typedef struct{
  *  @param [in] si_other Socket
  *  @return void
  */
-void UDP_ClientInit( struct sockaddr_in *si_other);
+void UDP_ClientInit(uint32_t *ClientSocket, struct sockaddr_in *si_other);
 
 /**
  *  @brief This API shall send a frame
@@ -32,7 +32,7 @@ void UDP_ClientInit( struct sockaddr_in *si_other);
  *  @param [in] len      Length of frame being sent
  *  @return void
  */
-void UDP_SendFrame(uint8_t *buffer, struct sockaddr_in *servaddr, uint32_t len);
+void UDP_ClientSendFrame(uint32_t *ClientSocket, uint8_t * buffer, struct sockaddr_in *servaddr, uint32_t len);
 
 /**
  *  @brief This API shall receive and acknowledgment.
@@ -41,7 +41,7 @@ void UDP_SendFrame(uint8_t *buffer, struct sockaddr_in *servaddr, uint32_t len);
  *  @param [in] len      Length of frame being received
  *  @return void
  */
-void UDP_ReceiveACK(struct sockaddr_in *servaddr , uint32_t *len);
+void UDP_ClientReceiveACK(uint32_t *ClientSocket, struct sockaddr_in *servaddr, uint32_t * len);
 
 /**
  *  @brief This API shall terminate the PC Socket UDP connection
@@ -49,7 +49,7 @@ void UDP_ReceiveACK(struct sockaddr_in *servaddr , uint32_t *len);
  *  @param [in] sockfd Socket number
  *  @return void
  */
-void UDP_Disconnect(uint32_t socket);
+void UDP_ClientDisconnect(uint32_t *ClientSocket);
 
 
 #endif /* CLIENT_H */
