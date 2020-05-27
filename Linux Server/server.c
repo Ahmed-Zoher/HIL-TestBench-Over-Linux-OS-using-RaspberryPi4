@@ -6,10 +6,6 @@
  
 #include "server.h"
 
-/************* MACROS DEFINITIONS ************/
-#define MAXLINE  1024 
-#pragma comment(lib,"ws2_32") 	//Winsock Library
-
 /********** LINUX SERVER INTERFACES ***********/
 
 /**
@@ -20,10 +16,10 @@
  *  @param [in] cliaddr  Client address
  *  @return void 
  */
-void UDP_ServerInit(uint32_t *sockfd, struct sockaddr_in *servaddr, struct sockaddr_in *cliaddr)
+void UDP_ServerInit(uint32_t *ServerSocket, struct sockaddr_in *servaddr, struct sockaddr_in *cliaddr)
 {
 	// Creating socket file descriptor 
-    if ( (*sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0 ) 
+    if ( (*ServerSocket = socket(AF_INET, SOCK_DGRAM, 0)) < 0 ) 
 	{ 
         perror("socket creation failed"); 
         exit(EXIT_FAILURE); 
@@ -39,7 +35,7 @@ void UDP_ServerInit(uint32_t *sockfd, struct sockaddr_in *servaddr, struct socka
     servaddr->sin_port = htons(PORT); 
     
     // Bind the socket with the server address 
-    if ( bind(*sockfd, (const struct sockaddr *)servaddr, sizeof(struct sockaddr_in)) < 0 ) 
+    if ( bind(*ServerSocket, (const struct sockaddr *)servaddr, sizeof(struct sockaddr_in)) < 0 ) 
     { 
         perror("bind failed\n"); 
         exit(EXIT_FAILURE); 
@@ -55,11 +51,9 @@ void UDP_ServerInit(uint32_t *sockfd, struct sockaddr_in *servaddr, struct socka
  *  @param [in] len     Length of data being received
  *  @return void
  */
-void UDP_SendACK(uint32_t *sockfd, struct sockaddr_in * cliaddr,uint32_t len)
+void UDP_ServerSend(uint32_t *ServerSocket, uint8_t* Buffer, struct sockaddr_in * cliaddr, uint32_t len, uint16_t FrameSize)
 {
-	char *Server_msg = "ack"; 
-	sendto(*sockfd, (const char *)Server_msg, strlen(Server_msg), MSG_CONFIRM, (const struct sockaddr *)cliaddr, sizeof(struct sockaddr));
-    printf("Ack sent.\n");   
+	sendto(*ServerSocket, Buffer, FrameSize, MSG_CONFIRM, (const struct sockaddr *)cliaddr, sizeof(struct sockaddr)); 
 }
 
 /**
@@ -71,10 +65,9 @@ void UDP_SendACK(uint32_t *sockfd, struct sockaddr_in * cliaddr,uint32_t len)
  *  @param [in] len     Length of data being received
  *  @return void
  */
-void UDP_ReceiveFrame(uint32_t *sockfd, Test_frame* frame, struct sockaddr_in*  cliaddr, uint32_t* len)
+void UDP_ServerReceive(uint32_t *ServerSocket, uint8_t* frame, struct sockaddr_in*  cliaddr, uint32_t* len, uint16_t FrameSize)
 {	
-	recvfrom(*sockfd, (Test_frame*)frame, MAXLINE,  MSG_WAITALL, (struct sockaddr *)cliaddr, len); 
-    printf("ID: %d\nCMD: %d\n", frame->ID,frame->CMD); 	
+	recvfrom(*ServerSocket, (uint8_t*)frame, FrameSize,  MSG_WAITALL, (struct sockaddr *)cliaddr, len); 	
 }
 
 /**
@@ -83,7 +76,7 @@ void UDP_ReceiveFrame(uint32_t *sockfd, Test_frame* frame, struct sockaddr_in*  
  *  @param [in] sockfd Socket number
  *  @return void
  */
-void UDP_Disconnect(uint32_t *sockfd)
+void UDP_ServerDisconnect(uint32_t *ServerSocket)
 {
-	close(*sockfd);
+	close(*ServerSocket);
 }

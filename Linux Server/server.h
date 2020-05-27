@@ -14,14 +14,23 @@
 #define PORT     		8080 
 #define SERVER 			"192.168.5.10"
 #define ACK_SIZE 		4
+#define NACK_SIZE		5
 #define NUM_OF_FRAMES	3
 
 /************* TYPES DEFINITIONS ************/
-typedef struct{
-	uint32_t ID;
-	uint32_t CMD;
-	uint8_t Ay7aga;
-}Test_frame;
+typedef struct
+{
+	uint32_t Signature;
+	uint16_t NumOfCommands;
+	uint16_t TotalDataSize;
+}FrameHeader_t;
+
+typedef struct
+{
+	uint32_t PeripheralID;
+	uint32_t DataSize;
+	uint8_t* PeripheralData;
+}FrameData_t;
 
 /**
  *  @brief This API shall initialize the Linux UDP link.
@@ -31,7 +40,7 @@ typedef struct{
  *  @param [in] cliaddr  Client address
  *  @return void 
  */
-void UDP_ServerInit(uint32_t *sockfd, struct sockaddr_in *servaddr, struct sockaddr_in *cliaddr);
+void UDP_ServerInit(uint32_t *ServerSocket, struct sockaddr_in *servaddr, struct sockaddr_in *cliaddr);
 
 /**
  *  @brief This API shall send an acknoledgement upon receiving data.
@@ -41,7 +50,7 @@ void UDP_ServerInit(uint32_t *sockfd, struct sockaddr_in *servaddr, struct socka
  *  @param [in] len     Length of data being received
  *  @return void
  */
-void UDP_ReceiveFrame(uint32_t *sockfd, Test_frame* frame, struct sockaddr_in* cliaddr, uint32_t *len);
+void UDP_ServerSend(uint32_t *ServerSocket, uint8_t* Buffer, struct sockaddr_in * cliaddr, uint32_t len, uint16_t FrameSize);
 
 /**
  *  @brief This API shall recieve a data frame.
@@ -52,7 +61,7 @@ void UDP_ReceiveFrame(uint32_t *sockfd, Test_frame* frame, struct sockaddr_in* c
  *  @param [in] len     Length of data being received
  *  @return void
  */
-void UDP_SendACK(uint32_t *sockfd, struct sockaddr_in* cliaddr,uint32_t len);
+void UDP_ServerReceive(uint32_t *ServerSocket, uint8_t* frame, struct sockaddr_in*  cliaddr, uint32_t* len, uint16_t FrameSize);
 
 /**
  *  @brief This API shall terminate the Linux Socket UDP connection
@@ -60,6 +69,6 @@ void UDP_SendACK(uint32_t *sockfd, struct sockaddr_in* cliaddr,uint32_t len);
  *  @param [in] sockfd Socket number
  *  @return void
  */
-void UDP_Disconnect(uint32_t *sockfd);
+void UDP_ServerDisconnect(uint32_t *ServerSocket);
 
 #endif /* SERVER_H */

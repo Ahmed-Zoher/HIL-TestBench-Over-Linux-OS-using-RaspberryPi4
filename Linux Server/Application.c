@@ -19,14 +19,11 @@ int main(void)
 	struct sockaddr_in servaddr;
 	struct sockaddr_in cliaddr; 
 	uint32_t len = sizeof(struct sockaddr_in); 
+	uint8_t ACK_arr[] = "ACK";
+	uint8_t NACK_arr[] = "NACK";
 	
-	Test_frame frame = 
-	{
-		.ID 	= 0,
-		.CMD	= 0,
-		.Ay7aga	= 0
-	};
-	
+	FrameHeader_t FrameHeader;
+	uint8_t FrameDataBuffer[100] = {0};
 	
 	/**************************** Initializations **********************************/
 	/* Initializing the UDP connection*/
@@ -44,30 +41,43 @@ int main(void)
 	
 	/**************************** Receiving frames **********************************/
   
-	UDP_ReceiveFrame(&sockfd, &frame, &cliaddr, (uint32_t *)&len);
-	UDP_SendACK(&sockfd, &cliaddr, len);
+	/* HEADER */
+	UDP_ServerReceive(&sockfd, (uint8_t*)&FrameHeader, &cliaddr, (uint32_t *)&len, sizeof(FrameHeader_t));
 	
-
-	if(frame.ID == 5)
+	if(FrameHeader.Signature == 0x07775000)
 	{
+		UDP_ServerSend(&sockfd, ACK_arr, &cliaddr, len, ACK_SIZE);
 		printf("Condition True\n");
+		
+		printf("Total Data size: %d\n", FrameHeader.TotalDataSize);		
+		
+		
 		double start = time_time();
-		while ((time_time() - start) < 30.0)
+		while ((time_time() - start) < 5.0)
 		{
 			gpioWrite(LED_PIN, 1); /* on */ 
 			time_sleep(0.5);
 			gpioWrite(LED_PIN, 0); /* off */ 
 			time_sleep(0.5);
 		}
+		UDP_ServerReceive(&sockfd, (uint8_t *)FrameDataBuffer, &cliaddr, (uint32_t *)&len, FrameHeader.TotalDataSize);
+		
+		
+		for(uint16_t index =0; index<FrameHeader.TotalDataSize; index++)
+		{
+			printf("Byte[%d]: %d\n", index, FrameDataBuffer[index]);	
+		}
+		
+	printf("\n\n");
 	}
 	else
 	{
+		UDP_ServerSend(&sockfd, NACK_arr, &cliaddr, len, NACK_SIZE);
 		printf("Condition False\n");
 		gpioWrite(LED_PIN, 0); /* off */	
 	}
 	
-	
 	/*************************** Disconnecting the UDP connection *******************/
-	UDP_Disconnect(&sockfd);
+	UDP_ServerDisconnect(&sockfd);
 	return 0;
 }
