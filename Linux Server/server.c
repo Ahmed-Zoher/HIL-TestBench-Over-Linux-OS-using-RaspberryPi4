@@ -53,7 +53,7 @@ void UDP_ServerInit(uint32_t *ServerSocket, struct sockaddr_in *servaddr, struct
  */
 void UDP_ServerSend(uint32_t *ServerSocket, uint8_t* Buffer, struct sockaddr_in * cliaddr, uint32_t len, uint16_t FrameSize)
 {
-	sendto(*ServerSocket, Buffer, FrameSize, MSG_CONFIRM, (const struct sockaddr *)cliaddr, sizeof(struct sockaddr)); 
+	sendto(*ServerSocket, Buffer, FrameSize, MSG_CONFIRM, (const struct sockaddr *)cliaddr, len); 
 }
 
 /**
@@ -68,6 +68,7 @@ void UDP_ServerSend(uint32_t *ServerSocket, uint8_t* Buffer, struct sockaddr_in 
 void UDP_ServerReceive(uint32_t *ServerSocket, uint8_t* frame, struct sockaddr_in*  cliaddr, uint32_t* len, uint16_t FrameSize)
 {	
 	recvfrom(*ServerSocket, (uint8_t*)frame, FrameSize,  MSG_WAITALL, (struct sockaddr *)cliaddr, len); 	
+	printf("%s\n", frame);
 }
 
 /**
