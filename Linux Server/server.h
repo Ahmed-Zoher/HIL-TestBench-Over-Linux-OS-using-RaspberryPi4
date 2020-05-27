@@ -17,21 +17,6 @@
 #define NACK_SIZE		5
 #define NUM_OF_FRAMES	3
 
-/************* TYPES DEFINITIONS ************/
-typedef struct
-{
-	uint32_t Signature;
-	uint16_t NumOfCommands;
-	uint16_t TotalDataSize;
-}FrameHeader_t;
-
-typedef struct
-{
-	uint32_t PeripheralID;
-	uint32_t DataSize;
-	uint8_t* PeripheralData;
-}FrameData_t;
-
 /**
  *  @brief This API shall initialize the Linux UDP link.
  *  
