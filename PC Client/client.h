@@ -8,8 +8,9 @@
 /************* MACROS DEFINITIONS ************/
 #define SERVER 				"192.168.5.10"	//ip address of udp server
 #define BUFLEN 				512				//Max length of buffer
-#define PORT 				8080				//The port on which to listen for incoming data
+#define PORT 				8080			//The port on which to listen for incoming data
 #define ACK_SIZE 			4
+#define NACK_SIZE 			5
 #define NUM_OF_FRAMES		3
 
 /********** PC CLIENT INTERFACES ***********/

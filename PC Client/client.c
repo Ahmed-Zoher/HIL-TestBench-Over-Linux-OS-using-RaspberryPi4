@@ -69,6 +69,7 @@ void UDP_ClientReceive(uint32_t *ClientSocket, uint8_t* buffer, struct sockaddr_
 	if (recvfrom(*ClientSocket, buffer, FrameSize, 0, (struct sockaddr *)servaddr, len) == SOCKET_ERROR)
 	{
 		printf("recvfrom() failed with error code : %d" , WSAGetLastError());
+		printf("Waleed error code : %d" , SOCKET_ERROR);
 		exit(EXIT_FAILURE);
 	}
 	printf("%s\n",buffer);

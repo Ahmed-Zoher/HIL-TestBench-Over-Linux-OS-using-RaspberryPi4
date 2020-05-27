@@ -4,11 +4,14 @@
 #include "client.h"
 #include "Frame.h"
 
+
 /*************************** GLOBAL VARIABLES ***************************/
 uint8_t buf[BUFLEN];
 uint8_t recvBuf[ACK_SIZE];
 uint32_t Socket1;
 
+uint8_t RxFrameHeaderBuffer[100];
+uint8_t RxFrameDataBuffer[100];
 
 void main(void)
 {
@@ -17,6 +20,8 @@ void main(void)
 	uint32_t slen = sizeof(si_other);
 	uint16_t Iterator = 0;
 	uint8_t *Frame = NULL;
+	uint8_t ACK_arr[] = "ACK";
+	uint8_t NACK_arr[] = "NACK";
 	
 	FrameHeader_t FrameHeader = 
 	{
@@ -28,7 +33,6 @@ void main(void)
 	/***************** Initializations *****************/
 	UDP_ClientInit(&Socket1, &si_other);
 	
-	
 	/****************** Frame Generation ***************/
 	
 	
@@ -36,7 +40,7 @@ void main(void)
 	/* Header Frame */
 	UDP_ClientSend(&Socket1, (uint8_t *)&FrameHeader, &si_other, slen, sizeof(FrameHeader_t));
 	UDP_ClientReceive(&Socket1, recvBuf, &si_other, &slen, ACK_SIZE);
-	
+
 	if(strcmp(recvBuf, "ACK") == 0)
 	{
 		printf("BENCH-Tmam!\n");
@@ -52,7 +56,34 @@ void main(void)
 		printf("BENCH-Please!\n");
 	}
 	
+	
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	UDP_ClientReceive(&Socket1, RxFrameHeaderBuffer, &si_other, &slen, sizeof(FrameHeader_t));
+	
+	printf("RxHEADER - Signature: %04X\n", ((FrameHeader_t *)RxFrameHeaderBuffer)->Signature);
+	printf("RxHEADER - NumOfCommands: %d\n", ((FrameHeader_t *)RxFrameHeaderBuffer)->NumOfCommands);
+	printf("RxHEADER - TotalDataSize: %d\n", ((FrameHeader_t *)RxFrameHeaderBuffer)->TotalDataSize);
+	
+	if(((FrameHeader_t *)RxFrameHeaderBuffer)->Signature == SIGNATURE)
+	{
+		UDP_ClientSend(&Socket1, ACK_arr, &si_other, slen, ACK_SIZE);
+		UDP_ClientReceive(&Socket1, RxFrameDataBuffer, &si_other, &slen, ((FrameHeader_t *)RxFrameHeaderBuffer)->TotalDataSize);
+		
+		for(Iterator = 0; Iterator < ((FrameHeader_t *)RxFrameHeaderBuffer)->TotalDataSize; Iterator++)
+		{
+			printf("RxDATA - Byte[%d]: %d\n", Iterator, RxFrameDataBuffer[Iterator]);
+		}
+		
+	}
+	else
+	{
+		printf("Pitch Chill!(PC)\n");
+	}
+	
+
+
 	/***************** Socket Disconnect ****************/
 	UDP_ClientDisconnect(&Socket1);
+
 }
 
