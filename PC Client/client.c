@@ -4,13 +4,11 @@
  *  @brief PC client interfaces
  */
 
-#include<stdio.h>
-#include<stdint.h>
-#include<winsock2.h>
-
+#include <stdio.h>
+#include <stdint.h>
 #include "client.h"
 
-#pragma comment(lib,"ws2_32") 	//Winsock Library
+
 
 /**
  *  @brief This API shall initialize the PC Client UDP link.
@@ -31,7 +29,7 @@ void UDP_ClientInit(uint32_t *ClientSocket, struct sockaddr_in *si_other)
 	printf("Initialised.\n");
 	
 	//create socket
-	if ((&ClientSocket=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == SOCKET_ERROR)
+	if ((*ClientSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == SOCKET_ERROR)
 	{
 		printf("socket() Failed. Error Code : %d\n" , WSAGetLastError());
 		exit(EXIT_FAILURE);
@@ -52,34 +50,28 @@ void UDP_ClientInit(uint32_t *ClientSocket, struct sockaddr_in *si_other)
  *  @param [in] len      Length of frame being sent
  *  @return void
  */
-void UDP_ClientSendFrame(uint32_t *ClientSocket, uint8_t * buffer, struct sockaddr_in *servaddr, uint32_t len)
+void UDP_ClientSend(uint32_t *ClientSocket, uint8_t* buffer, struct sockaddr_in *servaddr, uint32_t len, uint32_t FrameSize)
 {
 	//send the message
-	if (sendto(&ClientSocket, buf, sizeof(Test_frame) , 0 , (struct sockaddr *)servaddr, len) == SOCKET_ERROR)
+	if (sendto(*ClientSocket, buffer, FrameSize, 0, (struct sockaddr *)servaddr, len) == SOCKET_ERROR)
 	{
 		printf("sendto() failed with error code : %d" , WSAGetLastError());
 		exit(EXIT_FAILURE);
 	}
 }
 
-/**
- *  @brief This API shall receive and acknowledgment.
- *  
- *  @param [in] servaddr Server address
- *  @param [in] len      Length of frame being received
- *  @return void
- */
-void UDP_ClientReceiveACK(uint32_t *ClientSocket, struct sockaddr_in *servaddr, uint32_t * len)
+
+void UDP_ClientReceive(uint32_t *ClientSocket, uint8_t* buffer, struct sockaddr_in *servaddr, uint32_t * len, uint32_t FrameSize)
 {
 	//clear the buffer by filling null, it might have previously received data
-	memset(recvBuf,0, BUFLEN);
+	memset(buffer,0, BUFLEN);
 	//try to receive some data, this is a blocking call
-	if (recvfrom(&ClientSocket, recvBuf, sizeof(ACK_SIZE), 0, (struct sockaddr *)servaddr, len) == SOCKET_ERROR)
+	if (recvfrom(*ClientSocket, buffer, FrameSize, 0, (struct sockaddr *)servaddr, len) == SOCKET_ERROR)
 	{
 		printf("recvfrom() failed with error code : %d" , WSAGetLastError());
 		exit(EXIT_FAILURE);
 	}
-	printf("%s\n",recvBuf);
+	printf("%s\n",buffer);
 }
 
 /**
@@ -90,7 +82,7 @@ void UDP_ClientReceiveACK(uint32_t *ClientSocket, struct sockaddr_in *servaddr, 
  */
 void UDP_ClientDisconnect(uint32_t *ClientSocket)
 {
-	closesocket(&ClientSocket);
+	closesocket(*ClientSocket);
 	WSACleanup();
 }
 
