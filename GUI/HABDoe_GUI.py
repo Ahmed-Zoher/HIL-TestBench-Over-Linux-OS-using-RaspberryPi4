@@ -1,5 +1,4 @@
 # gcc -fPIC -shared -o func.so func.c
-
 # -*- coding: utf-8 -*-
 
 ################################################################################
@@ -19,7 +18,7 @@ from PySide2.QtWidgets import *
 from ctypes import *
 
 import sys
-
+import time
 
 class Ui_HABDoe(object):
     def setupUi(self, HABDoe):
@@ -391,19 +390,33 @@ class Ui_HABDoe(object):
     '''
     to be changed as per user demand  
     '''
-    so_file = "./func.so"
+    so_file = "./client.so"
     global my_functions 
-    my_functions = CDLL(so_file) 
+    my_functions = CDLL(so_file)
+    status = 0
     #########################################################
     # Function Called By Connect_pushButton
     # Responsible for Establishing a connection 
     # between Server and client
     #########################################################
     def Connect_Func(self):
-      # print(my_functions.falla7(10))
-      self.Conncection_progressBar.setValue(100)
-    # Connect_Func      
     
+      status = my_functions.UDP_ClientConnect()
+      if(status == 0):
+        for i in range(0, 101, 5):
+          self.Conncection_progressBar.setValue(i)
+          time.sleep(0.1)
+          
+        print("CONNECTION_OK\n")
+        
+      elif(status == 1):
+        self.Conncection_progressBar.setValue(0)
+        print("CONNECTION_WINSOCK_INIT_ERROR\n")
+      elif(status == 2):
+        self.Conncection_progressBar.setValue(0)
+        print("CONNECTION_SOCKET_ERROR\n")
+      # Connect_Func      
+  
     
     #########################################################
     # Function Called By Disconnect_pushButton
@@ -411,9 +424,10 @@ class Ui_HABDoe(object):
     # between Server and client
     #########################################################
     def Disconnect_Func(self):
-      # print(my_functions.falla7_2(10))
+      my_functions.UDP_ClientDisconnect()
       self.Conncection_progressBar.setValue(0)
-    # Disconnect_Func      
+      print("DISCONNECTED FROM SERVER CONNECTION_OK\n")
+      # Disconnect_Func
     
     
     #########################################################
@@ -469,16 +483,25 @@ class Ui_HABDoe(object):
     # retranslateUi
 
 
-# Create the Qt Application
-app = QApplication(sys.argv)
-# Create the Qt Widget that will hold the Form/s
-widget = QWidget()
-# Create and show the form
-form = Ui_HABDoe()
-form.setupUi(widget)
-# Show what's inside the widget
-widget.show()
-# Run the main Qt loop
-# Run the Application or execute it
-app.exec_()
-sys.exit()
+def main():
+ 
+  # Create the Qt Application
+  app = QApplication(sys.argv)
+  # Create the Qt Widget that will hold the Form/s
+  widget = QWidget()
+  # Create and show the form
+  form = Ui_HABDoe()
+  form.setupUi(widget)
+  # Show what's inside the widget
+  widget.show()
+  # Run the main Qt loop
+  # Run the Application or execute it
+  app.exec_()  
+  sys.exit()
+
+
+# Standard boilerplate to call the main() function.
+if __name__ == '__main__':
+  main()
+  
+  

@@ -14,7 +14,6 @@
 #define TOTAL_SIZE				(UZART_DATA_SIZE + DIO_DATA_SIZE + (NUM_OF_CMD * PERIPH_HEADER_SIZE))
 /*************************************************/
 
-
 typedef struct
 {
 	uint32_t Signature;

@@ -13,42 +13,21 @@
 #define NACK_SIZE 			5
 #define NUM_OF_FRAMES		3
 
+#define CONNECTION_OK					0
+#define CONNECTION_WINSOCK_INIT_ERROR	1
+#define CONNECTION_SOCKET_ERROR			2
+
+
 /********** PC CLIENT INTERFACES ***********/
 
-/**
- *  @brief This API shall initialize the PC Client UDP link.
- *  
- *  @param [in] si_other Socket
- *  @return void
- */
-void UDP_ClientInit(uint32_t *ClientSocket, struct sockaddr_in *si_other);
 
-/**
- *  @brief This API shall send a frame
- *  
- *  @param [in] buffer   Buffer 
- *  @param [in] servaddr Server addresss
- *  @param [in] len      Length of frame being sent
- *  @return void
- */
-void UDP_ClientSend(uint32_t *ClientSocket, uint8_t* buffer, struct sockaddr_in *servaddr, uint32_t len, uint32_t FrameSize);
+uint8_t UDP_ClientConnect(void);
 
-/**
- *  @brief This API shall receive and acknowledgment.
- *  
- *  @param [in] servaddr Server address
- *  @param [in] len      Length of frame being received
- *  @return void
- */
-void UDP_ClientReceive(uint32_t *ClientSocket, uint8_t* buffer, struct sockaddr_in *servaddr, uint32_t * len, uint32_t FrameSize);
+void UDP_ClientSend(uint8_t* buffer, uint32_t FrameSize);
 
-/**
- *  @brief This API shall terminate the PC Socket UDP connection
- *  
- *  @param [in] sockfd Socket number
- *  @return void
- */
-void UDP_ClientDisconnect(uint32_t *ClientSocket);
+void UDP_ClientReceive(uint8_t* buffer, uint32_t FrameSize);
+
+void UDP_ClientDisconnect(void);
 
 
 #endif /* CLIENT_H */

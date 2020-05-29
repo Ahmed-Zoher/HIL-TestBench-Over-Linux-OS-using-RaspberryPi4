@@ -6,40 +6,24 @@
 
 
 /*************************** GLOBAL VARIABLES ***************************/
-uint8_t buf[BUFLEN];
-uint8_t recvBuf[ACK_SIZE];
-uint32_t Socket1;
 
-uint8_t RxFrameHeaderBuffer[100];
-uint8_t RxFrameDataBuffer[100];
-
+	
 void main(void)
 {
 	/***************** Local Variables definitions *****************/
-	struct sockaddr_in si_other;
-	uint32_t slen = sizeof(si_other);
-	uint16_t Iterator = 0;
-	uint8_t *Frame = NULL;
-	uint8_t ACK_arr[] = "ACK";
-	uint8_t NACK_arr[] = "NACK";
+
 	
-	FrameHeader_t FrameHeader = 
-	{
-		.Signature 		=  SIGNATURE,
-		.NumOfCommands 	=  NUM_OF_CMD,
-		.TotalDataSize 	=  TOTAL_SIZE
-	};
+	
 	
 	/***************** Initializations *****************/
-	UDP_ClientInit(&Socket1, &si_other);
+	//UDP_ClientConnect(&Socket1, &si_other);
+	UDP_ClientConnect();
 	
-	/****************** Frame Generation ***************/
-	
-	
-	/****************** Frame Transmission *************/
-	/* Header Frame */
 	UDP_ClientSend(&Socket1, (uint8_t *)&FrameHeader, &si_other, slen, sizeof(FrameHeader_t));
+	UDP_ClientSend();
+	
 	UDP_ClientReceive(&Socket1, recvBuf, &si_other, &slen, ACK_SIZE);
+	UDP_ClientReceive();
 
 	if(strcmp(recvBuf, "ACK") == 0)
 	{
@@ -48,7 +32,7 @@ void main(void)
 		
 		Frame = FRAME_Generate();
 		FRAME_Print(Frame);
-		UDP_ClientSend(&Socket1, Frame, &si_other, slen, FrameHeader.TotalDataSize);
+		//UDP_ClientSend(&Socket1, Frame, &si_other, slen, FrameHeader.TotalDataSize);
 		
 	}
 	else

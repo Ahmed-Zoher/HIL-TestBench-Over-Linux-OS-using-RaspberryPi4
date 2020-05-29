@@ -6,17 +6,35 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <string.h>
 #include "client.h"
+#include "Frame.h"
 
 
+uint8_t buf[BUFLEN];
+uint8_t recvBuf[ACK_SIZE];
+uint32_t ClientSocket;
 
-/**
- *  @brief This API shall initialize the PC Client UDP link.
- *  
- *  @param [in] si_other Socket
- *  @return void
- */
-void UDP_ClientInit(uint32_t *ClientSocket, struct sockaddr_in *si_other)
+uint8_t RxFrameHeaderBuffer[100];
+uint8_t RxFrameDataBuffer[100];
+
+struct sockaddr_in servaddr;
+uint32_t slen = sizeof(servaddr);
+uint16_t Iterator = 0;
+uint8_t *Frame = NULL;
+uint8_t ACK_arr[] = "ACK";
+uint8_t NACK_arr[] = "NACK";
+
+uint8_t ConnectionStatus = CONNECTION_OK;
+
+FrameHeader_t FrameHeader = 
+{
+	.Signature 		=  SIGNATURE,
+	.NumOfCommands 	=  NUM_OF_CMD,
+	.TotalDataSize 	=  TOTAL_SIZE
+};
+
+uint8_t UDP_ClientConnect(void)
 {
 	WSADATA wsa;
 	//Initialise winsock
@@ -24,36 +42,33 @@ void UDP_ClientInit(uint32_t *ClientSocket, struct sockaddr_in *si_other)
 	if (WSAStartup(MAKEWORD(2,2),&wsa) != 0)
 	{
 		printf("Initialization Failed. Error Code : %d\n",WSAGetLastError());
-		exit(EXIT_FAILURE);
+		//exit(EXIT_FAILURE);
+		return CONNECTION_WINSOCK_INIT_ERROR;
 	}
 	printf("Initialised.\n");
 	
 	//create socket
-	if ((*ClientSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == SOCKET_ERROR)
+	if ((ClientSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == SOCKET_ERROR)
 	{
 		printf("socket() Failed. Error Code : %d\n" , WSAGetLastError());
-		exit(EXIT_FAILURE);
+		//exit(EXIT_FAILURE);
+		return CONNECTION_SOCKET_ERROR;
 	}
-	
+		
 	//setup address structure
-	memset((char *) si_other, 0, sizeof(struct sockaddr_in ));
-	si_other->sin_family = AF_INET;
-	si_other->sin_port = htons(PORT);
-	si_other->sin_addr.S_un.S_addr = inet_addr(SERVER);
+	memset((char *) &servaddr, 0, sizeof(struct sockaddr_in ));
+	servaddr.sin_family = AF_INET;
+	servaddr.sin_port = htons(PORT);
+	servaddr.sin_addr.S_un.S_addr = inet_addr(SERVER);
+	
+	return CONNECTION_OK;
 }
 
-/**
- *  @brief This API shall send a frame
- *  
- *  @param [in] buffer   Buffer 
- *  @param [in] servaddr Server addresss
- *  @param [in] len      Length of frame being sent
- *  @return void
- */
-void UDP_ClientSend(uint32_t *ClientSocket, uint8_t* buffer, struct sockaddr_in *servaddr, uint32_t len, uint32_t FrameSize)
+
+void UDP_ClientSend(uint8_t* buffer, uint32_t FrameSize)
 {
 	//send the message
-	if (sendto(*ClientSocket, buffer, FrameSize, 0, (struct sockaddr *)servaddr, len) == SOCKET_ERROR)
+	if (sendto(ClientSocket, buffer, FrameSize, 0, (struct sockaddr *)servaddr, len) == SOCKET_ERROR)
 	{
 		printf("sendto() failed with error code : %d" , WSAGetLastError());
 		exit(EXIT_FAILURE);
@@ -61,29 +76,23 @@ void UDP_ClientSend(uint32_t *ClientSocket, uint8_t* buffer, struct sockaddr_in 
 }
 
 
-void UDP_ClientReceive(uint32_t *ClientSocket, uint8_t* buffer, struct sockaddr_in *servaddr, uint32_t * len, uint32_t FrameSize)
+void UDP_ClientReceive(uint8_t* buffer, uint32_t FrameSize)
 {
 	//clear the buffer by filling null, it might have previously received data
 	memset(buffer,0, BUFLEN);
 	//try to receive some data, this is a blocking call
-	if (recvfrom(*ClientSocket, buffer, FrameSize, 0, (struct sockaddr *)servaddr, len) == SOCKET_ERROR)
+	if (recvfrom(ClientSocket, buffer, FrameSize, 0, (struct sockaddr *)servaddr, &len) == SOCKET_ERROR)
 	{
 		printf("recvfrom() failed with error code : %d" , WSAGetLastError());
-		printf("Waleed error code : %d" , SOCKET_ERROR);
 		exit(EXIT_FAILURE);
 	}
 	printf("%s\n",buffer);
 }
 
-/**
- *  @brief This API shall terminate the PC Socket UDP connection
- *  
- *  @param [in] sockfd Socket number
- *  @return void
- */
-void UDP_ClientDisconnect(uint32_t *ClientSocket)
+
+void UDP_ClientDisconnect(void)
 {
-	closesocket(*ClientSocket);
+	closesocket(ClientSocket);
 	WSACleanup();
 }
 
