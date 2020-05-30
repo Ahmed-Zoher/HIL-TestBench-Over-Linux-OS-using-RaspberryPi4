@@ -437,16 +437,39 @@ class Ui_HABDoe(object):
     #########################################################
     def TEST_Func(self):
       # print(my_functions.falla7_3(10))
-      self.Conncection_progressBar.setValue(50)
-      self.Channel_20_horizontalSlider.setValue(1)
-      self.Channel_22_horizontalSlider.setValue(1)
-       
+      #self.Conncection_progressBar.setValue(50)
+      #self.Channel_20_horizontalSlider.setValue(1)
+      #self.Channel_22_horizontalSlider.setValue(1)
+      
       output = [int(self.OUT_Channel_10_checkBox.isChecked()),int(self.OUT_Channel_11_checkBox.isChecked()),
       int(self.OUT_Channel_12_checkBox.isChecked()),int(self.OUT_Channel_13_checkBox.isChecked()),
       int(self.OUT_Channel_14_checkBox.isChecked())]
       
-      for i in range(0, len(output)):
-        print(output[i]),
+      array_type = (c_int8 * len(output))(*output)
+      
+      arr = [1,2,3,4]
+      array_type2 = (c_int8 * len(arr))(*arr)
+      
+      #my_functions.PrintString(array_type(*arr),4)
+      
+      my_functions.FRAME_Generate(array_type, len(output), array_type2, len(arr))
+      my_functions.FRAME_Print()
+      
+      #Sending Header
+      my_functions.UDP_ClientSend(2)
+      
+      #Receiving ACK on Header
+      #print("Before Receiving ACK")
+      #ReceiveStatus = my_functions.UDP_ClientReceive(0)
+      #print("AFTER>>ReceiveStatus: " + str(ReceiveStatus))
+      
+      #if(ReceiveStatus == 0): #ACK received
+        #Sending Data Frame
+      my_functions.UDP_ClientSend(3)
+        
+      #elif (ReceiveStatus == 1): #NACK received
+        #print("NACK Received")
+        
     # TEST_Func    
     
     # setupUi

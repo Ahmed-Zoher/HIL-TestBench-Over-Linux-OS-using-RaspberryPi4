@@ -20,10 +20,10 @@ void main(void)
 	UDP_ClientConnect();
 	
 	UDP_ClientSend(&Socket1, (uint8_t *)&FrameHeader, &si_other, slen, sizeof(FrameHeader_t));
-	UDP_ClientSend();
+	//UDP_ClientSend();
 	
 	UDP_ClientReceive(&Socket1, recvBuf, &si_other, &slen, ACK_SIZE);
-	UDP_ClientReceive();
+	//UDP_ClientReceive();
 
 	if(strcmp(recvBuf, "ACK") == 0)
 	{

@@ -29,8 +29,8 @@ typedef struct
 	uint8_t*  PeripheralData;
 }FrameData_t;
 
-uint8_t* FRAME_Generate(void);
-void FRAME_Print(uint8_t* Frame);
+void FRAME_Generate(uint8_t* DIO_Data, uint32_t DIO_DataSize , uint8_t* UART_Data, uint32_t UART_DataSize);
+void FRAME_Print(void);
 
 
 #endif /* FRAME_H */

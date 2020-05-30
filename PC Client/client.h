@@ -8,24 +8,29 @@
 /************* MACROS DEFINITIONS ************/
 #define SERVER 				"192.168.5.10"	//ip address of udp server
 #define BUFLEN 				512				//Max length of buffer
-#define PORT 				8080			//The port on which to listen for incoming data
-#define ACK_SIZE 			4
-#define NACK_SIZE 			5
+#define PORT 				8888			//The port on which to listen for incoming data
+#define ACK					0x05
+#define NACK				0x08
+#define STATUS_SIZE			1
 #define NUM_OF_FRAMES		3
 
 #define CONNECTION_OK					0
 #define CONNECTION_WINSOCK_INIT_ERROR	1
 #define CONNECTION_SOCKET_ERROR			2
 
+/************* MESSAGE TYPES MACROS ************/
+#define	MESSAGE_ACK				0
+#define MESSAGE_NACK			1
+#define MESSAGE_HEADER_FRAME	2
+#define MESSAGE_DATA_FRAME		3
 
 /********** PC CLIENT INTERFACES ***********/
 
-
 uint8_t UDP_ClientConnect(void);
 
-void UDP_ClientSend(uint8_t* buffer, uint32_t FrameSize);
+void UDP_ClientSend(uint8_t MessageType);
 
-void UDP_ClientReceive(uint8_t* buffer, uint32_t FrameSize);
+uint8_t UDP_ClientReceive(uint8_t MessageType);
 
 void UDP_ClientDisconnect(void);
 
