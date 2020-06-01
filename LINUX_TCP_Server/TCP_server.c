@@ -6,10 +6,6 @@
  * @author     BENCH,PLEASE! TEAM
  * @date       June 1st,2020
  *********************************************************/
- 
-#include <stdio.h>
-#include <stdint.h>
-#include <string.h>
 #include "TCP_server.h"
 #include "Frame.h"
 
@@ -61,23 +57,10 @@ void main(void)
 /*<------------------------FUNCTION DEFINITIONS---------------------->*/
 uint8_t TCP_ServerConnect(void){
 
-	WSADATA wsa;
-	//Initialise winsock
-	printf("\nInitialising Winsock...\n");
-	if (WSAStartup(MAKEWORD(2,2),&wsa) != 0)
-	{
-		printf("Initialization Failed. Error Code : %d\n",WSAGetLastError());
-		//exit(EXIT_FAILURE);
-		return CONNECTION_WINSOCK_INIT_ERROR;
-	}
-	printf("Initialised.\n");
-	
 	//create socket
-	if ((ServerSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == SOCKET_ERROR)
+	if ((ServerSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
 	{
-		printf("socket() Failed. Error Code : %d\n" , WSAGetLastError());
-		//exit(EXIT_FAILURE);
-		/*WSACleanup();*/
+		perror("socket() Failed \n");
 		return CONNECTION_SOCKET_ERROR;
 	}
 		
@@ -85,20 +68,18 @@ uint8_t TCP_ServerConnect(void){
 	memset((char *) &servaddr, 0, sizeof(struct sockaddr_in ));
 	servaddr.sin_family = AF_INET;
 	servaddr.sin_port = htons(PORT);
-	servaddr.sin_addr.S_un.S_addr = inet_addr(SERVER); 
+	servaddr.sin_addr.s_addr = inet_addr(SERVER); 
 	
-	if (bind(ServerSocket, (struct sockaddr *)&servaddr, sizeof(servaddr)) == SOCKET_ERROR ) 
+	if (bind(ServerSocket, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0) 
     { 
-		printf("bind() failed! Error code: %ld\n", WSAGetLastError());
-       /*WSACleanup();*/
+		perror("bind() Failed ");
 		return CONNECTION_BIND_ERROR;
     } 
     printf("Bind done\n");  
-    
-	if(listen(ServerSocket,5) == SOCKET_ERROR)
+
+	if(listen(ServerSocket,5) < 0)
 	{
-		printf("listen() failed! Error code: %ld\n", WSAGetLastError());
-		/*WSACleanup();*/
+		perror("Listen() Failed ");
 		return CONNECTION_SOCKET_ERROR;
 	}
 	else
@@ -106,10 +87,9 @@ uint8_t TCP_ServerConnect(void){
 		printf("WAITING... \n ");
 
 	}
-	if((ClientSocket = accept(ServerSocket, (struct sockaddr*)&cliaddr, &len)) == INVALID_SOCKET)
+	if((ClientSocket = accept(ServerSocket, (struct sockaddr*)&cliaddr, &len)) < 0)
 	{
-		printf("accept() failed! Error code: %ld\n", WSAGetLastError());
-		/*WSACleanup();*/
+		perror("accept() Failed ");
 		return CONNECTION_SOCKET_ERROR;
 	}
 	else
@@ -127,38 +107,35 @@ void TCP_ServerSend(uint8_t MessageType)
 	{
 		case MESSAGE_ACK:
 			Status = ACK;
-			if (send(ClientSocket, (uint8_t *)&Status, STATUS_SIZE, 0) == SOCKET_ERROR)
+			if (send(ClientSocket, (uint8_t *)&Status, STATUS_SIZE, 0) < 0)
 			{
-				printf("send() failed with error code : %d" , WSAGetLastError());
-				exit(EXIT_FAILURE);
+				perror("send() Failed ");
 			}
 			break;
 
 		case MESSAGE_NACK:
 			Status = NACK;
-			if (send(ClientSocket, (uint8_t *)&Status, STATUS_SIZE, 0) == SOCKET_ERROR)
+			if (send(ClientSocket, (uint8_t *)&Status, STATUS_SIZE, 0) < 0)
 			{
-				printf("send() failed with error code : %d" , WSAGetLastError());
-				exit(EXIT_FAILURE);
+				perror("send() Failed ");
+				//exit(EXIT_FAILURE);
 			}
 			break;
 		case MESSAGE_HEADER_FRAME:
-			if (send(ClientSocket, (uint8_t *)&FrameHeader, sizeof(FrameHeader_t), 0) == SOCKET_ERROR)
+			if (send(ClientSocket, (uint8_t *)&FrameHeader, sizeof(FrameHeader_t), 0) < 0)
 			{
-				printf("send() failed with error code : %d" , WSAGetLastError());
-				exit(EXIT_FAILURE);
+				perror("send() Failed ");
 			}
 			break;
 		case MESSAGE_DATA_FRAME:	
-			if (send(ClientSocket, (uint8_t *)Frame, FrameHeader.TotalDataSize, 0) == SOCKET_ERROR)
+			if (send(ClientSocket, (uint8_t *)Frame, FrameHeader.TotalDataSize, 0) < 0)
 			{
-				printf("send() failed with error code : %d" , WSAGetLastError());
-				exit(EXIT_FAILURE);
+				perror("send() Failed ");
 			}
 			break;
 			
 		default:
-			printf("MESSAGE_TYPE_ERROR\n");
+			printf("MESSAGE_TYPE_ERROR");
 			break;
 	}
 }
@@ -175,8 +152,7 @@ uint8_t TCP_ServerReceive(uint8_t MessageType)
 
 		if (recv(ClientSocket, (uint8_t *)recvBuf, STATUS_SIZE, 0) < 0 )
 		{
-			printf("recv() failed with error code : %d" , WSAGetLastError());
-			exit(EXIT_FAILURE);
+			printf("recv() failed");
 		}
 		printf("%X\n", recvBuf[0]);
 		if( recvBuf[0] == ACK)
@@ -190,11 +166,9 @@ uint8_t TCP_ServerReceive(uint8_t MessageType)
 		break;
 
 		case MESSAGE_HEADER_FRAME:
-			printf("FML1\n");
-			if (recv(ClientSocket, recvBuf, sizeof(FrameHeader_t), 0) == SOCKET_ERROR)
+			if (recv(ClientSocket, recvBuf, sizeof(FrameHeader_t), 0) < 0)
 			{
-				printf("recv() failed with error code : %d" , WSAGetLastError());
-				exit(EXIT_FAILURE);
+				printf("recv() failed");
 			}
 			
 			returnType = MESSAGE_HEADER_FRAME;
@@ -203,10 +177,9 @@ uint8_t TCP_ServerReceive(uint8_t MessageType)
 		case MESSAGE_DATA_FRAME:
 		
 			printf("FML2\n");
-			if (recv(ClientSocket, recvBuf, FrameHeader.TotalDataSize, 0) == SOCKET_ERROR)
+			if (recv(ClientSocket, recvBuf, FrameHeader.TotalDataSize, 0) < 0)
 			{
-				printf("recv() failed with error code : %d" , WSAGetLastError());
-				exit(EXIT_FAILURE);
+				printf("recv() failed");
 			}
 			
 			returnType = MESSAGE_DATA_FRAME;
@@ -222,6 +195,5 @@ uint8_t TCP_ServerReceive(uint8_t MessageType)
 
 void TCP_ServerDisconnect(void)
 {
-	closesocket(ServerSocket);
-	WSACleanup();
+	close(ServerSocket);
 }

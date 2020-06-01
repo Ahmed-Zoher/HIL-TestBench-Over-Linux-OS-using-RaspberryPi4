@@ -11,11 +11,18 @@
 #ifndef TCP_SERVER_H
 #define TCP_SERVER_H
 
-/*<---------------------- FILE INCLUDES ------------------------->*/
-#include <winsock2.h>
-#pragma comment(lib,"ws2_32") 	//Winsock Library
+/*<---------------------- FILE INCLUDES ------------------------>*/
+#include <stdio.h>
+#include <stdint.h>
+#include <string.h>
+#include <stdlib.h> 
+#include <unistd.h> 
+#include <sys/types.h> 
+#include <sys/socket.h> 
+#include <arpa/inet.h> 
+#include <netinet/in.h> 
 
-/************* MACROS DEFINITIONS ************/
+/*<----------------------MACRO DEFINITIONS  ---------------------->*/
 #define SERVER 				"127.0.0.1"   	//ip address of udp server
 #define BUFLEN 				512				//Max length of buffer
 #define PORT 				8880			//The port on which to listen for incoming data
@@ -29,6 +36,7 @@
 #define CONNECTION_SOCKET_ERROR			2
 #define CONNECTION_BIND_ERROR			3
 #define CONNECTION_CONNECT_ERROR		4
+
 
 /************* MESSAGE TYPES MACROS ************/
 #define	MESSAGE_ACK				0

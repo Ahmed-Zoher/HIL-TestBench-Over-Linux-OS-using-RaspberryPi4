@@ -1,7 +1,7 @@
 /*********************************************************
  * @defgroup   TCP_CLIENT TCP client					  
  *														
- * @brief      This file implements TCP client
+ * @brief      This file implements TCP client.
  *
  * @author     BENCH,PLEASE! TEAM
  * @date       June 1st,2020
@@ -63,22 +63,11 @@ void main (void)
 
 uint8_t TCP_ClientConnect(void)
 {
-	WSADATA wsa;
-	//Initialise winsock
-	printf("\nInitialising Winsock...\n");
-	if (WSAStartup(MAKEWORD(2,2),&wsa) != 0)
-	{
-		printf("Initialization Failed. Error Code : %d\n",WSAGetLastError());
-		//exit(EXIT_FAILURE);
-		return CONNECTION_WINSOCK_INIT_ERROR;
-	}
-	printf("Initialised.\n");
 	
 	//create socket
-	if ((ClientSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == SOCKET_ERROR)
+	if ((ClientSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
 	{
-		printf("socket() Failed. Error Code : %d\n" , WSAGetLastError());
-		//exit(EXIT_FAILURE);
+		perror("socket() Failed");
 		return CONNECTION_SOCKET_ERROR;
 	}
 		
@@ -86,11 +75,11 @@ uint8_t TCP_ClientConnect(void)
 	memset((char *) &servaddr, 0, sizeof(struct sockaddr_in ));
 	servaddr.sin_family = AF_INET;
 	servaddr.sin_port = htons(PORT);
-	servaddr.sin_addr.S_un.S_addr = inet_addr(SERVER); 
+	servaddr.sin_addr.s_addr = inet_addr(SERVER); 
 	
-	if (connect(ClientSocket, (SOCKADDR *) &servaddr, sizeof(servaddr)) != 0)
+	if (connect(ClientSocket, (struct sockaddr *) &servaddr, sizeof(servaddr)) < 0 )
 	{
-		printf("connect() failed! Error code: %ld\n", WSAGetLastError());
+		perror("connect() failed");
 		return CONNECTION_SOCKET_ERROR;
 	}
 	else
@@ -108,9 +97,9 @@ void TCP_ClientSend(uint8_t MessageType)
 	{
 		case MESSAGE_ACK:
 			Status = ACK;
-			if (send(ClientSocket, (uint8_t *)&Status, STATUS_SIZE, 0) == SOCKET_ERROR)
+			if (send(ClientSocket, (uint8_t *)&Status, STATUS_SIZE, 0) < 0)
 			{
-				printf("send() failed with error code : %d" , WSAGetLastError());
+				perror("send() failed ");
 				//exit(EXIT_FAILURE);
 			}
 			else
@@ -121,9 +110,9 @@ void TCP_ClientSend(uint8_t MessageType)
 
 		case MESSAGE_NACK:
 			Status = NACK;
-			if (send(ClientSocket, (uint8_t *)&Status, STATUS_SIZE, 0) == SOCKET_ERROR)
+			if (send(ClientSocket, (uint8_t *)&Status, STATUS_SIZE, 0) < 0)
 			{
-				printf("send() failed with error code : %d" , WSAGetLastError());
+				perror("send() failed");
 			}
 			else
 			{
@@ -132,9 +121,9 @@ void TCP_ClientSend(uint8_t MessageType)
 			
 			break;
 		case MESSAGE_HEADER_FRAME:
-			if (send(ClientSocket, (uint8_t *)&FrameHeader, sizeof(FrameHeader_t), 0) == SOCKET_ERROR)
+			if (send(ClientSocket, (uint8_t *)&FrameHeader, sizeof(FrameHeader_t), 0) < 0 )
 			{
-				printf("send() failed with error code : %d" , WSAGetLastError());
+				perror("send() failed");
 			}
 			else
 			{
@@ -142,9 +131,9 @@ void TCP_ClientSend(uint8_t MessageType)
 			}
 			break;
 		case MESSAGE_DATA_FRAME:	
-			if (send(ClientSocket, (uint8_t *)Frame, FrameHeader.TotalDataSize, 0) == SOCKET_ERROR)
+			if (send(ClientSocket, (uint8_t *)Frame, FrameHeader.TotalDataSize, 0) < 0)
 			{
-				printf("send() failed with error code : %d" , WSAGetLastError());
+				perror("send() failed");
 			}
 			else
 			{
@@ -166,10 +155,9 @@ uint8_t TCP_ClientReceive(uint8_t MessageType)
 	{
 		case MESSAGE_ACK:
 		//try to receive some data, this is a blocking call
-		if (recv(ClientSocket, (uint8_t *)recvBuf, STATUS_SIZE, 0) == SOCKET_ERROR)
+		if (recv(ClientSocket, (uint8_t *)recvBuf, STATUS_SIZE, 0) < 0)
 		{
-			printf("recv() failed with error code : %d" , WSAGetLastError());
-			exit(EXIT_FAILURE);
+			perror("recv() failed");
 		}
 		printf("%X\n", recvBuf[0]);
 		if( recvBuf[0] == ACK)
@@ -183,20 +171,18 @@ uint8_t TCP_ClientReceive(uint8_t MessageType)
 		break;
 
 		case MESSAGE_HEADER_FRAME:
-			if (recv(ClientSocket, recvBuf, sizeof(FrameHeader_t), 0) == SOCKET_ERROR)
+			if (recv(ClientSocket, recvBuf, sizeof(FrameHeader_t), 0) < 0)
 			{
-				printf("recv() failed with error code : %d" , WSAGetLastError());
-				exit(EXIT_FAILURE);
+				perror("recv() failed");
 			}
 			
 			returnType = MESSAGE_HEADER_FRAME;
 			break;
 			
 		case MESSAGE_DATA_FRAME:
-			if (recv(ClientSocket, recvBuf, FrameHeader.TotalDataSize, 0) == SOCKET_ERROR)
+			if (recv(ClientSocket, recvBuf, FrameHeader.TotalDataSize, 0) < 0)
 			{
-				printf("recv() failed with error code : %d" , WSAGetLastError());
-				exit(EXIT_FAILURE);
+				perror("recv() failed");
 			}
 			
 			returnType = MESSAGE_DATA_FRAME;
@@ -212,8 +198,7 @@ uint8_t TCP_ClientReceive(uint8_t MessageType)
 
 void TCP_ClientDisconnect(void)
 {
-	closesocket(ClientSocket);
-	WSACleanup();
+	close(ClientSocket);
 }
 
 ////////////////////////////////////////////FRAME APIS////////////////////////////////////////
