@@ -24,6 +24,9 @@
 #define MESSAGE_HEADER_FRAME	2
 #define MESSAGE_DATA_FRAME		3
 
+#define HEADER_VALID	0
+#define HEADER_INVALID	1
+
 /********** PC CLIENT INTERFACES ***********/
 
 uint8_t UDP_ClientConnect(void);

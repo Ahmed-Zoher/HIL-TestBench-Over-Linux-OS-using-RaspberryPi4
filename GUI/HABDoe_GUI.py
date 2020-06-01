@@ -455,21 +455,36 @@ class Ui_HABDoe(object):
       my_functions.FRAME_Generate(array_type, len(output), array_type2, len(arr))
       my_functions.FRAME_Print()
       
-      #Sending Header
+      ##RECIVING DATA FROM PC
+      #Sending Tx-Header
       my_functions.UDP_ClientSend(2)
-      
-      #Receiving ACK on Header
-      #print("Before Receiving ACK")
-      #ReceiveStatus = my_functions.UDP_ClientReceive(0)
-      #print("AFTER>>ReceiveStatus: " + str(ReceiveStatus))
-      
-      #if(ReceiveStatus == 0): #ACK received
+      #Receiving ACK on Tx Header
+      ReceiveStatus = my_functions.UDP_ClientReceive(0)  
+      #Tx State
+      if(ReceiveStatus == 0): #ACK received
+        print("ACK Received")
         #Sending Data Frame
-      my_functions.UDP_ClientSend(3)
+        my_functions.UDP_ClientSend(3)     
+      elif (ReceiveStatus == 1): #NACK received
+        print("NACK Received")
+      
+      
+      
+      ##RECIVING DATA FROM RASPBERRY PI
+      #Receiving Rx-Header 
+      ReceiveStatus = my_functions.UDP_ClientReceive(2)
+      
+      if(ReceiveStatus == 0): #Header Valid
+        print("HEADER FRAME VALID")
+        #Sending ACK on FrameHeader
+        my_functions.UDP_ClientSend(0)
+        #Receive Rx-Data
+        my_functions.UDP_ClientReceive(3)     
+      elif(ReceiveStatus == 1): #Header Invalid
+        print("HEADER FRAME INVALID")
         
-      #elif (ReceiveStatus == 1): #NACK received
-        #print("NACK Received")
-        
+      
+      
     # TEST_Func    
     
     # setupUi

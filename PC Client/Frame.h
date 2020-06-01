@@ -26,7 +26,8 @@ typedef struct
 {
 	uint32_t  PeripheralID;
 	uint32_t  DataSize;
-	uint8_t*  PeripheralData;
+	//uint8_t*  PeripheralData;
+	uint8_t   PeripheralData;
 }FrameData_t;
 
 void FRAME_Generate(uint8_t* DIO_Data, uint32_t DIO_DataSize , uint8_t* UART_Data, uint32_t UART_DataSize);

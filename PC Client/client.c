@@ -12,11 +12,11 @@
 
 
 //uint8_t buf[BUFLEN];
-uint8_t recvBuf[STATUS_SIZE];
+uint8_t recvBuf[BUFLEN];
 uint32_t ClientSocket;
 
-uint8_t RxFrameHeaderBuffer[100];
-uint8_t RxFrameDataBuffer[100];
+uint8_t RxFrameHeaderBuffer[512];
+uint8_t RxFrameDataBuffer[512];
 
 struct sockaddr_in servaddr;
 uint32_t slen = sizeof(servaddr);
@@ -40,6 +40,7 @@ typedef struct
 uint8_t DIO_Data[DIO_DATA_SIZE] = {45, 120, 78, 42, 11};
 uint8_t UZART_Data[UZART_DATA_SIZE] = {23, 10, 117};
 
+static void recv_print(uint32_t size);
 
 FrameHeader_t FrameHeader = 
 {
@@ -49,7 +50,6 @@ FrameHeader_t FrameHeader =
 };
 
 //////////////////////////////////////////////////////////////////////////
-
 
 uint8_t UDP_ClientConnect(void)
 {
@@ -127,20 +127,20 @@ uint8_t UDP_ClientReceive(uint8_t MessageType)
 {
 	uint8_t returnType = 0;
 	//clear the buffer by filling null, it might have previously received data
-	memset(recvBuf, 0, BUFLEN);
 	
 	switch(MessageType)
 	{
 		case MESSAGE_ACK:
-		//try to receive some data, this is a blocking call
+		memset(recvBuf, 0, STATUS_SIZE);
 		if (recvfrom(ClientSocket, (uint8_t *)recvBuf, STATUS_SIZE, 0, (struct sockaddr *)&servaddr, &slen) == SOCKET_ERROR)
 		{
-			printf("USELESS PRINT 2\n");
 			printf("recvfrom() failed with error code : %d" , WSAGetLastError());
 			exit(EXIT_FAILURE);
 		}
-		printf("%s\n", recvBuf);
-		if(strcmp(recvBuf, "ACK") == 0)
+		printf("STATUS: %d", recvBuf[0]);
+		
+		recv_print(STATUS_SIZE);
+		if(recvBuf[0] == ACK)
 		{
 			returnType = MESSAGE_ACK;	
 		}
@@ -151,33 +151,39 @@ uint8_t UDP_ClientReceive(uint8_t MessageType)
 		break;
 
 		case MESSAGE_HEADER_FRAME:
-			printf("FML1\n");
+			memset(recvBuf, 0, sizeof(FrameHeader_t));
 			if (recvfrom(ClientSocket, recvBuf, sizeof(FrameHeader_t), 0, (struct sockaddr *)&servaddr, &slen) == SOCKET_ERROR)
 			{
 				printf("recvfrom() failed with error code : %d" , WSAGetLastError());
 				exit(EXIT_FAILURE);
 			}
-			printf("%s\n",recvBuf);
-			returnType = MESSAGE_HEADER_FRAME;
+			recv_print(sizeof(FrameHeader_t));
+			
+			if(((FrameHeader_t*)recvBuf)->Signature == SIGNATURE)
+			{
+				returnType = HEADER_VALID;
+			}
+			else
+			{
+				returnType = HEADER_INVALID;
+			}
 			break;
 			
 		case MESSAGE_DATA_FRAME:
-		
-			printf("FML2\n");
+			memset(recvBuf, 0, FrameHeader.TotalDataSize);
 			if (recvfrom(ClientSocket, recvBuf, FrameHeader.TotalDataSize, 0, (struct sockaddr *)&servaddr, &slen) == SOCKET_ERROR)
 			{
 				printf("recvfrom() failed with error code : %d" , WSAGetLastError());
 				exit(EXIT_FAILURE);
-			}
-			printf("%s\n",recvBuf);
+			}	
+			recv_print(FrameHeader.TotalDataSize);
 			returnType = MESSAGE_DATA_FRAME;
 			break;
 			
 		default:
 			printf("MESSAGE_TYPE_ERROR\n");
 			break;
-	}
-	
+	}	
 	return returnType;
 }
 
@@ -237,5 +243,15 @@ void FRAME_Print(void)
 	}
 }
 
-
 //////////////////////////////////////////////////////////////////////////
+
+static void recv_print(uint32_t size)
+{
+	uint32_t i = 0;
+	for(i = 0; i < size; i++)
+	{
+		printf("Byte[%d]: %d\n", i, recvBuf[i]);
+	}
+	printf("\n");
+}
+
