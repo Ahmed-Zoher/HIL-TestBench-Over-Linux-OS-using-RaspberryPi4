@@ -1168,40 +1168,6 @@ class Ui_HABDoe(object):
     global my_functions 
     my_functions = CDLL(so_file)
     status = 0
-    #########################################################
-    # Function Called By Connect_pushButton
-    # Responsible for Establishing a connection 
-    # between Server and client
-    #########################################################
-    def Connect_Func(self):
-    
-      status = my_functions.UDP_ClientConnect(b"192.168.5.10", 8888)
-      if(status == 0):
-        for i in range(0, 101, 5):
-          self.Conncection_progressBar.setValue(i)
-          time.sleep(0.1)
-          
-        print("CONNECTION_OK\n")
-        
-      elif(status == 1):
-        self.Conncection_progressBar.setValue(0)
-        print("CONNECTION_WINSOCK_INIT_ERROR\n")
-      elif(status == 2):
-        self.Conncection_progressBar.setValue(0)
-        print("CONNECTION_SOCKET_ERROR\n")
-    # Connect_Func      
-  
-    
-    #########################################################
-    # Function Called By Disconnect_pushButton
-    # Responsible for Closing/Finishing the connection 
-    # between Server and client
-    #########################################################
-    def Disconnect_Func(self):
-      my_functions.UDP_ClientDisconnect()
-      self.Conncection_progressBar.setValue(0)
-      print("DISCONNECTED FROM SERVER CONNECTION_OK\n")
-    # Disconnect_Func
     
     
     #########################################################
@@ -1210,21 +1176,15 @@ class Ui_HABDoe(object):
     # and begin sending frames
     #########################################################
     def TEST_Func(self):
-      # print(my_functions.falla7_3(10))
-      #self.Conncection_progressBar.setValue(50)
-      #self.Channel_20_horizontalSlider.setValue(1)
-      #self.Channel_22_horizontalSlider.setValue(1)
       
-      output = [int(self.OUT_Channel_10_checkBox.isChecked()),int(self.OUT_Channel_11_checkBox.isChecked()),
-      int(self.OUT_Channel_12_checkBox.isChecked()),int(self.OUT_Channel_13_checkBox.isChecked()),
-      int(self.OUT_Channel_14_checkBox.isChecked())]
+      output = [int(self.Channel1_horizontalSlider.value()),
+      int(self.Channel2_horizontalSlider.value()),
+      int(self.Channel3_horizontalSlider.value())]
       
       array_type = (c_int8 * len(output))(*output)
       
       arr = [1,2,3,4]
       array_type2 = (c_int8 * len(arr))(*arr)
-      
-      #my_functions.PrintString(array_type(*arr),4)
       
       my_functions.FRAME_GenerateDataFrame(array_type, len(output), array_type2, len(arr))
       my_functions.FRAME_Print()
@@ -1253,12 +1213,63 @@ class Ui_HABDoe(object):
         my_functions.UDP_ClientSend(0)
         #Receive Rx-Data
         my_functions.UDP_ClientReceive(3)
-        my_functions.FRAME_ParsingDataFrame()
+        
+        FRAME_return = my_functions.FRAME_ParsingDataFrame()
+        
+        DIO_Readings = [int(d) for d in str(bin(FRAME_return))[2:]]
+        [DIO_Readings.insert(0,0) for i in range(3-len(str(bin(FRAME_return))[2:]))]
+
+        self.Channel4_lcdNumber.display(DIO_Readings[2])
+        self.Channel5_lcdNumber.display(DIO_Readings[1])
+        self.Channel6_lcdNumber.display(DIO_Readings[0])
+
+      
       elif(ReceiveStatus == 1): #Header Invalid
         print("HEADER FRAME INVALID")
           
     # TEST_Func    
     
+    #########################################################
+    # Function Called By Connect_pushButton
+    # Responsible for Establishing a connection 
+    # between Server and client
+    #########################################################
+    def Connect_Func(self):
+    
+      status = my_functions.UDP_ClientConnect(b"192.168.5.10", 8888)
+      if(status == 0):
+        for i in range(0, 101, 5):
+          self.Conncection_progressBar.setValue(i)
+          time.sleep(0.01)
+        
+        print("CONNECTION_OK\n")
+        self.TEST_Func()
+      
+      elif(status == 1):
+        self.Conncection_progressBar.setValue(0)
+        print("CONNECTION_WINSOCK_INIT_ERROR\n")
+        
+      elif(status == 2):
+        self.Conncection_progressBar.setValue(0)
+        print("CONNECTION_SOCKET_ERROR\n")
+        
+      elif(status == 3):
+        self.Conncection_progressBar.setValue(0)
+        print("CONENCTION_REQUEST_TIMEOUT\n")  
+      
+    # Connect_Func      
+  
+    
+    #########################################################
+    # Function Called By Disconnect_pushButton
+    # Responsible for Closing/Finishing the connection 
+    # between Server and client
+    #########################################################
+    def Disconnect_Func(self):
+      my_functions.UDP_ClientDisconnect()
+      self.Conncection_progressBar.setValue(0)
+      print("DISCONNECTED FROM SERVER CONNECTION_OK\n")
+    # Disconnect_Func 
     # setupUi
 
     def retranslateUi(self, HABDoe):

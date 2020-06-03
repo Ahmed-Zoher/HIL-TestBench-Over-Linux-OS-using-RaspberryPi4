@@ -113,7 +113,7 @@ uint8_t UDP_ClientConnect(uint8_t* ServerIP, uint16_t ServerPort)
 		{
 			printf("CONNECTION KEY ACCEPTED\n");
 			TimeoutCounter = 0;
-			break;
+			return CONNECTION_OK;
 		}
 		else
 		{
@@ -125,7 +125,7 @@ uint8_t UDP_ClientConnect(uint8_t* ServerIP, uint16_t ServerPort)
 			UDP_ClientSend(MESSAGE_CONNECTION_KEY);
 		}
 	}
-	return CONNECTION_OK;
+	return CONENCTION_REQUEST_TIMEOUT;
 }
 
 void UDP_ClientSend(uint8_t MessageType)
@@ -333,6 +333,7 @@ uint8_t FRAME_ParsingDataFrame(void)
 	printf("\n\nDIO_BitValue: ");
 	bin(DIO_BitValue);
 	
+	printf("\n\nDIO_RETURNNNN:%d", DIO_BitValue);
 	return DIO_BitValue;
 }
 
