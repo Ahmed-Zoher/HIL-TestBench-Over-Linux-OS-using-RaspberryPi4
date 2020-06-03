@@ -53,7 +53,6 @@ int main(void)
 	if (gpioInitialise() < 0)
 	{
 	   fprintf(stderr, "pigpio initialisation failed\n");
-	   return 1;
 	}
 	
 	gpioSetMode(LED_RED, PI_OUTPUT);
@@ -67,7 +66,7 @@ int main(void)
 	
 	/**************************** Receiving frames **********************************/
   
-	/* Receiving Header */
+	/* HEADER */
 	UDP_ServerReceive(&sockfd, (uint8_t*)&RxFrameHeader, &cliaddr, (uint32_t *)&len, sizeof(FrameHeader_t));
 	
 	if(RxFrameHeader.Signature == 0x07775000)
@@ -102,9 +101,9 @@ int main(void)
 		
 		//printf("DIO PERIPHERAL_ID: %d\n", RxFrameData->PeripheralID);
 		//printf("DIO PERIPHERAL_DATA SIZE: %d\n", RxFrameData->DataSize);
-		gpioWrite(LED_RED, FrameDataBuffer[8]);
-		gpioWrite(LED_GREEN, FrameDataBuffer[9]);
-		gpioWrite(OUT3, FrameDataBuffer[10]);
+		gpioWrite(LED_RED, FrameDataBuffer[4]);
+		gpioWrite(LED_GREEN, FrameDataBuffer[5]);
+		gpioWrite(OUT3, FrameDataBuffer[6]);
 
 		
 	printf("\n\n");
