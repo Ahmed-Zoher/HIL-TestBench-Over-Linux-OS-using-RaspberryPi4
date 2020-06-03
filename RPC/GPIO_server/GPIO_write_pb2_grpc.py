@@ -2,6 +2,7 @@
 import grpc
 
 import GPIO_write_pb2 as GPIO__write__pb2
+from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 
 
 class PI_GPIOStub(object):
@@ -16,12 +17,12 @@ class PI_GPIOStub(object):
         self.set_mode = channel.unary_unary(
                 '/PI_GPIO/set_mode',
                 request_serializer=GPIO__write__pb2.ModeInputParams.SerializeToString,
-                response_deserializer=GPIO__write__pb2.Empty.FromString,
+                response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 )
         self.write = channel.unary_unary(
                 '/PI_GPIO/write',
                 request_serializer=GPIO__write__pb2.SetInputParams.SerializeToString,
-                response_deserializer=GPIO__write__pb2.Empty.FromString,
+                response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 )
 
 
@@ -46,12 +47,12 @@ def add_PI_GPIOServicer_to_server(servicer, server):
             'set_mode': grpc.unary_unary_rpc_method_handler(
                     servicer.set_mode,
                     request_deserializer=GPIO__write__pb2.ModeInputParams.FromString,
-                    response_serializer=GPIO__write__pb2.Empty.SerializeToString,
+                    response_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
             ),
             'write': grpc.unary_unary_rpc_method_handler(
                     servicer.write,
                     request_deserializer=GPIO__write__pb2.SetInputParams.FromString,
-                    response_serializer=GPIO__write__pb2.Empty.SerializeToString,
+                    response_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -75,7 +76,7 @@ class PI_GPIO(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/PI_GPIO/set_mode',
             GPIO__write__pb2.ModeInputParams.SerializeToString,
-            GPIO__write__pb2.Empty.FromString,
+            google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options, channel_credentials,
             call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -91,6 +92,6 @@ class PI_GPIO(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/PI_GPIO/write',
             GPIO__write__pb2.SetInputParams.SerializeToString,
-            GPIO__write__pb2.Empty.FromString,
+            google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options, channel_credentials,
             call_credentials, compression, wait_for_ready, timeout, metadata)
