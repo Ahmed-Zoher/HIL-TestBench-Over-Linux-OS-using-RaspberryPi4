@@ -12,7 +12,7 @@ from PySide2.QtCore import (QCoreApplication, QMetaObject, QObject, QPoint,
     QRect, QSize, QUrl, Qt)
 from PySide2.QtGui import (QBrush, QColor, QConicalGradient, QFont,
     QFontDatabase, QIcon, QLinearGradient, QPalette, QPainter, QPixmap,
-    QRadialGradient)
+    QRadialGradient, QValidator, QRegExpValidator)
 from PySide2.QtWidgets import *
 from ctypes import *
 
@@ -599,6 +599,12 @@ class Ui_HABDoe(object):
         self.UART_DataReceived_label.setGeometry(QRect(16, 145, 101, 21))
         self.UART_DataReceived_label.setFont(font1)
         self.UART_DataSend_lineEdit = QLineEdit(self.UART_groupBox)
+        '''
+        Changes added from .py
+        '''
+        validator = QRegExpValidator("[0-9A-Fa-f]+")
+        self.UART_DataSend_lineEdit.setValidator(validator)
+        # End of Changes
         self.UART_DataSend_lineEdit.setObjectName(u"UART_DataSend_lineEdit")
         self.UART_DataSend_lineEdit.setEnabled(True)
         self.UART_DataSend_lineEdit.setGeometry(QRect(13, 107, 221, 31))
@@ -686,6 +692,12 @@ class Ui_HABDoe(object):
         self.SPI_Channel_1_DataReceived_label.setGeometry(QRect(16, 145, 101, 21))
         self.SPI_Channel_1_DataReceived_label.setFont(font1)
         self.SPI_Channel_1_DataSend_lineEdit = QLineEdit(self.SPI_Channel_1_groupBox)
+        '''
+        Changes added from .py
+        '''
+        validator = QRegExpValidator("[0-9A-Fa-f]+")
+        self.SPI_Channel_1_DataSend_lineEdit.setValidator(validator)
+        # End of Changes
         self.SPI_Channel_1_DataSend_lineEdit.setObjectName(u"SPI_Channel_1_DataSend_lineEdit")
         self.SPI_Channel_1_DataSend_lineEdit.setEnabled(True)
         self.SPI_Channel_1_DataSend_lineEdit.setGeometry(QRect(13, 107, 221, 31))
@@ -813,6 +825,12 @@ class Ui_HABDoe(object):
         self.SPI_Channel_2_DataReceived_label.setGeometry(QRect(16, 145, 101, 21))
         self.SPI_Channel_2_DataReceived_label.setFont(font1)
         self.SPI_Channel_2_DataSend_lineEdit = QLineEdit(self.SPI_Channel_2_groupBox)
+        '''
+        Changes added from .py
+        '''
+        validator = QRegExpValidator("[0-9A-Fa-f]+")
+        self.SPI_Channel_2_DataSend_lineEdit.setValidator(validator)
+        # End of Changes
         self.SPI_Channel_2_DataSend_lineEdit.setObjectName(u"SPI_Channel_2_DataSend_lineEdit")
         self.SPI_Channel_2_DataSend_lineEdit.setEnabled(True)
         self.SPI_Channel_2_DataSend_lineEdit.setGeometry(QRect(13, 107, 221, 31))
@@ -1139,19 +1157,23 @@ class Ui_HABDoe(object):
 "    background-color: grey;\n"
 "    border-style: inset;\n"
 "}")
-
+        
+        # Signals
+        
         self.retranslateUi(HABDoe)
+        '''
+        Signals done from GUI
+        '''
         self.Channel8_horizontalSlider.valueChanged.connect(self.Channel8_lcdNumber.display)
         self.Channel7_horizontalSlider.valueChanged.connect(self.Channel7_lcdNumber.display)
 
+        # Signals
         self.BenchMode_tabWidget.setCurrentIndex(0)
         self.Peripherals_tabWidget.setCurrentIndex(0)
         self.TEST_pushButton.setDefault(False)
 
-
         QMetaObject.connectSlotsByName(HABDoe)
-        
-              
+         
         # Connect pushButton
         self.Connect_pushButton.clicked.connect(self.Connect_Func)
         
@@ -1161,6 +1183,15 @@ class Ui_HABDoe(object):
         # Test pushButton
         self.TEST_pushButton.clicked.connect(self.TEST_Func)
     
+        # UART horizontalSlider
+        self.UART_horizontalSlider.valueChanged.connect(self.UART_horizontalSlider_Func)
+        
+        # SPI Channel_1 horizontalSlider
+        self.SPI_Channel_1_horizontalSlider.valueChanged.connect(self.SPI_Channel_1_horizontalSlider_Func)
+        
+        # SPI Channel_2 horizontalSlider
+        self.SPI_Channel_2_horizontalSlider.valueChanged.connect(self.SPI_Channel_2_horizontalSlider_Func)
+        
     '''
     to be changed as per user demand  
     '''
@@ -1168,7 +1199,6 @@ class Ui_HABDoe(object):
     global my_functions 
     my_functions = CDLL(so_file)
     status = 0
-    
     
     #########################################################
     # Function Called By Connect_pushButton
@@ -1269,7 +1299,56 @@ class Ui_HABDoe(object):
       my_functions.UDP_ClientDisconnect()
       self.Conncection_progressBar.setValue(0)
       print("DISCONNECTED FROM SERVER CONNECTION_OK\n")
-    # Disconnect_Func 
+    # Disconnect_Func     
+    
+    
+    #########################################################
+    # Function Called By SPI_Channel_1_horizontalSlider
+    # Responsible for Disabling and enabling  
+    # the Configurations of SPI (ensure that configurations
+    # are done only when SPI is disabled)
+    #########################################################
+    def SPI_Channel_1_horizontalSlider_Func(self):
+      if int(self.SPI_Channel_1_horizontalSlider.value()) == 0:
+        self.SPI_Channel_1_DataSend_lineEdit.setReadOnly(False)
+        self.SPI_Channel_1_BaudRate_spinBox.setEnabled(True)
+      else:
+        self.SPI_Channel_1_DataSend_lineEdit.setReadOnly(True)
+        self.SPI_Channel_1_BaudRate_spinBox.setEnabled(False)
+    # SPI_Channel_1_horizontalSlider_Func     
+    
+    
+    #########################################################
+    # Function Called By SPI_Channel_2_horizontalSlider
+    # Responsible for Disabling and enabling  
+    # the Configurations of SPI (ensure that configurations
+    # are done only when SPI is disabled)
+    #########################################################
+    def SPI_Channel_2_horizontalSlider_Func(self):
+      if int(self.SPI_Channel_2_horizontalSlider.value()) == 0:
+        self.SPI_Channel_2_DataSend_lineEdit.setReadOnly(False)
+        self.SPI_Channel_2_BaudRate_spinBox.setEnabled(True)
+      else:
+        self.SPI_Channel_2_DataSend_lineEdit.setReadOnly(True)
+        self.SPI_Channel_2_BaudRate_spinBox.setEnabled(False)
+    # SPI_Channel_2_horizontalSlider_Func     
+    
+    
+    #########################################################
+    # Function Called By UART_horizontalSlider
+    # Responsible for Disabling and enabling  
+    # the Configurations of UART (ensure that configurations
+    # are done only when UART is disabled)
+    #########################################################
+    def UART_horizontalSlider_Func(self):
+      if int(self.UART_horizontalSlider.value()) == 0:
+        self.UART_DataSend_lineEdit.setReadOnly(False)
+        self.UART_BaudRate_comboBox.setEnabled(True)
+      else:
+        self.UART_DataSend_lineEdit.setReadOnly(True)
+        self.UART_BaudRate_comboBox.setEnabled(False)
+    # UART_horizontalSlider_Func 
+    
     # setupUi
 
     def retranslateUi(self, HABDoe):
