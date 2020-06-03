@@ -59,7 +59,7 @@ FrameHeader_t RxFrameHeader;
 
 uint32_t FrameTotalSize = 0;
 uint32_t DIO_DATA_SIZE = 0;
-uint32_t UART_DATA_SIZE = 0;
+uint32_t PWM_DATA_SIZE = 0;
 
 
 //>>PROBLEM IN ACK & NACK
@@ -256,19 +256,19 @@ void UDP_ClientDisconnect(void)
 }
 
 ////////////////////////////////////////////FRAME APIS////////////////////////////////////////
-void FRAME_GenerateDataFrame(uint8_t* DIO_Data, uint32_t DIO_DataSize , uint8_t* UART_Data, uint32_t UART_DataSize)
+void FRAME_GenerateDataFrame(uint8_t* DIO_Data, uint32_t DIO_DataSize , uint8_t* PWM_Data, uint32_t PWM_DataSize)
 {
 	uint8_t PeripheralIndex = 0;
 	DIO_DATA_SIZE = DIO_DataSize;
-	UART_DATA_SIZE = UART_DataSize;
+	PWM_DATA_SIZE = PWM_DataSize;
 	
 	/* Grouping for easier indexing */
-	uint32_t local_PeripheralID[NUM_OF_PERIPH] = {DIO_PERIPHERAL_ID, UART_PERIPHERAL_ID};
-	uint32_t local_PeripheralDataSize[NUM_OF_PERIPH] = {DIO_DataSize, UART_DataSize};
-	uint8_t *local_PeripheralData[NUM_OF_PERIPH] = {DIO_Data, UART_Data};
+	uint32_t local_PeripheralID[NUM_OF_PERIPH] = {DIO_PERIPHERAL_ID, PWM_PERIPHERAL_ID};
+	uint32_t local_PeripheralDataSize[NUM_OF_PERIPH] = {DIO_DataSize, PWM_DataSize};
+	uint8_t *local_PeripheralData[NUM_OF_PERIPH] = {DIO_Data, PWM_Data};
 	
 	/* Alloctating the size of the frame to be sent */
-	FrameTotalSize = DIO_DataSize + UART_DataSize + PERIPH_INFO_SIZE;
+	FrameTotalSize = DIO_DataSize + PWM_DataSize + PERIPH_INFO_SIZE;
 	TxFrameHeader.TotalDataSize = FrameTotalSize;
 	
 	Frame = (uint8_t *) calloc(FrameTotalSize, sizeof(uint8_t));
@@ -300,10 +300,10 @@ uint8_t FRAME_ParsingDataFrame(void)
 	
 	/* Arrays holding the Readings to be passed to the GUI */
 	uint8_t DIO_Readings[DIO_INPUT_PINS] = {0};
-	uint8_t UART_Readings[512] = {0}; //can be allocated by calloc later
+	uint8_t PWM_Readings[512] = {0}; //can be allocated by calloc later
 	
 	/*Grouping for easier indexing */
-	uint8_t* Rx_Readings[NUM_OF_PERIPH] = {DIO_Readings, UART_Readings};
+	uint8_t* Rx_Readings[NUM_OF_PERIPH] = {DIO_Readings, PWM_Readings};
 	
 	uint8_t *RxFrameData = (uint8_t *)RxFrameDataBuffer;
 	
@@ -319,9 +319,9 @@ uint8_t FRAME_ParsingDataFrame(void)
 		printf("DIO_READING[%d]: %d\n", Iterator, DIO_Readings[Iterator]);
 	}
 	
-	for(Iterator = 0; Iterator < UART_DATA_SIZE; Iterator++)
+	for(Iterator = 0; Iterator < PWM_DATA_SIZE; Iterator++)
 	{
-		printf("UART_READING[%d]: %d\n", Iterator, UART_Readings[Iterator]);
+		printf("PWM_READING[%d]: %d\n", Iterator, PWM_Readings[Iterator]);
 	}
 	
 	///////////////////// CONVERTING TO INT /////////////////////

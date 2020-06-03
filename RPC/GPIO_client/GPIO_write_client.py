@@ -19,7 +19,7 @@ def run():
     
     #make the call
     stub.set_mode(Mode_params)
-    stub.write(Write_params)
+    # stub.write(Write_params)
     
     print("Pin set :D")
 
