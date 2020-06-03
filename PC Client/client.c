@@ -6,53 +6,77 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <string.h>
 #include "client.h"
 #include "Frame.h"
 
+typedef struct
+{
+	uint8_t* Message;
+	uint8_t MessageSize;
+}MessageInfo_t;
+#define NUM_OF_MSGS			5
+#define IS_MSG_VALID(MSG)	((MSG == MESSAGE_ACK)				|| \
+						    (MSG == MESSAGE_NACK)   			|| \
+                            (MSG == MESSAGE_HEADER_FRAME)   	|| \
+                            (MSG == MESSAGE_DATA_FRAME)   		|| \
+                            (MSG == MESSAGE_CONNECTION_KEY))
 
-//uint8_t buf[BUFLEN];
-uint8_t recvBuf[BUFLEN];
-uint32_t ClientSocket;
 
-uint8_t RxFrameHeaderBuffer[512];
-uint8_t RxFrameDataBuffer[512];
+
+static void recv_print(uint32_t size);
+static void bin(unsigned n);
+
+/* CLIENT GLOBAL VARIABLES */
 
 struct sockaddr_in servaddr;
 uint32_t slen = sizeof(servaddr);
+uint32_t ClientSocket = 0;
+uint32_t ConnectionKey = CONNECTION_KEY;
 uint16_t Iterator = 0;
-
 uint8_t Status = NACK;
 
-uint8_t ConnectionStatus = CONNECTION_OK;
-
-/**** Frame variables **/
-uint8_t *Frame = NULL;
-uint32_t FrameTotalSize = 0;
-
-typedef struct
-{
-	uint8_t MessageType;
-	uint8_t MessageSize;
-}MessageInfo;
+uint8_t recvBuf[512] = {0};
 
 /////////////////////////// FRAME GLOBALS //////////////////////////////
-uint8_t DIO_Data[DIO_DATA_SIZE] = {45, 120, 78, 42, 11};
-uint8_t UZART_Data[UZART_DATA_SIZE] = {23, 10, 117};
+uint8_t *Frame = NULL;
 
-static void recv_print(uint32_t size);
+uint8_t TxFrameDataBuffer[512];
+uint8_t RxFrameDataBuffer[512];
 
-FrameHeader_t FrameHeader = 
+FrameData_t *TxFrameData = (FrameData_t *)TxFrameDataBuffer;
+FrameData_t *RxFrameData = (FrameData_t *)RxFrameDataBuffer;
+
+FrameHeader_t TxFrameHeader = 
 {
 	.Signature 		= 	SIGNATURE,	
-	.NumOfCommands	= 	NUM_OF_CMD,
+	.NumOfCommands	= 	NUM_OF_PERIPH,
 	.TotalDataSize	= 	0
 };
 
+FrameHeader_t RxFrameHeader;
+
+uint32_t FrameTotalSize = 0;
+uint32_t DIO_DATA_SIZE = 0;
+uint32_t UART_DATA_SIZE = 0;
+
+
+//>>PROBLEM IN ACK & NACK
+// MessageInfo_t MessageInfo[NUM_OF_MSGS] = {
+	// {.Message = , .MessageSize = },
+	// {.Message = , .MessageSize = },
+	// {.Message = , .MessageSize = },
+	// {.Message = , .MessageSize = },
+	// {.Message = , .MessageSize = }
+	
+// };
+
 //////////////////////////////////////////////////////////////////////////
 
-uint8_t UDP_ClientConnect(void)
+uint8_t UDP_ClientConnect(uint8_t* ServerIP, uint16_t ServerPort)
 {
+	uint8_t TimeoutCounter = 0;
 	WSADATA wsa;
 	//Initialise winsock
 	printf("\nInitialising Winsock...\n");
@@ -71,18 +95,50 @@ uint8_t UDP_ClientConnect(void)
 		//exit(EXIT_FAILURE);
 		return CONNECTION_SOCKET_ERROR;
 	}
-		
+
 	//setup address structure
 	memset((char *) &servaddr, 0, sizeof(struct sockaddr_in ));
 	servaddr.sin_family = AF_INET;
-	servaddr.sin_port = htons(PORT);
-	servaddr.sin_addr.S_un.S_addr = inet_addr(SERVER); 
+	servaddr.sin_port = htons(ServerPort);
+	servaddr.sin_addr.S_un.S_addr = inet_addr(ServerIP); 
 	
+	
+	/*********** CONNECTION KEY VERIFICATION ***********/
+	UDP_ClientSend(MESSAGE_CONNECTION_KEY);
+	
+	while(TimeoutCounter < 5)
+	{
+		printf("Trial: %d\n", TimeoutCounter);
+		if(UDP_ClientReceive(MESSAGE_ACK) == MESSAGE_ACK)
+		{
+			printf("CONNECTION KEY ACCEPTED\n");
+			TimeoutCounter = 0;
+			break;
+		}
+		else
+		{
+			printf("Connection Trial[%d] failed, Retrying......\n", TimeoutCounter);
+			TimeoutCounter++;
+			// if(TimeoutCounter == 4) 
+				// ConnectionKey = CONNECTION_KEY;
+			
+			UDP_ClientSend(MESSAGE_CONNECTION_KEY);
+		}
+	}
 	return CONNECTION_OK;
 }
 
 void UDP_ClientSend(uint8_t MessageType)
 {
+	// if(IS_MSG_VALID(MessageType))
+	// {
+		
+		
+	// }
+	// else
+	// {
+		// printf("MESSAGE_TYPE_ERROR\n");	
+	// }	
 	switch(MessageType)
 	{
 		case MESSAGE_ACK:
@@ -103,14 +159,22 @@ void UDP_ClientSend(uint8_t MessageType)
 			}
 			break;
 		case MESSAGE_HEADER_FRAME:
-			if (sendto(ClientSocket, (uint8_t *)&FrameHeader, sizeof(FrameHeader_t), 0, (struct sockaddr *)&servaddr, slen) == SOCKET_ERROR)
+			if (sendto(ClientSocket, (uint8_t *)&TxFrameHeader, sizeof(FrameHeader_t), 0, (struct sockaddr *)&servaddr, slen) == SOCKET_ERROR)
 			{
 				printf("sendto() failed with error code : %d" , WSAGetLastError());
 				exit(EXIT_FAILURE);
 			}
 			break;
 		case MESSAGE_DATA_FRAME:	
-			if (sendto(ClientSocket, (uint8_t *)Frame, FrameHeader.TotalDataSize, 0, (struct sockaddr *)&servaddr, slen) == SOCKET_ERROR)
+			if (sendto(ClientSocket, (uint8_t *)Frame, TxFrameHeader.TotalDataSize, 0, (struct sockaddr *)&servaddr, slen) == SOCKET_ERROR)
+			{
+				printf("sendto() failed with error code : %d" , WSAGetLastError());
+				exit(EXIT_FAILURE);
+			}
+			break;
+			
+		case MESSAGE_CONNECTION_KEY:	
+			if (sendto(ClientSocket, (uint8_t *)&ConnectionKey, sizeof(uint32_t), 0, (struct sockaddr *)&servaddr, slen) == SOCKET_ERROR)
 			{
 				printf("sendto() failed with error code : %d" , WSAGetLastError());
 				exit(EXIT_FAILURE);
@@ -118,7 +182,7 @@ void UDP_ClientSend(uint8_t MessageType)
 			break;
 			
 		default:
-			printf("MESSAGE_TYPE_ERROR\n");
+			
 			break;
 	}
 }
@@ -131,16 +195,14 @@ uint8_t UDP_ClientReceive(uint8_t MessageType)
 	switch(MessageType)
 	{
 		case MESSAGE_ACK:
-		memset(recvBuf, 0, STATUS_SIZE);
-		if (recvfrom(ClientSocket, (uint8_t *)recvBuf, STATUS_SIZE, 0, (struct sockaddr *)&servaddr, &slen) == SOCKET_ERROR)
+		memset(RxFrameDataBuffer, 0, STATUS_SIZE);
+		if (recvfrom(ClientSocket, (uint8_t *)RxFrameDataBuffer, STATUS_SIZE, 0, (struct sockaddr *)&servaddr, &slen) == SOCKET_ERROR)
 		{
 			printf("recvfrom() failed with error code : %d" , WSAGetLastError());
 			exit(EXIT_FAILURE);
-		}
-		printf("STATUS: %d", recvBuf[0]);
-		
+		}		
 		recv_print(STATUS_SIZE);
-		if(recvBuf[0] == ACK)
+		if(RxFrameDataBuffer[0] == ACK)
 		{
 			returnType = MESSAGE_ACK;	
 		}
@@ -151,15 +213,15 @@ uint8_t UDP_ClientReceive(uint8_t MessageType)
 		break;
 
 		case MESSAGE_HEADER_FRAME:
-			memset(recvBuf, 0, sizeof(FrameHeader_t));
-			if (recvfrom(ClientSocket, recvBuf, sizeof(FrameHeader_t), 0, (struct sockaddr *)&servaddr, &slen) == SOCKET_ERROR)
+			memset(&RxFrameHeader, 0, sizeof(FrameHeader_t));
+			if (recvfrom(ClientSocket, (uint8_t*)&RxFrameHeader, sizeof(FrameHeader_t), 0, (struct sockaddr *)&servaddr, &slen) == SOCKET_ERROR)
 			{
 				printf("recvfrom() failed with error code : %d" , WSAGetLastError());
 				exit(EXIT_FAILURE);
 			}
 			recv_print(sizeof(FrameHeader_t));
 			
-			if(((FrameHeader_t*)recvBuf)->Signature == SIGNATURE)
+			if(RxFrameHeader.Signature == SIGNATURE)
 			{
 				returnType = HEADER_VALID;
 			}
@@ -170,13 +232,13 @@ uint8_t UDP_ClientReceive(uint8_t MessageType)
 			break;
 			
 		case MESSAGE_DATA_FRAME:
-			memset(recvBuf, 0, FrameHeader.TotalDataSize);
-			if (recvfrom(ClientSocket, recvBuf, FrameHeader.TotalDataSize, 0, (struct sockaddr *)&servaddr, &slen) == SOCKET_ERROR)
+			memset(RxFrameDataBuffer, 0, RxFrameHeader.TotalDataSize);
+			if (recvfrom(ClientSocket, RxFrameDataBuffer, RxFrameHeader.TotalDataSize, 0, (struct sockaddr *)&servaddr, &slen) == SOCKET_ERROR)
 			{
 				printf("recvfrom() failed with error code : %d" , WSAGetLastError());
 				exit(EXIT_FAILURE);
 			}	
-			recv_print(FrameHeader.TotalDataSize);
+			recv_print(RxFrameHeader.TotalDataSize);
 			returnType = MESSAGE_DATA_FRAME;
 			break;
 			
@@ -194,44 +256,84 @@ void UDP_ClientDisconnect(void)
 }
 
 ////////////////////////////////////////////FRAME APIS////////////////////////////////////////
-void FRAME_Generate(uint8_t* DIO_Data, uint32_t DIO_DataSize , uint8_t* UART_Data, uint32_t UART_DataSize)
+void FRAME_GenerateDataFrame(uint8_t* DIO_Data, uint32_t DIO_DataSize , uint8_t* UART_Data, uint32_t UART_DataSize)
 {
-	uint16_t CMDIndex = 0;
-	uint16_t DataIndex = 0;
-	uint16_t FrameIndex = 0;
+	uint8_t PeripheralIndex = 0;
+	DIO_DATA_SIZE = DIO_DataSize;
+	UART_DATA_SIZE = UART_DataSize;
 	
-	FrameData_t FrameData[NUM_OF_CMD] = 
-	{
-		{
-			.PeripheralID	= 	DIO_PERIPHERAL_ID,	
-			.DataSize		= 	DIO_DataSize,		
-			.PeripheralData	= 	DIO_Data
-		},
-
-		{
-			.PeripheralID	= 	UZART_PERIPHERAL_ID,	
-			.DataSize		= 	UART_DataSize,		
-			.PeripheralData	= 	UART_Data
-		}
-	};
+	/* Grouping for easier indexing */
+	uint32_t local_PeripheralID[NUM_OF_PERIPH] = {DIO_PERIPHERAL_ID, UART_PERIPHERAL_ID};
+	uint32_t local_PeripheralDataSize[NUM_OF_PERIPH] = {DIO_DataSize, UART_DataSize};
+	uint8_t *local_PeripheralData[NUM_OF_PERIPH] = {DIO_Data, UART_Data};
 	
-	FrameTotalSize = DIO_DataSize + UART_DataSize + (NUM_OF_CMD * PERIPH_HEADER_SIZE);
-	FrameHeader.TotalDataSize = FrameTotalSize;
+	/* Alloctating the size of the frame to be sent */
+	FrameTotalSize = DIO_DataSize + UART_DataSize + PERIPH_INFO_SIZE;
+	TxFrameHeader.TotalDataSize = FrameTotalSize;
+	
 	Frame = (uint8_t *) calloc(FrameTotalSize, sizeof(uint8_t));
+	/* Pointer to hold the current position while transitioning in the frame */	
+	uint8_t *Pointer = (uint8_t *)Frame;
 	
-	for(CMDIndex = 0; CMDIndex < NUM_OF_CMD; CMDIndex++)
+	for(PeripheralIndex = 0; PeripheralIndex < NUM_OF_PERIPH; PeripheralIndex++)
 	{
-		Frame[FrameIndex] = FrameData[CMDIndex].PeripheralID; //2 bytes
-		FrameIndex += 2;
-		Frame[FrameIndex] = FrameData[CMDIndex].DataSize; //2 bytes
-		FrameIndex += 2;
-		
-		for(DataIndex = 0; DataIndex < FrameData[CMDIndex].DataSize; DataIndex++)
-		{
-			Frame[FrameIndex] = FrameData[CMDIndex].PeripheralData[DataIndex];
-			FrameIndex++;
-		}
+		/* Copying the Peripheral ID */
+		memcpy(Pointer, &local_PeripheralID[PeripheralIndex], sizeof(uint32_t));
+		Pointer += sizeof(uint32_t); /* Moving the pointer by "PeripheralID" size */
+		/* Copying the DataSize */
+		memcpy(Pointer, &local_PeripheralDataSize[PeripheralIndex], sizeof(uint32_t));
+		Pointer += sizeof(uint32_t); /* Moving the pointer by "DataSize" size */
+		/* Copying the Data */
+		memcpy(Pointer, local_PeripheralData[PeripheralIndex], local_PeripheralDataSize[PeripheralIndex]);
+		Pointer += local_PeripheralDataSize[PeripheralIndex]; /* Moving the pointer by to point on the next Peripheral */
 	}
+}
+
+void FRAME_FreeData(void)
+{
+	free(Frame);
+}
+
+uint8_t FRAME_ParsingDataFrame(void)
+{
+	uint8_t PeripheralIndex = 0;
+	
+	/* Arrays holding the Readings to be passed to the GUI */
+	uint8_t DIO_Readings[DIO_INPUT_PINS] = {0};
+	uint8_t UART_Readings[512] = {0}; //can be allocated by calloc later
+	
+	/*Grouping for easier indexing */
+	uint8_t* Rx_Readings[NUM_OF_PERIPH] = {DIO_Readings, UART_Readings};
+	
+	uint8_t *RxFrameData = (uint8_t *)RxFrameDataBuffer;
+	
+	for(PeripheralIndex = 0; PeripheralIndex < NUM_OF_PERIPH; PeripheralIndex++)
+	{
+		memcpy(Rx_Readings[PeripheralIndex], &(((FrameData_t *)RxFrameData)->PeripheralData), ((FrameData_t *)RxFrameData)->DataSize);
+		RxFrameData += (PERIPH_HEADER_SIZE + ((FrameData_t *)RxFrameData)->DataSize);
+	}
+	
+	uint8_t Iterator = 0;
+	for(Iterator = 0; Iterator < DIO_DATA_SIZE; Iterator++)
+	{
+		printf("DIO_READING[%d]: %d\n", Iterator, DIO_Readings[Iterator]);
+	}
+	
+	for(Iterator = 0; Iterator < UART_DATA_SIZE; Iterator++)
+	{
+		printf("UART_READING[%d]: %d\n", Iterator, UART_Readings[Iterator]);
+	}
+	
+	///////////////////// CONVERTING TO INT /////////////////////
+	uint8_t DIO_BitValue = 0;
+	for(Iterator = 0; Iterator < DIO_DATA_SIZE; Iterator++)
+	{
+		DIO_BitValue |= (DIO_Readings[Iterator]<<Iterator);
+	}
+	printf("\n\nDIO_BitValue: ");
+	bin(DIO_BitValue);
+	
+	return DIO_BitValue;
 }
 
 void FRAME_Print(void)
@@ -244,14 +346,24 @@ void FRAME_Print(void)
 }
 
 //////////////////////////////////////////////////////////////////////////
-
 static void recv_print(uint32_t size)
 {
 	uint32_t i = 0;
 	for(i = 0; i < size; i++)
 	{
-		printf("Byte[%d]: %d\n", i, recvBuf[i]);
+		printf("Byte[%d]: %d\n", i, RxFrameDataBuffer[i]);
 	}
 	printf("\n");
 }
+
+static void bin(unsigned n) 
+{ 
+    /* step 1 */
+    if (n > 1) 
+        bin(n/2); 
+  
+    /* step 2 */
+    printf("%d", n % 2); 
+}
+
 

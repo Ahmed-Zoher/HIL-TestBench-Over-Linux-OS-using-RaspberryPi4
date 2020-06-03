@@ -401,7 +401,7 @@ class Ui_HABDoe(object):
     #########################################################
     def Connect_Func(self):
     
-      status = my_functions.UDP_ClientConnect()
+      status = my_functions.UDP_ClientConnect(b"192.168.5.10", 8888)
       if(status == 0):
         for i in range(0, 101, 5):
           self.Conncection_progressBar.setValue(i)
@@ -452,7 +452,7 @@ class Ui_HABDoe(object):
       
       #my_functions.PrintString(array_type(*arr),4)
       
-      my_functions.FRAME_Generate(array_type, len(output), array_type2, len(arr))
+      my_functions.FRAME_GenerateDataFrame(array_type, len(output), array_type2, len(arr))
       my_functions.FRAME_Print()
       
       ##RECIVING DATA FROM PC
@@ -479,7 +479,8 @@ class Ui_HABDoe(object):
         #Sending ACK on FrameHeader
         my_functions.UDP_ClientSend(0)
         #Receive Rx-Data
-        my_functions.UDP_ClientReceive(3)     
+        my_functions.UDP_ClientReceive(3)
+        my_functions.FRAME_ParsingDataFrame()
       elif(ReceiveStatus == 1): #Header Invalid
         print("HEADER FRAME INVALID")
         
