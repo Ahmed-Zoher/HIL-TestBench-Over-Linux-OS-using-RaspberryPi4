@@ -11,6 +11,7 @@ from google.protobuf import symbol_database as _symbol_database
 _sym_db = _symbol_database.Default()
 
 
+from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
@@ -18,8 +19,9 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=b'\n\x10GPIO_write.proto\"6\n\x0fModeInputParams\x12\x10\n\x08gpio_pin\x18\x01 \x01(\r\x12\x11\n\tgpio_mode\x18\x02 \x01(\r\"6\n\x0eSetInputParams\x12\x10\n\x08gpio_pin\x18\x01 \x01(\r\x12\x12\n\ngpio_level\x18\x02 \x01(\r\"\x07\n\x05\x45mpty2U\n\x07PI_GPIO\x12&\n\x08set_mode\x12\x10.ModeInputParams\x1a\x06.Empty\"\x00\x12\"\n\x05write\x12\x0f.SetInputParams\x1a\x06.Empty\"\x00\x62\x06proto3'
-)
+  serialized_pb=b'\n\x10GPIO_write.proto\x1a\x1bgoogle/protobuf/empty.proto\"6\n\x0fModeInputParams\x12\x10\n\x08gpio_pin\x18\x01 \x01(\r\x12\x11\n\tgpio_mode\x18\x02 \x01(\r\"6\n\x0eSetInputParams\x12\x10\n\x08gpio_pin\x18\x01 \x01(\r\x12\x12\n\ngpio_level\x18\x02 \x01(\r\"\x1a\n\treturnMsg\x12\r\n\x05\x66stek\x18\x01 \x01(\r2u\n\x07PI_GPIO\x12\x36\n\x08set_mode\x12\x10.ModeInputParams\x1a\x16.google.protobuf.Empty\"\x00\x12\x32\n\x05write\x12\x0f.SetInputParams\x1a\x16.google.protobuf.Empty\"\x00\x62\x06proto3'
+  ,
+  dependencies=[google_dot_protobuf_dot_empty__pb2.DESCRIPTOR,])
 
 
 
@@ -57,8 +59,8 @@ _MODEINPUTPARAMS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=20,
-  serialized_end=74,
+  serialized_start=49,
+  serialized_end=103,
 )
 
 
@@ -95,18 +97,25 @@ _SETINPUTPARAMS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=76,
-  serialized_end=130,
+  serialized_start=105,
+  serialized_end=159,
 )
 
 
-_EMPTY = _descriptor.Descriptor(
-  name='Empty',
-  full_name='Empty',
+_RETURNMSG = _descriptor.Descriptor(
+  name='returnMsg',
+  full_name='returnMsg',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
+    _descriptor.FieldDescriptor(
+      name='fstek', full_name='returnMsg.fstek', index=0,
+      number=1, type=13, cpp_type=3, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -119,13 +128,13 @@ _EMPTY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=132,
-  serialized_end=139,
+  serialized_start=161,
+  serialized_end=187,
 )
 
 DESCRIPTOR.message_types_by_name['ModeInputParams'] = _MODEINPUTPARAMS
 DESCRIPTOR.message_types_by_name['SetInputParams'] = _SETINPUTPARAMS
-DESCRIPTOR.message_types_by_name['Empty'] = _EMPTY
+DESCRIPTOR.message_types_by_name['returnMsg'] = _RETURNMSG
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 ModeInputParams = _reflection.GeneratedProtocolMessageType('ModeInputParams', (_message.Message,), {
@@ -142,12 +151,12 @@ SetInputParams = _reflection.GeneratedProtocolMessageType('SetInputParams', (_me
   })
 _sym_db.RegisterMessage(SetInputParams)
 
-Empty = _reflection.GeneratedProtocolMessageType('Empty', (_message.Message,), {
-  'DESCRIPTOR' : _EMPTY,
+returnMsg = _reflection.GeneratedProtocolMessageType('returnMsg', (_message.Message,), {
+  'DESCRIPTOR' : _RETURNMSG,
   '__module__' : 'GPIO_write_pb2'
-  # @@protoc_insertion_point(class_scope:Empty)
+  # @@protoc_insertion_point(class_scope:returnMsg)
   })
-_sym_db.RegisterMessage(Empty)
+_sym_db.RegisterMessage(returnMsg)
 
 
 
@@ -157,8 +166,8 @@ _PI_GPIO = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  serialized_start=141,
-  serialized_end=226,
+  serialized_start=189,
+  serialized_end=306,
   methods=[
   _descriptor.MethodDescriptor(
     name='set_mode',
@@ -166,7 +175,7 @@ _PI_GPIO = _descriptor.ServiceDescriptor(
     index=0,
     containing_service=None,
     input_type=_MODEINPUTPARAMS,
-    output_type=_EMPTY,
+    output_type=google_dot_protobuf_dot_empty__pb2._EMPTY,
     serialized_options=None,
   ),
   _descriptor.MethodDescriptor(
@@ -175,7 +184,7 @@ _PI_GPIO = _descriptor.ServiceDescriptor(
     index=1,
     containing_service=None,
     input_type=_SETINPUTPARAMS,
-    output_type=_EMPTY,
+    output_type=google_dot_protobuf_dot_empty__pb2._EMPTY,
     serialized_options=None,
   ),
 ])
