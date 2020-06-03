@@ -8,7 +8,7 @@ import GPIO_write_pb2_grpc
 
 def run():
     #open a gRPC channel
-    channel = grpc.insecure_channel('localhost:50051')
+    channel = grpc.insecure_channel('192.168.5.10:50051')
 
     #create a stub (client)
     stub = GPIO_write_pb2_grpc.PI_GPIOStub(channel)
