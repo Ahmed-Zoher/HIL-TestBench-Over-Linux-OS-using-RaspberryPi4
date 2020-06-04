@@ -6,7 +6,7 @@
 #define DIO_INPUT_PINS			3
 
 
-#define UART_PERIPHERAL_ID		0x04
+#define PWM_PERIPHERAL_ID		0x04
 
 #define SIGNATURE				0x07775000
 #define NUM_OF_PERIPH			2

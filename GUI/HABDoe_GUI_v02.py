@@ -1213,11 +1213,20 @@ class Ui_HABDoe(object):
       
       array_type = (c_int8 * len(output))(*output)
       
-      arr = [1,2,3,4]
-      array_type2 = (c_int8 * len(arr))(*arr)
+      PWM_mappingValue = 10000
+      PWM_array = [c_int32(self.Channel7_Frequency_spinBox.value()), 
+                    c_int32(self.Channel7_horizontalSlider.value() * PWM_mappingValue), 
+                    c_int32(self.Channel8_Frequency_spinBox.value()), 
+                    c_int32(self.Channel8_horizontalSlider.value() * PWM_mappingValue)]
       
-      my_functions.FRAME_GenerateDataFrame(array_type, len(output), array_type2, len(arr))
+      PWM_DATA = (c_int32 * len(PWM_array))(*PWM_array)
+      
+      
+      #Sending Data to generate the client frame
+      my_functions.FRAME_GenerateDataFrame(array_type, len(output), PWM_DATA, 16)
       my_functions.FRAME_Print()
+      
+     
       
       ##RECIVING DATA FROM PC
       #Sending Tx-Header
@@ -1273,20 +1282,26 @@ class Ui_HABDoe(object):
           time.sleep(0.01)
         
         print("CONNECTION_OK\n")
-        self.TEST_Func()
+        ProgramStatus = 1
+        
+        while(ProgramStatus):
+          self.TEST_Func()
       
       elif(status == 1):
         self.Conncection_progressBar.setValue(0)
         print("CONNECTION_WINSOCK_INIT_ERROR\n")
+        ProgramStatus = 0
         
       elif(status == 2):
         self.Conncection_progressBar.setValue(0)
         print("CONNECTION_SOCKET_ERROR\n")
+        ProgramStatus = 0
         
       elif(status == 3):
         self.Conncection_progressBar.setValue(0)
-        print("CONENCTION_REQUEST_TIMEOUT\n")  
-      
+        print("CONENCTION_REQUEST_TIMEOUT\n")
+        ProgramStatus = 0     
+        
     # Connect_Func      
   
     
@@ -1299,6 +1314,7 @@ class Ui_HABDoe(object):
       my_functions.UDP_ClientDisconnect()
       self.Conncection_progressBar.setValue(0)
       print("DISCONNECTED FROM SERVER CONNECTION_OK\n")
+      ProgramStatus = 0
     # Disconnect_Func     
     
     
