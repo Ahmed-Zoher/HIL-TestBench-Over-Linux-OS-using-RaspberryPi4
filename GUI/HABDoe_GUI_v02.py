@@ -12,12 +12,15 @@ from PySide2.QtCore import (QCoreApplication, QMetaObject, QObject, QPoint,
     QRect, QSize, QUrl, Qt)
 from PySide2.QtGui import (QBrush, QColor, QConicalGradient, QFont,
     QFontDatabase, QIcon, QLinearGradient, QPalette, QPainter, QPixmap,
-    QRadialGradient, QValidator, QRegExpValidator)
+    QRadialGradient, QValidator, QRegExpValidator)   
+    
 from PySide2.QtWidgets import *
 from ctypes import *
 
 import sys
 import time
+import os
+os.system('cls')
 
 class Ui_HABDoe(object):
     def setupUi(self, HABDoe):
@@ -1197,6 +1200,8 @@ class Ui_HABDoe(object):
     '''
     so_file = "./client.so"
     global my_functions 
+    global ProgramStatus
+    
     my_functions = CDLL(so_file)
     status = 0
     
@@ -1207,12 +1212,39 @@ class Ui_HABDoe(object):
     #########################################################
     def TEST_Func(self):
       
-      output = [int(self.Channel1_horizontalSlider.value()),
+      #Message Definitions
+      MESSAGE_ACK				      = 0
+      MESSAGE_NACK			      = 1
+      MESSAGE_HEADER_FRAME	  = 2
+      MESSAGE_DATA_FRAME		  = 3
+      MESSAGE_CONNECTION_KEY	= 4
+      MESSAGE_UART			      = 5
+      MESSAGE_SPI_CH1			    = 6
+      MESSAGE_SPI_CH2			    = 7
+      MESSAGE_SERIAL_SIZE     = 8
+ 
+      #Status Definitions
+      CONNECTION_OK					          = 0
+      CONNECTION_WINSOCK_INIT_ERROR	  = 1
+      CONNECTION_SOCKET_ERROR			    = 2
+      CONENCTION_REQUEST_TIMEOUT		  = 3
+      HEADER_VALID		                = 0
+      HEADER_INVALID		              = 1
+      
+      #Serial Index
+      SERIAL_UART				  = 0
+      SERIAL_SPI_CH1			= 1
+      SERIAL_SPI_CH2			= 2
+      
+      PERIPH_ID_SIZE			= 4
+      
+      DIO_array = [int(self.Channel1_horizontalSlider.value()),
       int(self.Channel2_horizontalSlider.value()),
       int(self.Channel3_horizontalSlider.value())]
       
-      array_type = (c_int8 * len(output))(*output)
+      DIO_DATA = (c_int8 * len(DIO_array))(*DIO_array)
       
+      ##PWM DATA
       PWM_mappingValue = 10000
       PWM_array = [c_int32(self.Channel7_Frequency_spinBox.value()), 
                     c_int32(self.Channel7_horizontalSlider.value() * PWM_mappingValue), 
@@ -1221,37 +1253,60 @@ class Ui_HABDoe(object):
       
       PWM_DATA = (c_int32 * len(PWM_array))(*PWM_array)
       
+    
+      
+      ##UART CONFIG
+      UART_config = [c_int32(self.UART_horizontalSlider.value()), 
+                    c_int32(int(self.UART_BaudRate_comboBox.currentText())),
+                    c_int32(len(self.UART_DataSend_lineEdit.displayText()) + PERIPH_ID_SIZE)]
+      
+      UART_CONFIG = (c_int32 * len(UART_config))(*UART_config)
+      
+      ##UART DATA
+      UART_dataArray = [int(i, 16) for i in (self.UART_DataSend_lineEdit.displayText())]  
+      UART_DATA = (c_int8 * len(UART_dataArray))(*UART_dataArray)
+      
+      ##SPI_CH1 CONFIG
+      SPI_CH1_array = [ c_int32(self.SPI_Channel_1_horizontalSlider.value()), 
+                        c_int32(self.SPI_Channel_1_BaudRate_spinBox.value())]
+      
+      SPI_CH1_CONFIG = (c_int32 * len(SPI_CH1_array))(*SPI_CH1_array)
+      
+      ##SPI_CH2 CONFIG
+      SPI_CH2_array = [ c_int32(self.SPI_Channel_2_horizontalSlider.value()), 
+                        c_int32(self.SPI_Channel_2_BaudRate_spinBox.value())]
+      
+      SPI_CH2_CONFIG = (c_int32 * len(SPI_CH2_array))(*SPI_CH2_array)
       
       #Sending Data to generate the client frame
-      my_functions.FRAME_GenerateDataFrame(array_type, len(output), PWM_DATA, 16)
+      my_functions.FRAME_GenerateDataFrame(DIO_DATA, PWM_DATA, UART_CONFIG, SPI_CH1_CONFIG, SPI_CH2_CONFIG)
       my_functions.FRAME_Print()
-      
-     
       
       ##RECIVING DATA FROM PC
       #Sending Tx-Header
-      my_functions.UDP_ClientSend(2)
+      my_functions.UDP_ClientSend(MESSAGE_HEADER_FRAME)
       #Receiving ACK on Tx Header
-      ReceiveStatus = my_functions.UDP_ClientReceive(0)  
+      ReceiveStatus = my_functions.UDP_ClientReceive(MESSAGE_ACK)  
       #Tx State
       if(ReceiveStatus == 0): #ACK received
         print("ACK Received")
         #Sending Data Frame
-        my_functions.UDP_ClientSend(3)     
+        my_functions.UDP_ClientSend(MESSAGE_DATA_FRAME)
+        my_functions.FRAME_FreeData()        
       elif (ReceiveStatus == 1): #NACK received
         print("NACK Received")
       
-        
+
       ##RECIVING DATA FROM RASPBERRY PI
       #Receiving Rx-Header 
-      ReceiveStatus = my_functions.UDP_ClientReceive(2)
+      ReceiveStatus = my_functions.UDP_ClientReceive(MESSAGE_HEADER_FRAME)
       
       if(ReceiveStatus == 0): #Header Valid
         print("HEADER FRAME VALID")
         #Sending ACK on FrameHeader
-        my_functions.UDP_ClientSend(0)
+        my_functions.UDP_ClientSend(MESSAGE_ACK)
         #Receive Rx-Data
-        my_functions.UDP_ClientReceive(3)
+        my_functions.UDP_ClientReceive(MESSAGE_DATA_FRAME)
         
         FRAME_return = my_functions.FRAME_ParsingDataFrame()
         
@@ -1261,11 +1316,39 @@ class Ui_HABDoe(object):
         self.Channel4_lcdNumber.display(DIO_Readings[2])
         self.Channel5_lcdNumber.display(DIO_Readings[1])
         self.Channel6_lcdNumber.display(DIO_Readings[0])
+        
+        if(self.UART_horizontalSlider.value() == 1):
+          ##Sending the serial frames
+          #Generate UART Frame     
+          my_functions.FRAME_SerialFrameGenerate(UART_DATA, UART_config[2], SERIAL_UART)
+          
+          #Sending UART Frame
+          my_functions.UDP_ClientSend(MESSAGE_UART) 
+          
+          ##Receiving the serial frames
+          if(my_functions.UDP_ClientReceive(MESSAGE_SERIAL_SIZE) != MESSAGE_NACK):
+            my_functions.UDP_ClientReceive(MESSAGE_UART)
+            
+            my_functions.FRAME_ReturnSerial.restype = c_char_p
+            UART_ReadingArray = my_functions.FRAME_ReturnSerial()
+            
+            #Displaying the received frame frm PC
+            tempUART_ReadingArray = str(UART_ReadingArray)
+            NewUartReading = tempUART_ReadingArray[6:len(tempUART_ReadingArray)-1]
+            self.UART_DataReceived_lineEdit.setText(tempUART_ReadingArray[6:len(tempUART_ReadingArray)-1])
+            my_functions.FRAME_ReturnSerialFree()
+   
+          else:
+            print("UART_SIZE_ERROR\n")
+            
+        if(self.SPI_Channel_1_horizontalSlider.value() == 1):
+          print("SPI_CH1 IS ENABLED")
+        
+        if(self.SPI_Channel_2_horizontalSlider.value() == 1):
+          print("SPI_CH2 IS ENABLED")
 
-      
       elif(ReceiveStatus == 1): #Header Invalid
         print("HEADER FRAME INVALID")
-          
     # TEST_Func    
     
     #########################################################
@@ -1274,8 +1357,9 @@ class Ui_HABDoe(object):
     # between Server and client
     #########################################################
     def Connect_Func(self):
-    
-      status = my_functions.UDP_ClientConnect(b"192.168.5.10", 8888)
+      global ProgramStatus
+      
+      status = my_functions.UDP_ClientConnect(b"192.168.5.10", 8080)
       if(status == 0):
         for i in range(0, 101, 5):
           self.Conncection_progressBar.setValue(i)
@@ -1284,8 +1368,12 @@ class Ui_HABDoe(object):
         print("CONNECTION_OK\n")
         ProgramStatus = 1
         
+        COUNTER = 0
         while(ProgramStatus):
+          COUNTER += 1
+          print("PROGRAM COUNTER: " + str(COUNTER))
           self.TEST_Func()
+          QCoreApplication.processEvents()
       
       elif(status == 1):
         self.Conncection_progressBar.setValue(0)
@@ -1311,10 +1399,12 @@ class Ui_HABDoe(object):
     # between Server and client
     #########################################################
     def Disconnect_Func(self):
-      my_functions.UDP_ClientDisconnect()
-      self.Conncection_progressBar.setValue(0)
-      print("DISCONNECTED FROM SERVER CONNECTION_OK\n")
+      global ProgramStatus
       ProgramStatus = 0
+      self.Conncection_progressBar.setValue(0)
+      my_functions.UDP_ClientDisconnect()
+      
+      print("DISCONNECTED FROM SERVER CONNECTION_OK\n")
     # Disconnect_Func     
     
     
