@@ -1,0 +1,68 @@
+
+syntax = "proto3";
+
+message ModeInputParams
+{
+	uint32 gpio_pin = 1;
+	uint32 gpio_mode = 2;
+}
+
+message SetInputParams
+{
+	uint32 gpio_pin = 1;
+	uint32 gpio_level = 2;
+}
+
+message PinNumber
+{
+	uint32 gpio_pin =1;
+}
+
+message GPIO_Level
+{
+	uint32 gpio_pin_level =1;
+}
+
+message GPIO_PUD
+{
+	uint32 gpio_pin = 1;
+	uint32 gpio_pud =2;
+}
+
+message PWM_params
+{
+	uint32 gpio_pin = 1;
+	uint32 PWMfreq = 2;
+	uint32 PWMduty = 3;
+}
+
+message PWM_Status
+{
+	int32 PWM_return = 1;
+}
+
+message Empty{}
+
+service PI_GPIO 
+{
+	/************************** GPIO RPCs ***************************/
+	rpc set_mode (ModeInputParams) returns (Empty) {}
+	rpc write (SetInputParams) returns (Empty) {}
+	rpc read (PinNumber) returns (GPIO_Level) {}
+	rpc set_pull_up_down(GPIO_PUD) returns (Empty) {}
+	
+	/************************** PWM RPCs ****************************/
+	rpc hardware_PWM(PWM_params) returns (PWM_Status) {}
+	
+	
+	//rpc delay( micros ) returns () {}
+	//int serOpen(char *sertty, unsigned baud, unsigned serFlags)
+	//int serClose(unsigned handle)
+	//int serReadByte(unsigned handle)
+	//int serWrite(unsigned handle, char *buf, unsigned count)
+	//int serDataAvailable(unsigned handle)
+	//int gpioTime(unsigned timetype, int *seconds, int *micros)
+
+
+}
+
