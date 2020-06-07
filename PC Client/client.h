@@ -20,15 +20,18 @@
 #define CONNECTION_SOCKET_ERROR			2
 #define CONENCTION_REQUEST_TIMEOUT		3
 
+#define HEADER_VALID		0
+#define HEADER_INVALID		1
 /************* MESSAGE TYPES MACROS ************/
 #define	MESSAGE_ACK				0
 #define MESSAGE_NACK			1
 #define MESSAGE_HEADER_FRAME	2
 #define MESSAGE_DATA_FRAME		3
 #define MESSAGE_CONNECTION_KEY	4
-
-#define HEADER_VALID	0
-#define HEADER_INVALID	1
+#define MESSAGE_UART			5
+#define MESSAGE_SPI_CH1			6
+#define MESSAGE_SPI_CH2			7
+#define MESSAGE_SERIAL_SIZE		8
 
 /********** PC CLIENT INTERFACES ***********/
 

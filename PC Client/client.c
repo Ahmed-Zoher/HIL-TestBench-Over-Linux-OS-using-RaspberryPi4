@@ -25,6 +25,7 @@ typedef struct
 
 
 
+
 static void recv_print(uint32_t size);
 static void bin(unsigned n);
 
@@ -41,6 +42,17 @@ uint8_t recvBuf[512] = {0};
 
 /////////////////////////// FRAME GLOBALS //////////////////////////////
 uint8_t *Frame = NULL;
+uint8_t *UART_Frame = NULL;
+uint32_t UART_FrameSize = 0;
+
+uint8_t *SPI_CH1_Frame = NULL;
+uint32_t SPI_CH1_FrameSize = 0;
+
+uint8_t *SPI_CH2_Frame = NULL;
+uint32_t SPI_CH2_FrameSize = 0;
+
+uint32_t SerialSize = 0;
+uint8_t* SerialBuffer = NULL;
 
 uint8_t TxFrameDataBuffer[512];
 uint8_t RxFrameDataBuffer[512];
@@ -57,10 +69,7 @@ FrameHeader_t TxFrameHeader =
 
 FrameHeader_t RxFrameHeader;
 
-uint32_t FrameTotalSize = 0;
-uint32_t DIO_DATA_SIZE = 0;
-uint32_t UART_DATA_SIZE = 0;
-
+uint32_t FrameTotalSize 	= 0;
 
 //>>PROBLEM IN ACK & NACK
 // MessageInfo_t MessageInfo[NUM_OF_MSGS] = {
@@ -181,6 +190,33 @@ void UDP_ClientSend(uint8_t MessageType)
 			}
 			break;
 			
+		case MESSAGE_UART:
+			if(UART_FrameSize > 0)
+			{
+				if (sendto(ClientSocket, (uint8_t *)UART_Frame, UART_FrameSize, 0, (struct sockaddr *)&servaddr, slen) == SOCKET_ERROR)
+				{
+					printf("sendto() failed with error code : %d" , WSAGetLastError());
+					exit(EXIT_FAILURE);
+				}
+			}
+			break;
+			
+		case MESSAGE_SPI_CH1:	
+			if (sendto(ClientSocket, (uint8_t *)SPI_CH1_Frame, SPI_CH1_FrameSize, 0, (struct sockaddr *)&servaddr, slen) == SOCKET_ERROR)
+			{
+				printf("sendto() failed with error code : %d" , WSAGetLastError());
+				exit(EXIT_FAILURE);
+			}
+			break;
+			
+		case MESSAGE_SPI_CH2:	
+			if (sendto(ClientSocket, (uint8_t *)SPI_CH2_Frame, SPI_CH2_FrameSize, 0, (struct sockaddr *)&servaddr, slen) == SOCKET_ERROR)
+			{
+				printf("sendto() failed with error code : %d" , WSAGetLastError());
+				exit(EXIT_FAILURE);
+			}
+			break;
+			
 		default:
 			
 			break;
@@ -198,6 +234,7 @@ uint8_t UDP_ClientReceive(uint8_t MessageType)
 		memset(RxFrameDataBuffer, 0, STATUS_SIZE);
 		if (recvfrom(ClientSocket, (uint8_t *)RxFrameDataBuffer, STATUS_SIZE, 0, (struct sockaddr *)&servaddr, &slen) == SOCKET_ERROR)
 		{
+			printf("HERE1\n");
 			printf("recvfrom() failed with error code : %d" , WSAGetLastError());
 			exit(EXIT_FAILURE);
 		}		
@@ -216,6 +253,7 @@ uint8_t UDP_ClientReceive(uint8_t MessageType)
 			memset(&RxFrameHeader, 0, sizeof(FrameHeader_t));
 			if (recvfrom(ClientSocket, (uint8_t*)&RxFrameHeader, sizeof(FrameHeader_t), 0, (struct sockaddr *)&servaddr, &slen) == SOCKET_ERROR)
 			{
+				printf("HERE2\n");
 				printf("recvfrom() failed with error code : %d" , WSAGetLastError());
 				exit(EXIT_FAILURE);
 			}
@@ -235,13 +273,78 @@ uint8_t UDP_ClientReceive(uint8_t MessageType)
 			memset(RxFrameDataBuffer, 0, RxFrameHeader.TotalDataSize);
 			if (recvfrom(ClientSocket, RxFrameDataBuffer, RxFrameHeader.TotalDataSize, 0, (struct sockaddr *)&servaddr, &slen) == SOCKET_ERROR)
 			{
+				printf("HERE3\n");
 				printf("recvfrom() failed with error code : %d" , WSAGetLastError());
 				exit(EXIT_FAILURE);
 			}	
 			recv_print(RxFrameHeader.TotalDataSize);
 			returnType = MESSAGE_DATA_FRAME;
 			break;
+	
+		///////////////////////////CHANGES HERE		
+		case MESSAGE_SERIAL_SIZE:
+			if (recvfrom(ClientSocket, (uint8_t *)&SerialSize, sizeof(uint32_t), 0, (struct sockaddr *)&servaddr, &slen) == SOCKET_ERROR)
+			{
+				printf("HERE4\n");
+				printf("recvfrom() failed with error code : %d" , WSAGetLastError());
+				exit(EXIT_FAILURE);
+			}
+			printf("SerialSize: %d\n", SerialSize);
+			if(SerialSize != 0)
+			{
+				returnType = MESSAGE_SERIAL_SIZE;
+			}
+			else
+			{
+				returnType = MESSAGE_NACK;
+			}
+			break;
+		
+		case MESSAGE_UART:
+			if(SerialSize > 0)
+			{
+				memset(RxFrameDataBuffer, 0, SerialSize);
+				if (recvfrom(ClientSocket, RxFrameDataBuffer, SerialSize, 0, (struct sockaddr *)&servaddr, &slen) == SOCKET_ERROR)
+				{
+					printf("HERE5\n");
+					printf("recvfrom() failed with error code : %d" , WSAGetLastError());
+					exit(EXIT_FAILURE);
+				}
+				recv_print(SerialSize);
+			}
+			returnType = MESSAGE_DATA_FRAME;
+			break;
 			
+		case MESSAGE_SPI_CH1:
+			if(SerialSize > 0)
+			{
+				memset(RxFrameDataBuffer, 0, SerialSize);
+				if (recvfrom(ClientSocket, RxFrameDataBuffer, SerialSize, 0, (struct sockaddr *)&servaddr, &slen) == SOCKET_ERROR)
+				{
+					printf("HERE6\n");
+					printf("recvfrom() failed with error code : %d" , WSAGetLastError());
+					exit(EXIT_FAILURE);
+				}	
+				recv_print(SerialSize);
+			}
+			returnType = MESSAGE_SPI_CH1;
+			break;
+			
+		case MESSAGE_SPI_CH2:
+			if(SerialSize > 0)
+			{
+				memset(RxFrameDataBuffer, 0, SerialSize);
+				if (recvfrom(ClientSocket, RxFrameDataBuffer, SerialSize, 0, (struct sockaddr *)&servaddr, &slen) == SOCKET_ERROR)
+				{
+					printf("HERE7\n");
+					printf("recvfrom() failed with error code : %d" , WSAGetLastError());
+					exit(EXIT_FAILURE);
+				}	
+				recv_print(SerialSize);
+			}
+			returnType = MESSAGE_SPI_CH2;
+			break;
+
 		default:
 			printf("MESSAGE_TYPE_ERROR\n");
 			break;
@@ -256,19 +359,23 @@ void UDP_ClientDisconnect(void)
 }
 
 ////////////////////////////////////////////FRAME APIS////////////////////////////////////////
-void FRAME_GenerateDataFrame(uint8_t* DIO_Data, uint32_t DIO_DataSize , uint8_t* UART_Data, uint32_t UART_DataSize)
+void FRAME_GenerateDataFrame(uint8_t* DIO_Data, uint8_t* PWM_Config, uint8_t* UART_Config, uint8_t* SPI_CH1_Config, uint8_t* SPI_CH2_Config)
 {
 	uint8_t PeripheralIndex = 0;
-	DIO_DATA_SIZE = DIO_DataSize;
-	UART_DATA_SIZE = UART_DataSize;
+	
+	// DIO_ID .. DIO_DATA_SIZE .. DIO_DATA .. PWM_ID .. PWM_DATA_SIZE .. PWM_DATA ... UART_ID .. UART_DATA_SIZE(1) .. UART_DATA(state)
 	
 	/* Grouping for easier indexing */
-	uint32_t local_PeripheralID[NUM_OF_PERIPH] = {DIO_PERIPHERAL_ID, UART_PERIPHERAL_ID};
-	uint32_t local_PeripheralDataSize[NUM_OF_PERIPH] = {DIO_DataSize, UART_DataSize};
-	uint8_t *local_PeripheralData[NUM_OF_PERIPH] = {DIO_Data, UART_Data};
+	uint32_t local_PeripheralID[NUM_OF_PERIPH] = {DIO_PERIPHERAL_ID, PWM_PERIPHERAL_ID, UART_PERIPHERAL_ID, SPI_CH1_PERIPHERAL_ID, SPI_CH2_PERIPHERAL_ID};
+	uint32_t local_PeripheralDataSize[NUM_OF_PERIPH] = {DIO_INPUT_PINS, PWM_CONFIG_SIZE, UART_CONFIG_SIZE, SPI_CH1_CONFIG_SIZE, SPI_CH2_CONFIG_SIZE};
+	uint8_t *local_PeripheralData[NUM_OF_PERIPH] = {DIO_Data, PWM_Config, UART_Config, SPI_CH1_Config, SPI_CH2_Config};
 	
 	/* Alloctating the size of the frame to be sent */
-	FrameTotalSize = DIO_DataSize + UART_DataSize + PERIPH_INFO_SIZE;
+	FrameTotalSize = 0;
+	for(PeripheralIndex = 0; PeripheralIndex < NUM_OF_PERIPH; PeripheralIndex++)
+		FrameTotalSize += local_PeripheralDataSize[PeripheralIndex];
+	
+	FrameTotalSize += PERIPH_INFO_SIZE;
 	TxFrameHeader.TotalDataSize = FrameTotalSize;
 	
 	Frame = (uint8_t *) calloc(FrameTotalSize, sizeof(uint8_t));
@@ -294,39 +401,80 @@ void FRAME_FreeData(void)
 	free(Frame);
 }
 
+void FRAME_SerialFrameGenerate(uint8_t *Serial_Data, uint32_t Serial_DataSize, uint8_t SerialIndex)
+{
+	uint32_t local_PeripheralID = 0;
+	
+	uint8_t *SerialFrame = (uint8_t *)calloc((PERIPH_ID_SIZE + Serial_DataSize), sizeof(uint8_t));
+	memcpy((SerialFrame + PERIPH_ID_SIZE), Serial_Data, Serial_DataSize);
+	
+	switch(SerialIndex)
+	{
+		case SERIAL_UART:
+			local_PeripheralID = UART_PERIPHERAL_ID;
+			UART_FrameSize = Serial_DataSize;
+			memcpy(SerialFrame, &local_PeripheralID, PERIPH_ID_SIZE);
+			UART_Frame = SerialFrame;
+			break;
+		case SERIAL_SPI_CH1:
+			local_PeripheralID = SPI_CH1_PERIPHERAL_ID;
+			SPI_CH1_FrameSize = Serial_DataSize;
+			memcpy(SerialFrame, &local_PeripheralID, PERIPH_ID_SIZE);
+			SPI_CH1_Frame = SerialFrame;
+			break;		
+		case SERIAL_SPI_CH2:
+			local_PeripheralID = SPI_CH2_PERIPHERAL_ID; 
+			SPI_CH2_FrameSize = Serial_DataSize;
+			memcpy(SerialFrame, &local_PeripheralID, PERIPH_ID_SIZE);
+			SPI_CH2_Frame = SerialFrame;
+			break;
+		default:
+			printf("Physiiick .. U GOT THE RONG NUMBAH\n");
+			break;
+	}
+	
+	printf("\n", Iterator);
+	for(uint32_t Iterator = 0; Iterator < Serial_DataSize; Iterator++)
+	{
+		printf("Serial_Frame[%d]: %02X\n", Iterator, SerialFrame[Iterator]);
+	}
+}
+
 uint8_t FRAME_ParsingDataFrame(void)
 {
 	uint8_t PeripheralIndex = 0;
-	
+
 	/* Arrays holding the Readings to be passed to the GUI */
 	uint8_t DIO_Readings[DIO_INPUT_PINS] = {0};
-	uint8_t UART_Readings[512] = {0}; //can be allocated by calloc later
+	uint8_t PWM_Readings[512] = {0};
 	
 	/*Grouping for easier indexing */
-	uint8_t* Rx_Readings[NUM_OF_PERIPH] = {DIO_Readings, UART_Readings};
+	uint8_t* Rx_Readings[NUM_OF_PERIPH] = {DIO_Readings, PWM_Readings};
 	
 	uint8_t *RxFrameData = (uint8_t *)RxFrameDataBuffer;
 	
-	for(PeripheralIndex = 0; PeripheralIndex < NUM_OF_PERIPH; PeripheralIndex++)
+	
+	//FORCED TO GET DIO AND PWM ONLY  NUM_OF_PERIPH>>2 
+	for(PeripheralIndex = 0; PeripheralIndex < 2; PeripheralIndex++)
 	{
 		memcpy(Rx_Readings[PeripheralIndex], &(((FrameData_t *)RxFrameData)->PeripheralData), ((FrameData_t *)RxFrameData)->DataSize);
 		RxFrameData += (PERIPH_HEADER_SIZE + ((FrameData_t *)RxFrameData)->DataSize);
 	}
 	
 	uint8_t Iterator = 0;
-	for(Iterator = 0; Iterator < DIO_DATA_SIZE; Iterator++)
+	for(Iterator = 0; Iterator < DIO_INPUT_PINS; Iterator++)
 	{
 		printf("DIO_READING[%d]: %d\n", Iterator, DIO_Readings[Iterator]);
 	}
 	
-	for(Iterator = 0; Iterator < UART_DATA_SIZE; Iterator++)
+	for(Iterator = 0; Iterator < PWM_CONFIG_SIZE; Iterator++)
 	{
-		printf("UART_READING[%d]: %d\n", Iterator, UART_Readings[Iterator]);
+		printf("PWM_READING[%d]: %d\n", Iterator, PWM_Readings[Iterator]);
 	}
 	
 	///////////////////// CONVERTING TO INT /////////////////////
 	uint8_t DIO_BitValue = 0;
-	for(Iterator = 0; Iterator < DIO_DATA_SIZE; Iterator++)
+	for(Iterator = 0; Iterator < DIO_INPUT_PINS; Iterator++)
 	{
 		DIO_BitValue |= (DIO_Readings[Iterator]<<Iterator);
 	}
@@ -367,4 +515,32 @@ static void bin(unsigned n)
     printf("%d", n % 2); 
 }
 
+uint8_t *FRAME_ReturnSerial(void)
+{
+	
+	//uint8_t null = '\0';
+	uint32_t Iterator = 0;
 
+	SerialBuffer = (uint8_t *)calloc(SerialSize + 1, sizeof(uint8_t));
+
+	for (Iterator = 0; Iterator < SerialSize; Iterator++)
+	{
+		printf("RX_FRAME_BUFFER_UART_BYTE[%d]: %02X\n", Iterator, RxFrameDataBuffer[Iterator]);
+		if (RxFrameDataBuffer[Iterator] < 16)
+		{
+			sprintf(SerialBuffer + Iterator, "%01X", RxFrameDataBuffer[Iterator]);
+		}
+		else
+		{
+			sprintf(SerialBuffer + Iterator * 2, "%02X", RxFrameDataBuffer[Iterator]);
+		}    
+	}
+	printf("BUFFER: %s\n", SerialBuffer);
+	SerialSize = 0;
+	return SerialBuffer;
+}
+
+void FRAME_ReturnSerialFree(void)
+{
+	free(SerialBuffer);
+}

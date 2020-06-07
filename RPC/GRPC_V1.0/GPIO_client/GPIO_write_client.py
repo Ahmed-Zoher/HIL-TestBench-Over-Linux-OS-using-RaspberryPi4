@@ -8,18 +8,18 @@ import GPIO_write_pb2_grpc
 
 def run():
     #open a gRPC channel
-    channel = grpc.insecure_channel('localhost:50051')
+    channel = grpc.insecure_channel('192.168.5.10:50051')
 
     #create a stub (client)
     stub = GPIO_write_pb2_grpc.PI_GPIOStub(channel)
 
     #create a valid request message
-    Mode_params = GPIO_write_pb2.ModeInputParams(gpio_pin=18,gpio_mode=1)
-    Write_params = GPIO_write_pb2.SetInputParams(gpio_pin=18,gpio_level=1)
+    Mode_params = GPIO_write_pb2.ModeInputParams(gpio_pin=18, gpio_mode=1)
+    Write_params = GPIO_write_pb2.SetInputParams(gpio_pin=18, gpio_level=1)
     
     #make the call
-    stub.set_mode(Mode_params)
-    stub.write(Write_params)
+    response = stub.set_mode(Mode_params)
+    #response = stub.write(Write_params)
     
     print("Pin set :D")
 
