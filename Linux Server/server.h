@@ -9,9 +9,10 @@
 #include <sys/socket.h> 
 #include <arpa/inet.h> 
 #include <netinet/in.h> 
+#include <errno.h>
 
 /************* MACROS DEFINITIONS ************/
-#define PORT     		8888 
+#define PORT     		8080 
 #define SERVER 			"192.168.5.10"
 #define ACK 			0x05
 #define NACK			0x08
@@ -59,5 +60,6 @@ void UDP_ServerReceive(uint32_t *ServerSocket, uint8_t* frame, struct sockaddr_i
  */
 void UDP_ServerDisconnect(uint32_t *ServerSocket);
 
+uint8_t UDP_ValidateKey(uint32_t *ServerSocket, struct sockaddr_in *servaddr, struct sockaddr_in *cliaddr);
 
 #endif /* SERVER_H */

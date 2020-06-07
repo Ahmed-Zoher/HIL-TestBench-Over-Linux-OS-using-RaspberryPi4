@@ -5,6 +5,10 @@
  */
  
 #include "server.h"
+#define  TIMEOUT_ERROR		11
+
+uint8_t ClientAvailable = 0;
+uint32_t timeout = 10;
 
 /********** LINUX SERVER INTERFACES ***********/
 
@@ -18,9 +22,9 @@
  */
 void UDP_ServerInit(uint32_t *ServerSocket, struct sockaddr_in *servaddr, struct sockaddr_in *cliaddr)
 {
-	uint32_t keyFrame = 0;
-	uint8_t ConnectionStatus = 0;
-	uint32_t len = sizeof(struct sockaddr_in);
+	//uint32_t keyFrame = 0;
+	//uint8_t ConnectionStatus = 0;
+	//uint32_t len = sizeof(struct sockaddr_in);
 	
 	// Creating socket file descriptor 
     if ( (*ServerSocket = socket(AF_INET, SOCK_DGRAM, 0)) < 0 ) 
@@ -38,34 +42,19 @@ void UDP_ServerInit(uint32_t *ServerSocket, struct sockaddr_in *servaddr, struct
     servaddr->sin_addr.s_addr = inet_addr(SERVER); 
     servaddr->sin_port = htons(PORT); 
     
+    struct timeval tv;
+	tv.tv_sec = timeout;
+	tv.tv_usec = 0;
+
+    setsockopt(*ServerSocket, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(struct timeval));
+    
     // Bind the socket with the server address 
     if ( bind(*ServerSocket, (const struct sockaddr *)servaddr, sizeof(struct sockaddr_in)) < 0 ) 
     { 
         perror("bind failed\n"); 
         exit(EXIT_FAILURE); 
     } 
-    printf("Bind done\n");  
-    
-    while(1)
-    {
-		printf("Waiting for Initialization key....\n");
-		
-		UDP_ServerReceive(ServerSocket, (uint8_t*)&keyFrame, cliaddr, &len, sizeof(uint32_t));
-		
-		if(keyFrame == CONNECTION_KEY)
-		{
-			printf("CONNECTION KEY SUCCESS....\n");
-			ConnectionStatus = ACK;
-			UDP_ServerSend(ServerSocket, (uint8_t*)&ConnectionStatus, cliaddr, len, sizeof(uint8_t));
-			break;
-		}
-		else
-		{
-			printf("CONNECTION KEY FAILURE....\n");
-			ConnectionStatus = NACK;
-			UDP_ServerSend(ServerSocket, (uint8_t*)&ConnectionStatus, cliaddr, len, sizeof(uint8_t));
-		}
-	}	
+    printf("Bind done\n"); 	
 }
 
 /**
@@ -92,7 +81,18 @@ void UDP_ServerSend(uint32_t *ServerSocket, uint8_t* Buffer, struct sockaddr_in 
  */
 void UDP_ServerReceive(uint32_t *ServerSocket, uint8_t* frame, struct sockaddr_in*  cliaddr, uint32_t* len, uint16_t FrameSize)
 {	
-	recvfrom(*ServerSocket, (uint8_t*)frame, FrameSize,  MSG_WAITALL, (struct sockaddr *)cliaddr, len);
+	if((recvfrom(*ServerSocket, (uint8_t*)frame, FrameSize,  MSG_WAITALL, (struct sockaddr *)cliaddr, len) < 0))
+	{
+		printf("Receive from failed\n");
+		if(errno == TIMEOUT_ERROR)
+		{
+			printf("Session Timeout, client has been disconnected\n");
+			if(ClientAvailable == 1)
+			{
+				ClientAvailable = 0;
+			}
+		}
+	}
 }
 
 /**
@@ -104,5 +104,34 @@ void UDP_ServerReceive(uint32_t *ServerSocket, uint8_t* frame, struct sockaddr_i
 void UDP_ServerDisconnect(uint32_t *ServerSocket)
 {
 	close(*ServerSocket);
+}
+
+uint8_t UDP_ValidateKey(uint32_t *ServerSocket, struct sockaddr_in *servaddr, struct sockaddr_in *cliaddr)
+{
+	uint32_t keyFrame = 0;
+	uint8_t ConnectionStatus = 0;
+	uint32_t len = sizeof(struct sockaddr_in);
+	uint8_t validation =0;
+	printf("Waiting for Initialization key....\n");
+		
+	UDP_ServerReceive(ServerSocket, (uint8_t*)&keyFrame, cliaddr, &len, sizeof(uint32_t));
+		
+	if(keyFrame == CONNECTION_KEY)
+	{
+		printf("CONNECTION KEY SUCCESS....\n");
+		ClientAvailable = 1;
+		validation = 1;
+		ConnectionStatus = ACK;
+		UDP_ServerSend(ServerSocket, (uint8_t*)&ConnectionStatus, cliaddr, len, sizeof(uint8_t));
+	}
+	else
+	{
+		printf("CONNECTION KEY FAILURE....\n");
+		validation = 0;
+		ConnectionStatus = NACK;
+		UDP_ServerSend(ServerSocket, (uint8_t*)&ConnectionStatus, cliaddr, len, sizeof(uint8_t));
+	}
+	
+	return validation;
 }
 
