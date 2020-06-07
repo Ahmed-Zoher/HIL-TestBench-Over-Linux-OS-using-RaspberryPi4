@@ -238,7 +238,7 @@ uint8_t UDP_ClientReceive(uint8_t MessageType)
 			printf("recvfrom() failed with error code : %d" , WSAGetLastError());
 			exit(EXIT_FAILURE);
 		}		
-		recv_print(STATUS_SIZE);
+		printf("ACKNOWLEDGMENT_STATUS: %d\n", RxFrameDataBuffer[0]);
 		if(RxFrameDataBuffer[0] == ACK)
 		{
 			returnType = MESSAGE_ACK;	
@@ -256,9 +256,7 @@ uint8_t UDP_ClientReceive(uint8_t MessageType)
 				printf("HERE2\n");
 				printf("recvfrom() failed with error code : %d" , WSAGetLastError());
 				exit(EXIT_FAILURE);
-			}
-			recv_print(sizeof(FrameHeader_t));
-			
+			}			
 			if(RxFrameHeader.Signature == SIGNATURE)
 			{
 				returnType = HEADER_VALID;
@@ -267,6 +265,11 @@ uint8_t UDP_ClientReceive(uint8_t MessageType)
 			{
 				returnType = HEADER_INVALID;
 			}
+			for(Iterator = 0; Iterator < sizeof(FrameHeader_t); Iterator++)
+			{
+				printf("RX_HEADER_FRAME_BYTE[%d]: %d\n", Iterator, ((uint8_t*)&RxFrameHeader)[Iterator]);
+			}
+			printf("\n");
 			break;
 			
 		case MESSAGE_DATA_FRAME:
@@ -276,8 +279,12 @@ uint8_t UDP_ClientReceive(uint8_t MessageType)
 				printf("HERE3\n");
 				printf("recvfrom() failed with error code : %d" , WSAGetLastError());
 				exit(EXIT_FAILURE);
-			}	
-			recv_print(RxFrameHeader.TotalDataSize);
+			}
+			for(Iterator = 0; Iterator < RxFrameHeader.TotalDataSize; Iterator++)
+			{
+				printf("RX_DATA_FRAME_BYTE[%d]: %d\n", Iterator, RxFrameDataBuffer[Iterator]);
+			}
+			printf("\n");
 			returnType = MESSAGE_DATA_FRAME;
 			break;
 	
@@ -310,7 +317,10 @@ uint8_t UDP_ClientReceive(uint8_t MessageType)
 					printf("recvfrom() failed with error code : %d" , WSAGetLastError());
 					exit(EXIT_FAILURE);
 				}
-				recv_print(SerialSize);
+				for(Iterator = 0; Iterator < SerialSize; Iterator++)
+				{
+					printf("RX_UART_MESSAGE_BYTE[%d]: %d\n", Iterator, RxFrameDataBuffer[Iterator]);
+				}
 			}
 			returnType = MESSAGE_DATA_FRAME;
 			break;
@@ -443,25 +453,30 @@ void FRAME_SerialFrameGenerate(uint8_t *Serial_Data, uint32_t Serial_DataSize, u
 uint8_t FRAME_ParsingDataFrame(void)
 {
 	uint8_t PeripheralIndex = 0;
-
 	/* Arrays holding the Readings to be passed to the GUI */
 	uint8_t DIO_Readings[DIO_INPUT_PINS] = {0};
-	uint8_t PWM_Readings[512] = {0};
+	uint8_t PWM_Readings[20] = {0};
+	////CHANGES IN PWM READINGS to 20
 	
 	/*Grouping for easier indexing */
 	uint8_t* Rx_Readings[NUM_OF_PERIPH] = {DIO_Readings, PWM_Readings};
 	
 	uint8_t *RxFrameData = (uint8_t *)RxFrameDataBuffer;
-	
+	printf("FAR1\n");
 	
 	//FORCED TO GET DIO AND PWM ONLY  NUM_OF_PERIPH>>2 
+	printf("HABAL FEL GBAL: %d", PeripheralIndex);
 	for(PeripheralIndex = 0; PeripheralIndex < 2; PeripheralIndex++)
 	{
+		printf("STEP1\n");
 		memcpy(Rx_Readings[PeripheralIndex], &(((FrameData_t *)RxFrameData)->PeripheralData), ((FrameData_t *)RxFrameData)->DataSize);
+		printf("STEP2\n");
+		printf("REFAAAAAT'ssssss >>>> BYTE: %d", ((FrameData_t *)RxFrameData)->DataSize);
 		RxFrameData += (PERIPH_HEADER_SIZE + ((FrameData_t *)RxFrameData)->DataSize);
+		printf("STEP3\n");
 	}
+	printf("FAR2\n");
 	
-	uint8_t Iterator = 0;
 	for(Iterator = 0; Iterator < DIO_INPUT_PINS; Iterator++)
 	{
 		printf("DIO_READING[%d]: %d\n", Iterator, DIO_Readings[Iterator]);
@@ -471,7 +486,7 @@ uint8_t FRAME_ParsingDataFrame(void)
 	{
 		printf("PWM_READING[%d]: %d\n", Iterator, PWM_Readings[Iterator]);
 	}
-	
+	printf("FAR3\n");
 	///////////////////// CONVERTING TO INT /////////////////////
 	uint8_t DIO_BitValue = 0;
 	for(Iterator = 0; Iterator < DIO_INPUT_PINS; Iterator++)
@@ -482,6 +497,7 @@ uint8_t FRAME_ParsingDataFrame(void)
 	bin(DIO_BitValue);
 	
 	printf("\n\nDIO_RETURNNNN:%d", DIO_BitValue);
+	printf("FAR4\n");
 	return DIO_BitValue;
 }
 

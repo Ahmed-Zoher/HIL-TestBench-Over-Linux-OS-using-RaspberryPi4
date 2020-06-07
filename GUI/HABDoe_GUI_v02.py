@@ -1292,7 +1292,7 @@ class Ui_HABDoe(object):
         print("ACK Received")
         #Sending Data Frame
         my_functions.UDP_ClientSend(MESSAGE_DATA_FRAME)
-        my_functions.FRAME_FreeData()        
+        my_functions.FRAME_FreeData()      
       elif (ReceiveStatus == 1): #NACK received
         print("NACK Received")
       
@@ -1405,7 +1405,7 @@ class Ui_HABDoe(object):
       my_functions.UDP_ClientDisconnect()
       
       print("DISCONNECTED FROM SERVER CONNECTION_OK\n")
-    # Disconnect_Func     
+    # Disconnect_Func
     
     
     #########################################################
