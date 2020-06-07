@@ -1,0 +1,61 @@
+
+import grpc
+
+#contatin the request and response classes
+import GPIO_write_pb2
+#contains the generated client and server classes
+import GPIO_write_pb2_grpc
+
+# Creating a global stub object for the wrapper functions
+global stub
+stub = 0 
+
+class TestBench(object):
+    
+    #constructor
+    def __init__(self):
+        
+        global stub
+        #open a gRPC channel
+        channel = grpc.insecure_channel('192.168.5.10:50051')
+        #create a stub (client)
+        stub = GPIO_write_pb2_grpc.PI_GPIOStub(channel)
+
+    ## Defining function wrappers for the user ##
+    def GPIO_SetMode (self,GPIO_PinNumber,GPIO_Mode):
+        #create a valid request message
+        Mode_params = GPIO_write_pb2.ModeInputParams(gpio_pin=GPIO_PinNumber,gpio_mode=GPIO_Mode)
+        #create an empty message
+        EmptyResp = GPIO_write_pb2.Empty()
+        #make the call
+        EmptyResp = stub.set_mode(Mode_params)
+
+    def GPIO_Write (self,GPIO_PinNumber,GPIO_Level):
+        #create a valid request message
+        Write_params = GPIO_write_pb2.SetInputParams(gpio_pin=GPIO_PinNumber,gpio_level=GPIO_Level)
+        #create an empty message
+        EmptyResp = GPIO_write_pb2.Empty()
+        #make the call
+        EmptyResp = stub.write(Write_params)
+        
+    def GPIO_Read (self,GPIO_PinNumber):
+        #create a valid request message
+        Read_params = GPIO_write_pb2.PinNumber(gpio_pin=GPIO_PinNumber)
+        #make the call
+        GPIO_reading = stub.read(Read_params)
+        return GPIO_reading.gpio_pin_level
+
+    def GPIO_SetPullUpDown (self,GPIO_PinNumber,GPIO_PullUpDown):
+        #create a valid request message
+        GPIO_PUD = GPIO_write_pb2.GPIO_PUD(gpio_pin=GPIO_PinNumber,gpio_pud=GPIO_PullUpDown)
+        #create an empty message
+        EmptyResp = GPIO_write_pb2.Empty()
+        #make the call
+        EmptyResp = stub.set_pull_up_down(GPIO_PUD)
+        
+    def PWM_Configure (self,GPIO_PinNumber,PWM_Freq ,PWM_Duty):
+        #create a valid request message
+        PWM_Params = GPIO_write_pb2.PWM_params(gpio_pin=GPIO_PinNumber,PWMfreq=PWM_Freq , PWMduty=PWM_Duty)
+        #make the call
+        PWM_status = stub.hardware_PWM(PWM_Params)
+        return PWM_status.PWM_return
