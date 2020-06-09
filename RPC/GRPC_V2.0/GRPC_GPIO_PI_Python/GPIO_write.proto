@@ -1,6 +1,7 @@
 
 syntax = "proto3";
 
+/* GPIO messages */
 message ModeInputParams
 {
 	uint32 gpio_pin = 1;
@@ -29,6 +30,7 @@ message GPIO_PUD
 	uint32 gpio_pud =2;
 }
 
+/* PWM messages */
 message PWM_params
 {
 	uint32 gpio_pin = 1;
@@ -43,6 +45,42 @@ message PWM_Status
 
 message Empty{}
 
+
+/* Serial messages */
+message SerialOpenParams
+{
+	string tty = 1;
+	int32 baud = 2;
+	int32 ser_flags = 3;
+}
+
+message SerialHandleMessage
+{
+	int32 SerialHandle = 1;
+}
+
+message SerialByte
+{
+	int32 ReadByte = 1;
+}
+
+message SerialWriteByteParams
+{
+	int32 handle = 1;
+	int32 byte_val = 2;
+}
+
+message SerialWriteParams
+{
+	int32 handle = 1;
+	bytes data = 2;
+}
+
+message NumberofBytes
+{
+	int32 NumofBytes = 1;
+}
+
 service PI_GPIO 
 {
 	/************************** GPIO RPCs ***************************/
@@ -54,15 +92,13 @@ service PI_GPIO
 	/************************** PWM RPCs ****************************/
 	rpc hardware_PWM(PWM_params) returns (PWM_Status) {}
 	
-	
-	//rpc delay( micros ) returns () {}
-	//int serOpen(char *sertty, unsigned baud, unsigned serFlags)
-	//int serClose(unsigned handle)
-	//int serReadByte(unsigned handle)
-	//int serWrite(unsigned handle, char *buf, unsigned count)
-	//int serDataAvailable(unsigned handle)
-	//int gpioTime(unsigned timetype, int *seconds, int *micros)
-
-
+	/************************** Serial RPCs ****************************/
+	rpc serial_open (SerialOpenParams) returns (SerialHandleMessage) {}
+	rpc serial_close (SerialHandleMessage) returns (Empty) {}
+	rpc serial_read_byte (SerialHandleMessage) returns (SerialByte) {}
+	rpc serial_write_byte (SerialWriteByteParams) returns (Empty) {}
+	rpc serial_write(SerialWriteParams) returns (Empty) {}
+	rpc serial_data_available (SerialHandleMessage) returns (NumberofBytes) {}
+	rpc stop (Empty) returns (Empty) {}
 }
 

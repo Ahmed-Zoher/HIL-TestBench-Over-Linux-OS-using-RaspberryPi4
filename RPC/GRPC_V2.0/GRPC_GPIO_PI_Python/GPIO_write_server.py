@@ -13,6 +13,7 @@ pi1 = pigpio.pi()
 #class that subclasses the generated class
 class PI_GPIOServicer(GPIO_write_pb2_grpc.PI_GPIOServicer):
 
+    ## GPIO functions ##
     def set_mode(self, request, context):
         response = GPIO_write_pb2.Empty()
         pi1.set_mode( request.gpio_pin,request.gpio_mode )
@@ -32,12 +33,48 @@ class PI_GPIOServicer(GPIO_write_pb2_grpc.PI_GPIOServicer):
         response = GPIO_write_pb2.Empty()
         pi1.set_pull_up_down( request.gpio_pin,request.gpio_pud )
         return response
-        
+    
+    ## PWM functions ##
     def hardware_PWM (self, request, context):
         response = GPIO_write_pb2.PWM_Status()
         response.PWM_return = pi1.hardware_PWM( request.gpio_pin , request.PWMfreq ,request.PWMduty )
         return response
-
+    
+    ## Serial functions ##
+    def serial_open (self, request, context):
+        response = GPIO_write_pb2.SerialHandleMessage()
+        response.SerialHandle = pi1.serial_open ( str(request.tty) , request.baud ,request.ser_flags )
+        return response
+    
+    def serial_close (self, request, context):
+        response = GPIO_write_pb2.Empty()
+        pi1.serial_close ( request.SerialHandle )
+        return response
+        
+    def serial_read_byte (self, request, context):
+        response = GPIO_write_pb2.SerialByte()
+        response.ReadByte = pi1.serial_read_byte ( request.SerialHandle )
+        return response
+        
+    def serial_write_byte (self, request, context):
+        response = GPIO_write_pb2.Empty()
+        pi1.serial_write_byte ( request.handle , request.byte_val )
+        return response
+        
+    def serial_write (self, request, context):
+        response = GPIO_write_pb2.Empty()
+        pi1.serial_write ( request.handle , request.data )
+        return response
+    
+    def serial_data_available (self, request, context):
+        response = GPIO_write_pb2.NumberofBytes()
+        response.NumofBytes = pi1.serial_data_available ( request.handle )
+        return response
+        
+    def stop (self, request, context):
+        response = GPIO_write_pb2.Empty()
+        pi1.stop()
+        return response
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
