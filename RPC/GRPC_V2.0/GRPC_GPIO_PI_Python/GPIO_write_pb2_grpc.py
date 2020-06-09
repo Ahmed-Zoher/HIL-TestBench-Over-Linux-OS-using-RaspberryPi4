@@ -38,6 +38,41 @@ class PI_GPIOStub(object):
                 request_serializer=GPIO__write__pb2.PWM_params.SerializeToString,
                 response_deserializer=GPIO__write__pb2.PWM_Status.FromString,
                 )
+        self.serial_open = channel.unary_unary(
+                '/PI_GPIO/serial_open',
+                request_serializer=GPIO__write__pb2.SerialOpenParams.SerializeToString,
+                response_deserializer=GPIO__write__pb2.SerialHandleMessage.FromString,
+                )
+        self.serial_close = channel.unary_unary(
+                '/PI_GPIO/serial_close',
+                request_serializer=GPIO__write__pb2.SerialHandleMessage.SerializeToString,
+                response_deserializer=GPIO__write__pb2.Empty.FromString,
+                )
+        self.serial_read_byte = channel.unary_unary(
+                '/PI_GPIO/serial_read_byte',
+                request_serializer=GPIO__write__pb2.SerialHandleMessage.SerializeToString,
+                response_deserializer=GPIO__write__pb2.SerialByte.FromString,
+                )
+        self.serial_write_byte = channel.unary_unary(
+                '/PI_GPIO/serial_write_byte',
+                request_serializer=GPIO__write__pb2.SerialWriteByteParams.SerializeToString,
+                response_deserializer=GPIO__write__pb2.Empty.FromString,
+                )
+        self.serial_write = channel.unary_unary(
+                '/PI_GPIO/serial_write',
+                request_serializer=GPIO__write__pb2.SerialWriteParams.SerializeToString,
+                response_deserializer=GPIO__write__pb2.Empty.FromString,
+                )
+        self.serial_data_available = channel.unary_unary(
+                '/PI_GPIO/serial_data_available',
+                request_serializer=GPIO__write__pb2.SerialHandleMessage.SerializeToString,
+                response_deserializer=GPIO__write__pb2.NumberofBytes.FromString,
+                )
+        self.stop = channel.unary_unary(
+                '/PI_GPIO/stop',
+                request_serializer=GPIO__write__pb2.Empty.SerializeToString,
+                response_deserializer=GPIO__write__pb2.Empty.FromString,
+                )
 
 
 class PI_GPIOServicer(object):
@@ -75,6 +110,49 @@ class PI_GPIOServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def serial_open(self, request, context):
+        """************************* Serial RPCs ***************************
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def serial_close(self, request, context):
+        """Missing associated documentation comment in .proto file"""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def serial_read_byte(self, request, context):
+        """Missing associated documentation comment in .proto file"""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def serial_write_byte(self, request, context):
+        """Missing associated documentation comment in .proto file"""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def serial_write(self, request, context):
+        """Missing associated documentation comment in .proto file"""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def serial_data_available(self, request, context):
+        """Missing associated documentation comment in .proto file"""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def stop(self, request, context):
+        """Missing associated documentation comment in .proto file"""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_PI_GPIOServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -102,6 +180,41 @@ def add_PI_GPIOServicer_to_server(servicer, server):
                     servicer.hardware_PWM,
                     request_deserializer=GPIO__write__pb2.PWM_params.FromString,
                     response_serializer=GPIO__write__pb2.PWM_Status.SerializeToString,
+            ),
+            'serial_open': grpc.unary_unary_rpc_method_handler(
+                    servicer.serial_open,
+                    request_deserializer=GPIO__write__pb2.SerialOpenParams.FromString,
+                    response_serializer=GPIO__write__pb2.SerialHandleMessage.SerializeToString,
+            ),
+            'serial_close': grpc.unary_unary_rpc_method_handler(
+                    servicer.serial_close,
+                    request_deserializer=GPIO__write__pb2.SerialHandleMessage.FromString,
+                    response_serializer=GPIO__write__pb2.Empty.SerializeToString,
+            ),
+            'serial_read_byte': grpc.unary_unary_rpc_method_handler(
+                    servicer.serial_read_byte,
+                    request_deserializer=GPIO__write__pb2.SerialHandleMessage.FromString,
+                    response_serializer=GPIO__write__pb2.SerialByte.SerializeToString,
+            ),
+            'serial_write_byte': grpc.unary_unary_rpc_method_handler(
+                    servicer.serial_write_byte,
+                    request_deserializer=GPIO__write__pb2.SerialWriteByteParams.FromString,
+                    response_serializer=GPIO__write__pb2.Empty.SerializeToString,
+            ),
+            'serial_write': grpc.unary_unary_rpc_method_handler(
+                    servicer.serial_write,
+                    request_deserializer=GPIO__write__pb2.SerialWriteParams.FromString,
+                    response_serializer=GPIO__write__pb2.Empty.SerializeToString,
+            ),
+            'serial_data_available': grpc.unary_unary_rpc_method_handler(
+                    servicer.serial_data_available,
+                    request_deserializer=GPIO__write__pb2.SerialHandleMessage.FromString,
+                    response_serializer=GPIO__write__pb2.NumberofBytes.SerializeToString,
+            ),
+            'stop': grpc.unary_unary_rpc_method_handler(
+                    servicer.stop,
+                    request_deserializer=GPIO__write__pb2.Empty.FromString,
+                    response_serializer=GPIO__write__pb2.Empty.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -190,5 +303,117 @@ class PI_GPIO(object):
         return grpc.experimental.unary_unary(request, target, '/PI_GPIO/hardware_PWM',
             GPIO__write__pb2.PWM_params.SerializeToString,
             GPIO__write__pb2.PWM_Status.FromString,
+            options, channel_credentials,
+            call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def serial_open(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/PI_GPIO/serial_open',
+            GPIO__write__pb2.SerialOpenParams.SerializeToString,
+            GPIO__write__pb2.SerialHandleMessage.FromString,
+            options, channel_credentials,
+            call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def serial_close(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/PI_GPIO/serial_close',
+            GPIO__write__pb2.SerialHandleMessage.SerializeToString,
+            GPIO__write__pb2.Empty.FromString,
+            options, channel_credentials,
+            call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def serial_read_byte(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/PI_GPIO/serial_read_byte',
+            GPIO__write__pb2.SerialHandleMessage.SerializeToString,
+            GPIO__write__pb2.SerialByte.FromString,
+            options, channel_credentials,
+            call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def serial_write_byte(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/PI_GPIO/serial_write_byte',
+            GPIO__write__pb2.SerialWriteByteParams.SerializeToString,
+            GPIO__write__pb2.Empty.FromString,
+            options, channel_credentials,
+            call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def serial_write(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/PI_GPIO/serial_write',
+            GPIO__write__pb2.SerialWriteParams.SerializeToString,
+            GPIO__write__pb2.Empty.FromString,
+            options, channel_credentials,
+            call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def serial_data_available(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/PI_GPIO/serial_data_available',
+            GPIO__write__pb2.SerialHandleMessage.SerializeToString,
+            GPIO__write__pb2.NumberofBytes.FromString,
+            options, channel_credentials,
+            call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def stop(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/PI_GPIO/stop',
+            GPIO__write__pb2.Empty.SerializeToString,
+            GPIO__write__pb2.Empty.FromString,
             options, channel_credentials,
             call_credentials, compression, wait_for_ready, timeout, metadata)

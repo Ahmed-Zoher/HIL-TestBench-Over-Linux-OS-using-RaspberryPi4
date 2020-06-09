@@ -22,6 +22,8 @@ class TestBench(object):
         stub = GPIO_write_pb2_grpc.PI_GPIOStub(channel)
 
     ## Defining function wrappers for the user ##
+    
+    ## GPIO functions ##
     def GPIO_SetMode (self,GPIO_PinNumber,GPIO_Mode):
         #create a valid request message
         Mode_params = GPIO_write_pb2.ModeInputParams(gpio_pin=GPIO_PinNumber,gpio_mode=GPIO_Mode)
@@ -53,9 +55,66 @@ class TestBench(object):
         #make the call
         EmptyResp = stub.set_pull_up_down(GPIO_PUD)
         
+    ## PWM functions ##
     def PWM_Configure (self,GPIO_PinNumber,PWM_Freq ,PWM_Duty):
         #create a valid request message
         PWM_Params = GPIO_write_pb2.PWM_params(gpio_pin=GPIO_PinNumber,PWMfreq=PWM_Freq , PWMduty=PWM_Duty)
         #make the call
         PWM_status = stub.hardware_PWM(PWM_Params)
         return PWM_status.PWM_return
+    
+    ## Serial functions ##
+    def Serial_Open (self,TTY_Name, BaudRate ,SerialFlags):
+        #create a valid request message
+        SerialOpenParams = GPIO_write_pb2.SerialOpenParams(tty=TTY_Name,baud=BaudRate,ser_flags=SerialFlags)
+        #make the call
+        SerialHandleReturn = stub.serial_open(SerialOpenParams)
+        return SerialHandleReturn.SerialHandle
+    
+    def Serial_Close (self,Handle):
+        #create a valid request message
+        SerialCloseParams = GPIO_write_pb2.SerialHandleMessage(SerialHandle = Handle)
+        #create an empty message
+        EmptyResp = GPIO_write_pb2.Empty()
+        #make the call
+        EmptyResp = stub.serial_close(SerialCloseParams)
+        
+    def Serial_Readbyte (self,Handle):
+        #create a valid request message
+        SerialReadByteParams = GPIO_write_pb2.SerialHandleMessage(SerialHandle = Handle)
+        #make the call
+        SerialByte = stub.serial_read_byte(SerialReadByteParams)
+        return SerialByte.ReadByte
+    
+    def Serial_WriteByte (self,Handle,ByteVal):
+        #create a valid request message
+        SerialWriteByteParams = GPIO_write_pb2.SerialWriteByteParams(handle = Handle, byte_val=ByteVal)
+        #create an empty message
+        EmptyResp = GPIO_write_pb2.Empty()
+        #make the call
+        EmptyResp = stub.serial_write_byte(SerialWriteByteParams)
+        
+    def Serial_Write (self,Handle,Data):
+        #create a valid request message
+        SerialWriteParams = GPIO_write_pb2.SerialWriteParams(handle = Handle, data=Data)
+        #create an empty message
+        EmptyResp = GPIO_write_pb2.Empty()
+        #make the call
+        EmptyResp = stub.serial_write(SerialWriteParams)
+    
+    def Serial_DataAvailable (self,Handle):
+        #create a valid request message
+        SerialDataAvailableParams = GPIO_write_pb2.SerialHandleMessage(SerialHandle = Handle)
+        #make the call
+        NumberofBytes = stub.serial_data_available(SerialDataAvailableParams)
+        return NumberofBytes.NumofBytes
+        
+    def PIGPIO_Stop (self):
+        #create an empty message
+        EmptyResp = GPIO_write_pb2.Empty()
+        #make the call
+        EmptyResp = stub.stop(EmptyResp)
+        
+        
+        
+        
