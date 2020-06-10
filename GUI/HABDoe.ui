@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>837</width>
-    <height>541</height>
+    <width>915</width>
+    <height>624</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>91</width>
+    <height>0</height>
+   </size>
   </property>
   <property name="font">
    <font>
@@ -24,8 +30,8 @@
     <rect>
      <x>9</x>
      <y>169</y>
-     <width>821</width>
-     <height>361</height>
+     <width>891</width>
+     <height>451</height>
     </rect>
    </property>
    <property name="font">
@@ -70,7 +76,7 @@ QTabBar::tab:selected {
 }</string>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <property name="iconSize">
     <size>
@@ -85,10 +91,10 @@ QTabBar::tab:selected {
     <widget class="QGroupBox" name="Peripherals_groupBox">
      <property name="geometry">
       <rect>
-       <x>4</x>
+       <x>8</x>
        <y>12</y>
-       <width>811</width>
-       <height>321</height>
+       <width>871</width>
+       <height>411</height>
       </rect>
      </property>
      <property name="font">
@@ -121,9 +127,15 @@ QGroupBox::title {
        <rect>
         <x>11</x>
         <y>20</y>
-        <width>791</width>
-        <height>291</height>
+        <width>851</width>
+        <height>381</height>
        </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
       </property>
       <property name="font">
        <font>
@@ -184,9 +196,9 @@ QTabBar::tab:selected {
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>20</y>
-          <width>131</width>
-          <height>231</height>
+          <y>14</y>
+          <width>401</width>
+          <height>91</height>
          </rect>
         </property>
         <property name="font">
@@ -197,37 +209,67 @@ QTabBar::tab:selected {
         <property name="title">
          <string>Digital O/P PINS</string>
         </property>
-        <widget class="QGroupBox" name="Channel3_groupBox">
-         <property name="geometry">
-          <rect>
-           <x>20</x>
-           <y>161</y>
-           <width>91</width>
-           <height>51</height>
-          </rect>
-         </property>
-         <property name="font">
-          <font>
-           <family>Segoe UI</family>
-          </font>
-         </property>
-         <property name="title">
-          <string>Channel 3</string>
-         </property>
-         <widget class="QSlider" name="Channel3_horizontalSlider">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="geometry">
-           <rect>
-            <x>29</x>
-            <y>18</y>
-            <width>31</width>
-            <height>22</height>
-           </rect>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QSlider::groove:horizontal { 
+        <layout class="QHBoxLayout" name="horizontalLayout_10">
+         <item>
+          <widget class="QGroupBox" name="Channel1_groupBox">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>91</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <family>Segoe UI</family>
+            </font>
+           </property>
+           <property name="title">
+            <string>Channel 1</string>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QLabel" name="label_15">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="font">
+               <font>
+                <family>Segoe UI</family>
+               </font>
+              </property>
+              <property name="text">
+               <string>0</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSlider" name="Channel1_horizontalSlider">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>31</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QSlider::groove:horizontal { 
 	background-color:rgb(215,215,215) ;
 	border: 0px solid #424242; 
 	height: 10px; 
@@ -250,82 +292,102 @@ QSlider::handle:horizontal {
 QSlider::handle:horizontal:hover { 
 	border-radius: 10px;
 }r</string>
-          </property>
-          <property name="maximum">
-           <number>1</number>
-          </property>
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label_13">
-          <property name="geometry">
-           <rect>
-            <x>9</x>
-            <y>20</y>
-            <width>16</width>
-            <height>16</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <family>Segoe UI</family>
-           </font>
-          </property>
-          <property name="text">
-           <string>0</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label_14">
-          <property name="geometry">
-           <rect>
-            <x>70</x>
-            <y>20</y>
-            <width>16</width>
-            <height>16</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <family>Segoe UI</family>
-           </font>
-          </property>
-          <property name="text">
-           <string>1</string>
-          </property>
-         </widget>
-        </widget>
-        <widget class="QGroupBox" name="Channel1_groupBox">
-         <property name="geometry">
-          <rect>
-           <x>20</x>
-           <y>28</y>
-           <width>91</width>
-           <height>51</height>
-          </rect>
-         </property>
-         <property name="font">
-          <font>
-           <family>Segoe UI</family>
-          </font>
-         </property>
-         <property name="title">
-          <string>Channel 1</string>
-         </property>
-         <widget class="QSlider" name="Channel1_horizontalSlider">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="geometry">
-           <rect>
-            <x>29</x>
-            <y>18</y>
-            <width>31</width>
-            <height>22</height>
-           </rect>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QSlider::groove:horizontal { 
+              </property>
+              <property name="maximum">
+               <number>1</number>
+              </property>
+              <property name="value">
+               <number>0</number>
+              </property>
+              <property name="tracking">
+               <bool>true</bool>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_16">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="font">
+               <font>
+                <family>Segoe UI</family>
+               </font>
+              </property>
+              <property name="text">
+               <string>1</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="Channel2_groupBox">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>91</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <family>Segoe UI</family>
+            </font>
+           </property>
+           <property name="title">
+            <string>Channel 2</string>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <widget class="QLabel" name="label_17">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="font">
+               <font>
+                <family>Segoe UI</family>
+               </font>
+              </property>
+              <property name="text">
+               <string>0</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSlider" name="Channel2_horizontalSlider">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>31</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QSlider::groove:horizontal { 
 	background-color:rgb(215,215,215) ;
 	border: 0px solid #424242; 
 	height: 10px; 
@@ -348,88 +410,96 @@ QSlider::handle:horizontal {
 QSlider::handle:horizontal:hover { 
 	border-radius: 10px;
 }r</string>
-          </property>
-          <property name="maximum">
-           <number>1</number>
-          </property>
-          <property name="value">
-           <number>0</number>
-          </property>
-          <property name="tracking">
-           <bool>true</bool>
-          </property>
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label_15">
-          <property name="geometry">
-           <rect>
-            <x>9</x>
-            <y>20</y>
-            <width>16</width>
-            <height>16</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <family>Segoe UI</family>
-           </font>
-          </property>
-          <property name="text">
-           <string>0</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label_16">
-          <property name="geometry">
-           <rect>
-            <x>70</x>
-            <y>20</y>
-            <width>16</width>
-            <height>16</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <family>Segoe UI</family>
-           </font>
-          </property>
-          <property name="text">
-           <string>1</string>
-          </property>
-         </widget>
-        </widget>
-        <widget class="QGroupBox" name="Channel2_groupBox">
-         <property name="geometry">
-          <rect>
-           <x>20</x>
-           <y>94</y>
-           <width>91</width>
-           <height>51</height>
-          </rect>
-         </property>
-         <property name="font">
-          <font>
-           <family>Segoe UI</family>
-          </font>
-         </property>
-         <property name="title">
-          <string>Channel 2</string>
-         </property>
-         <widget class="QSlider" name="Channel2_horizontalSlider">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="geometry">
-           <rect>
-            <x>29</x>
-            <y>18</y>
-            <width>31</width>
-            <height>22</height>
-           </rect>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QSlider::groove:horizontal { 
+              </property>
+              <property name="maximum">
+               <number>1</number>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_18">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="font">
+               <font>
+                <family>Segoe UI</family>
+               </font>
+              </property>
+              <property name="text">
+               <string>1</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="Channel3_groupBox">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>91</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <family>Segoe UI</family>
+            </font>
+           </property>
+           <property name="title">
+            <string>Channel 3</string>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <item>
+             <widget class="QLabel" name="label_13">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="font">
+               <font>
+                <family>Segoe UI</family>
+               </font>
+              </property>
+              <property name="text">
+               <string>0</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSlider" name="Channel3_horizontalSlider">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>31</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QSlider::groove:horizontal { 
 	background-color:rgb(215,215,215) ;
 	border: 0px solid #424242; 
 	height: 10px; 
@@ -452,59 +522,157 @@ QSlider::handle:horizontal {
 QSlider::handle:horizontal:hover { 
 	border-radius: 10px;
 }r</string>
-          </property>
-          <property name="maximum">
-           <number>1</number>
-          </property>
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label_17">
-          <property name="geometry">
-           <rect>
-            <x>9</x>
-            <y>20</y>
-            <width>16</width>
-            <height>16</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <family>Segoe UI</family>
-           </font>
-          </property>
-          <property name="text">
-           <string>0</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label_18">
-          <property name="geometry">
-           <rect>
-            <x>70</x>
-            <y>20</y>
-            <width>16</width>
-            <height>16</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <family>Segoe UI</family>
-           </font>
-          </property>
-          <property name="text">
-           <string>1</string>
-          </property>
-         </widget>
-        </widget>
+              </property>
+              <property name="maximum">
+               <number>1</number>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_14">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="font">
+               <font>
+                <family>Segoe UI</family>
+               </font>
+              </property>
+              <property name="text">
+               <string>1</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="Channel4_groupBox">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>91</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <family>Segoe UI</family>
+            </font>
+           </property>
+           <property name="title">
+            <string>Channel 4</string>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_4">
+            <item>
+             <widget class="QLabel" name="label_19">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="font">
+               <font>
+                <family>Segoe UI</family>
+               </font>
+              </property>
+              <property name="text">
+               <string>0</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSlider" name="Channel4_horizontalSlider">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>31</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QSlider::groove:horizontal { 
+	background-color:rgb(215,215,215) ;
+	border: 0px solid #424242; 
+	height: 10px; 
+	border-radius: 5px;
+}
+
+QSlider::handle:horizontal { 
+	background-color: #05B8CC; 
+	border: 2px solid #05B8CC; 
+	width: 16px; 
+	height: 20px; 
+	line-height: 20px; 
+	margin-top: -5px; 
+	margin-bottom: -5px; 
+	border-radius: 10px; 
+}
+
+
+
+QSlider::handle:horizontal:hover { 
+	border-radius: 10px;
+}r</string>
+              </property>
+              <property name="maximum">
+               <number>1</number>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_20">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="font">
+               <font>
+                <family>Segoe UI</family>
+               </font>
+              </property>
+              <property name="text">
+               <string>1</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
        </widget>
        <widget class="QGroupBox" name="DigitalInPins_groupBox">
         <property name="geometry">
          <rect>
-          <x>178</x>
-          <y>20</y>
-          <width>131</width>
-          <height>231</height>
+          <x>10</x>
+          <y>112</y>
+          <width>401</width>
+          <height>91</height>
          </rect>
         </property>
         <property name="font">
@@ -515,146 +683,505 @@ QSlider::handle:horizontal:hover {
         <property name="title">
          <string>Digital I/P PINS</string>
         </property>
-        <widget class="QGroupBox" name="Channel4_groupBox">
-         <property name="geometry">
-          <rect>
-           <x>20</x>
-           <y>28</y>
-           <width>91</width>
-           <height>51</height>
-          </rect>
-         </property>
-         <property name="font">
-          <font>
-           <family>Segoe UI</family>
-          </font>
-         </property>
-         <property name="title">
-          <string>Channel 4</string>
-         </property>
-         <widget class="QLCDNumber" name="Channel4_lcdNumber">
-          <property name="geometry">
-           <rect>
-            <x>15</x>
-            <y>20</y>
-            <width>64</width>
-            <height>23</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>9</pointsize>
-           </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QLCDNumber {
+        <layout class="QHBoxLayout" name="horizontalLayout_9">
+         <item>
+          <widget class="QGroupBox" name="Channel5_groupBox">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>91</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>91</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <family>Segoe UI</family>
+            </font>
+           </property>
+           <property name="title">
+            <string>Channel 5</string>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_5">
+            <item>
+             <widget class="QLCDNumber" name="Channel5_lcdNumber">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>9</pointsize>
+               </font>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QLCDNumber {
 	border: 1px solid black;
 	border-radius: 5px;
 	background-color: white;
 	color: rgb(50, 50, 50);
 }</string>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </widget>
-        <widget class="QGroupBox" name="Channel5_groupBox">
-         <property name="geometry">
-          <rect>
-           <x>20</x>
-           <y>94</y>
-           <width>91</width>
-           <height>51</height>
-          </rect>
-         </property>
-         <property name="font">
-          <font>
-           <family>Segoe UI</family>
-          </font>
-         </property>
-         <property name="title">
-          <string>Channel 5</string>
-         </property>
-         <widget class="QLCDNumber" name="Channel5_lcdNumber">
-          <property name="geometry">
-           <rect>
-            <x>16</x>
-            <y>20</y>
-            <width>64</width>
-            <height>23</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>9</pointsize>
-           </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QLCDNumber {
+              </property>
+              <property name="segmentStyle">
+               <enum>QLCDNumber::Flat</enum>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="Channel6_groupBox">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>91</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>91</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <family>Segoe UI</family>
+            </font>
+           </property>
+           <property name="title">
+            <string>Channel 6</string>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_6">
+            <item>
+             <widget class="QLCDNumber" name="Channel6_lcdNumber">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>9</pointsize>
+               </font>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QLCDNumber {
 	border: 1px solid black;
 	border-radius: 5px;
 	background-color: white;
 	color: rgb(50, 50, 50);
 }</string>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </widget>
-        <widget class="QGroupBox" name="Channel6_groupBox">
-         <property name="geometry">
-          <rect>
-           <x>20</x>
-           <y>161</y>
-           <width>91</width>
-           <height>51</height>
-          </rect>
-         </property>
-         <property name="font">
-          <font>
-           <family>Segoe UI</family>
-          </font>
-         </property>
-         <property name="title">
-          <string>Channel 6</string>
-         </property>
-         <widget class="QLCDNumber" name="Channel6_lcdNumber">
-          <property name="geometry">
-           <rect>
-            <x>15</x>
-            <y>20</y>
-            <width>64</width>
-            <height>23</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>9</pointsize>
-           </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QLCDNumber {
+              </property>
+              <property name="segmentStyle">
+               <enum>QLCDNumber::Flat</enum>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="Channel7_groupBox">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>91</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>91</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <family>Segoe UI</family>
+            </font>
+           </property>
+           <property name="title">
+            <string>Channel 7</string>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_7">
+            <item>
+             <widget class="QLCDNumber" name="Channel7_lcdNumber">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>9</pointsize>
+               </font>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QLCDNumber {
 	border: 1px solid black;
 	border-radius: 5px;
 	background-color: white;
 	color: rgb(50, 50, 50);
 }</string>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </widget>
+              </property>
+              <property name="segmentStyle">
+               <enum>QLCDNumber::Flat</enum>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="Channel8_groupBox">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>91</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>91</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <family>Segoe UI</family>
+            </font>
+           </property>
+           <property name="title">
+            <string>Channel 8</string>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_8">
+            <item>
+             <widget class="QLCDNumber" name="Channel8_lcdNumber">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>9</pointsize>
+               </font>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QLCDNumber {
+	border: 1px solid black;
+	border-radius: 5px;
+	background-color: white;
+	color: rgb(50, 50, 50);
+}</string>
+              </property>
+              <property name="segmentStyle">
+               <enum>QLCDNumber::Flat</enum>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QGroupBox" name="PWMInPins_groupBox">
+        <property name="geometry">
+         <rect>
+          <x>440</x>
+          <y>14</y>
+          <width>401</width>
+          <height>191</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Segoe UI</family>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true"/>
+        </property>
+        <property name="title">
+         <string>PWM I/P PINS</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <item>
+          <widget class="QGroupBox" name="Channel11_groupBox">
+           <property name="font">
+            <font>
+             <family>Segoe UI</family>
+            </font>
+           </property>
+           <property name="title">
+            <string>Channel 11</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_4">
+            <item row="0" column="0">
+             <widget class="QLabel" name="Channel11_Frequency_label">
+              <property name="font">
+               <font>
+                <family>Segoe UI</family>
+               </font>
+              </property>
+              <property name="text">
+               <string>Frequency (Hz)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLCDNumber" name="Channel11_Frequency_lcdNumber">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>100</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>9</pointsize>
+               </font>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QLCDNumber {
+	border: 1px solid black;
+	border-radius: 5px;
+	background-color: white;
+	color: rgb(50, 50, 50);
+}</string>
+              </property>
+              <property name="digitCount">
+               <number>8</number>
+              </property>
+              <property name="mode">
+               <enum>QLCDNumber::Dec</enum>
+              </property>
+              <property name="segmentStyle">
+               <enum>QLCDNumber::Flat</enum>
+              </property>
+              <property name="value" stdset="0">
+               <double>0.000000000000000</double>
+              </property>
+              <property name="intValue" stdset="0">
+               <number>0</number>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="Channel11_DutyCycle_label">
+              <property name="font">
+               <font>
+                <family>Segoe UI</family>
+               </font>
+              </property>
+              <property name="text">
+               <string>Duty Cycle (%)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLCDNumber" name="Channel11_DutyCycle_lcdNumber">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>100</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>9</pointsize>
+               </font>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QLCDNumber {
+	border: 1px solid black;
+	border-radius: 5px;
+	background-color: white;
+	color: rgb(50, 50, 50);
+}</string>
+              </property>
+              <property name="digitCount">
+               <number>8</number>
+              </property>
+              <property name="mode">
+               <enum>QLCDNumber::Dec</enum>
+              </property>
+              <property name="segmentStyle">
+               <enum>QLCDNumber::Flat</enum>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="Channel12_groupBox">
+           <property name="font">
+            <font>
+             <family>Segoe UI</family>
+            </font>
+           </property>
+           <property name="title">
+            <string>Channel 12</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_3">
+            <item row="0" column="0">
+             <widget class="QLabel" name="Channel12_Frequency_label">
+              <property name="font">
+               <font>
+                <family>Segoe UI</family>
+               </font>
+              </property>
+              <property name="text">
+               <string>Frequency (Hz)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLCDNumber" name="Channel7_Frequency_lcdNumber">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>100</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>9</pointsize>
+               </font>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QLCDNumber {
+	border: 1px solid black;
+	border-radius: 5px;
+	background-color: white;
+	color: rgb(50, 50, 50);
+}</string>
+              </property>
+              <property name="digitCount">
+               <number>8</number>
+              </property>
+              <property name="mode">
+               <enum>QLCDNumber::Dec</enum>
+              </property>
+              <property name="segmentStyle">
+               <enum>QLCDNumber::Flat</enum>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="Channel12_DutyCycle_label">
+              <property name="font">
+               <font>
+                <family>Segoe UI</family>
+               </font>
+              </property>
+              <property name="text">
+               <string>Duty Cycle (%)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLCDNumber" name="Channel7_DutyCycle_lcdNumber">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>100</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>9</pointsize>
+               </font>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QLCDNumber {
+	border: 1px solid black;
+	border-radius: 5px;
+	background-color: white;
+	color: rgb(50, 50, 50);
+}</string>
+              </property>
+              <property name="digitCount">
+               <number>8</number>
+              </property>
+              <property name="mode">
+               <enum>QLCDNumber::Dec</enum>
+              </property>
+              <property name="segmentStyle">
+               <enum>QLCDNumber::Flat</enum>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
        </widget>
        <widget class="QGroupBox" name="PWMOutPins_groupBox">
         <property name="geometry">
          <rect>
-          <x>344</x>
-          <y>20</y>
-          <width>431</width>
-          <height>231</height>
+          <x>10</x>
+          <y>211</y>
+          <width>831</width>
+          <height>141</height>
          </rect>
         </property>
         <property name="font">
@@ -668,11 +1195,11 @@ QSlider::handle:horizontal:hover {
         <property name="title">
          <string>PWM O/P PINS</string>
         </property>
-        <widget class="QGroupBox" name="Channel7_groupBox">
+        <widget class="QGroupBox" name="Channel10_groupBox">
          <property name="geometry">
           <rect>
-           <x>16</x>
-           <y>24</y>
+           <x>420</x>
+           <y>30</y>
            <width>401</width>
            <height>91</height>
           </rect>
@@ -683,13 +1210,13 @@ QSlider::handle:horizontal:hover {
           </font>
          </property>
          <property name="title">
-          <string>Channel 7</string>
+          <string>Channel 10</string>
          </property>
-         <widget class="QLabel" name="Channel7_Frequency_label">
+         <widget class="QLabel" name="Channel10_Frequency_label">
           <property name="geometry">
            <rect>
             <x>8</x>
-            <y>23</y>
+            <y>21</y>
             <width>91</width>
             <height>16</height>
            </rect>
@@ -703,7 +1230,7 @@ QSlider::handle:horizontal:hover {
            <string>Frequency (Hz)</string>
           </property>
          </widget>
-         <widget class="QLCDNumber" name="Channel7_lcdNumber">
+         <widget class="QLCDNumber" name="Channel10_lcdNumber">
           <property name="geometry">
            <rect>
             <x>329</x>
@@ -729,7 +1256,7 @@ QSlider::handle:horizontal:hover {
            <enum>QLCDNumber::Flat</enum>
           </property>
          </widget>
-         <widget class="QSlider" name="Channel7_horizontalSlider">
+         <widget class="QSlider" name="Channel10_horizontalSlider">
           <property name="enabled">
            <bool>true</bool>
           </property>
@@ -779,7 +1306,7 @@ QSlider::handle:horizontal:hover {
            <enum>Qt::Horizontal</enum>
           </property>
          </widget>
-         <widget class="QLabel" name="Channel7_DutyCycle_label">
+         <widget class="QLabel" name="Channel10_DutyCycle_label">
           <property name="geometry">
            <rect>
             <x>10</x>
@@ -797,7 +1324,207 @@ QSlider::handle:horizontal:hover {
            <string>Duty Cycle (%)</string>
           </property>
          </widget>
-         <widget class="QLineEdit" name="Channel7_FrequencyRange_lineEdit">
+         <widget class="QLineEdit" name="Channel10_FrequencyRange_lineEdit">
+          <property name="geometry">
+           <rect>
+            <x>252</x>
+            <y>23</y>
+            <width>141</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Segoe UI</family>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLineEdit {
+    border: 2px solid gray;
+    border-radius: 10px;
+    padding: 0 8px;
+    background: white;
+    selection-background-color: darkgray;
+}
+
+QLineEdit:read-only {
+    background: lightblue;
+}
+</string>
+          </property>
+          <property name="text">
+           <string>   Range: 0 -&gt; 30,000,000</string>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+         <widget class="QSpinBox" name="Channel10_Frequency_spinBox">
+          <property name="geometry">
+           <rect>
+            <x>103</x>
+            <y>22</y>
+            <width>81</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Segoe UI</family>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QSpinBox {
+    border: 2px solid gray;
+    border-radius: 10px;
+    padding: 0 8px;
+    background: white;
+    selection-background-color: darkgray;
+}
+
+QSpinBox::up-button{
+    width: 0
+}
+QSpinBox::down-button{
+    width: 0
+}
+</string>
+          </property>
+          <property name="maximum">
+           <number>30000000</number>
+          </property>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="Channel9_groupBox">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>30</y>
+           <width>401</width>
+           <height>91</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <family>Segoe UI</family>
+          </font>
+         </property>
+         <property name="title">
+          <string>Channel 9</string>
+         </property>
+         <widget class="QLabel" name="Channel9_Frequency_label">
+          <property name="geometry">
+           <rect>
+            <x>8</x>
+            <y>23</y>
+            <width>91</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Segoe UI</family>
+           </font>
+          </property>
+          <property name="text">
+           <string>Frequency (Hz)</string>
+          </property>
+         </widget>
+         <widget class="QLCDNumber" name="Channel9_lcdNumber">
+          <property name="geometry">
+           <rect>
+            <x>329</x>
+            <y>54</y>
+            <width>64</width>
+            <height>23</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>9</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLCDNumber {
+	border: 1px solid black;
+	border-radius: 5px;
+	background-color: white;
+	color: rgb(50, 50, 50);
+}</string>
+          </property>
+          <property name="segmentStyle">
+           <enum>QLCDNumber::Flat</enum>
+          </property>
+         </widget>
+         <widget class="QSlider" name="Channel9_horizontalSlider">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>100</x>
+            <y>54</y>
+            <width>221</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QSlider::groove:horizontal { 
+	background-color:rgb(215,215,215) ;
+	border: 0px solid #424242; 
+	height: 10px; 
+	border-radius: 5px;
+}
+
+QSlider::handle:horizontal { 
+	background-color: #05B8CC; 
+	border: 2px solid #05B8CC; 
+	width: 16px; 
+	height: 20px; 
+	line-height: 20px; 
+	margin-top: -5px; 
+	margin-bottom: -5px; 
+	border-radius: 10px; 
+}
+
+
+
+QSlider::handle:horizontal:hover { 
+	border-radius: 10px;
+}r</string>
+          </property>
+          <property name="maximum">
+           <number>100</number>
+          </property>
+          <property name="value">
+           <number>0</number>
+          </property>
+          <property name="tracking">
+           <bool>true</bool>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+         <widget class="QLabel" name="Channel9_DutyCycle_label">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>55</y>
+            <width>81</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Segoe UI</family>
+           </font>
+          </property>
+          <property name="text">
+           <string>Duty Cycle (%)</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="Channel9_FrequencyRange_lineEdit">
           <property name="geometry">
            <rect>
             <x>252</x>
@@ -832,7 +1559,7 @@ QLineEdit:read-only {
            <bool>true</bool>
           </property>
          </widget>
-         <widget class="QSpinBox" name="Channel7_Frequency_spinBox">
+         <widget class="QSpinBox" name="Channel9_Frequency_spinBox">
           <property name="geometry">
            <rect>
             <x>101</x>
@@ -873,206 +1600,6 @@ QSpinBox::down-button{
           </property>
          </widget>
         </widget>
-        <widget class="QGroupBox" name="Channel8_groupBox">
-         <property name="geometry">
-          <rect>
-           <x>16</x>
-           <y>125</y>
-           <width>401</width>
-           <height>91</height>
-          </rect>
-         </property>
-         <property name="font">
-          <font>
-           <family>Segoe UI</family>
-          </font>
-         </property>
-         <property name="title">
-          <string>Channel 8</string>
-         </property>
-         <widget class="QLabel" name="Channel8_Frequency_label">
-          <property name="geometry">
-           <rect>
-            <x>8</x>
-            <y>21</y>
-            <width>91</width>
-            <height>16</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <family>Segoe UI</family>
-           </font>
-          </property>
-          <property name="text">
-           <string>Frequency (Hz)</string>
-          </property>
-         </widget>
-         <widget class="QLCDNumber" name="Channel8_lcdNumber">
-          <property name="geometry">
-           <rect>
-            <x>329</x>
-            <y>54</y>
-            <width>64</width>
-            <height>23</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>9</pointsize>
-           </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QLCDNumber {
-	border: 1px solid black;
-	border-radius: 5px;
-	background-color: white;
-	color: rgb(50, 50, 50);
-}</string>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-         <widget class="QSlider" name="Channel8_horizontalSlider">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="geometry">
-           <rect>
-            <x>100</x>
-            <y>54</y>
-            <width>221</width>
-            <height>22</height>
-           </rect>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QSlider::groove:horizontal { 
-	background-color:rgb(215,215,215) ;
-	border: 0px solid #424242; 
-	height: 10px; 
-	border-radius: 5px;
-}
-
-QSlider::handle:horizontal { 
-	background-color: #05B8CC; 
-	border: 2px solid #05B8CC; 
-	width: 16px; 
-	height: 20px; 
-	line-height: 20px; 
-	margin-top: -5px; 
-	margin-bottom: -5px; 
-	border-radius: 10px; 
-}
-
-
-
-QSlider::handle:horizontal:hover { 
-	border-radius: 10px;
-}r</string>
-          </property>
-          <property name="maximum">
-           <number>100</number>
-          </property>
-          <property name="value">
-           <number>0</number>
-          </property>
-          <property name="tracking">
-           <bool>true</bool>
-          </property>
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-         <widget class="QLabel" name="Channel8_DutyCycle_label">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>55</y>
-            <width>81</width>
-            <height>16</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <family>Segoe UI</family>
-           </font>
-          </property>
-          <property name="text">
-           <string>Duty Cycle (%)</string>
-          </property>
-         </widget>
-         <widget class="QLineEdit" name="Channel8_FrequencyRange_lineEdit">
-          <property name="geometry">
-           <rect>
-            <x>252</x>
-            <y>23</y>
-            <width>141</width>
-            <height>20</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <family>Segoe UI</family>
-           </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QLineEdit {
-    border: 2px solid gray;
-    border-radius: 10px;
-    padding: 0 8px;
-    background: white;
-    selection-background-color: darkgray;
-}
-
-QLineEdit:read-only {
-    background: lightblue;
-}
-</string>
-          </property>
-          <property name="text">
-           <string>   Range: 0 -&gt; 30,000,000</string>
-          </property>
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-         </widget>
-         <widget class="QSpinBox" name="Channel8_Frequency_spinBox">
-          <property name="geometry">
-           <rect>
-            <x>103</x>
-            <y>22</y>
-            <width>81</width>
-            <height>21</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <family>Segoe UI</family>
-           </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QSpinBox {
-    border: 2px solid gray;
-    border-radius: 10px;
-    padding: 0 8px;
-    background: white;
-    selection-background-color: darkgray;
-}
-
-QSpinBox::up-button{
-    width: 0
-}
-QSpinBox::down-button{
-    width: 0
-}
-</string>
-          </property>
-          <property name="maximum">
-           <number>30000000</number>
-          </property>
-         </widget>
-        </widget>
        </widget>
       </widget>
       <widget class="QWidget" name="BasicCommunication_tab">
@@ -1082,11 +1609,17 @@ QSpinBox::down-button{
        <widget class="QGroupBox" name="UART_groupBox">
         <property name="geometry">
          <rect>
-          <x>5</x>
-          <y>12</y>
+          <x>12</x>
+          <y>31</y>
           <width>251</width>
-          <height>251</height>
+          <height>301</height>
          </rect>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
         </property>
         <property name="font">
          <font>
@@ -1100,7 +1633,7 @@ QSpinBox::down-button{
          <property name="geometry">
           <rect>
            <x>157</x>
-           <y>220</y>
+           <y>265</y>
            <width>41</width>
            <height>16</height>
           </rect>
@@ -1118,7 +1651,7 @@ QSpinBox::down-button{
          <property name="geometry">
           <rect>
            <x>61</x>
-           <y>218</y>
+           <y>263</y>
            <width>41</width>
            <height>20</height>
           </rect>
@@ -1139,7 +1672,7 @@ QSpinBox::down-button{
          <property name="geometry">
           <rect>
            <x>110</x>
-           <y>218</y>
+           <y>263</y>
            <width>31</width>
            <height>22</height>
           </rect>
@@ -1210,6 +1743,9 @@ QComboBox::drop-down {
 	 border-radius: 8px;
 	 background-color: darkgray;
 }</string>
+         </property>
+         <property name="currentIndex">
+          <number>12</number>
          </property>
          <item>
           <property name="text">
@@ -1342,7 +1878,7 @@ QComboBox::drop-down {
          <property name="geometry">
           <rect>
            <x>16</x>
-           <y>145</y>
+           <y>190</y>
            <width>101</width>
            <height>21</height>
           </rect>
@@ -1409,7 +1945,7 @@ QComboBox::drop-down {
          <property name="geometry">
           <rect>
            <x>13</x>
-           <y>170</y>
+           <y>215</y>
            <width>221</width>
            <height>31</height>
           </rect>
@@ -1446,14 +1982,62 @@ QComboBox::drop-down {
           <bool>true</bool>
          </property>
         </widget>
+        <widget class="QPushButton" name="UART_SendData_pushButton">
+         <property name="geometry">
+          <rect>
+           <x>77</x>
+           <y>150</y>
+           <width>101</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Segoe UI</family>
+           <pointsize>8</pointsize>
+           <weight>50</weight>
+           <italic>false</italic>
+           <bold>false</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QPushButton {
+    color: white;
+	background-color: #05B8CC;
+	border: 2px solid grey;
+    border-width: 0px;
+    border-radius: 10px;    
+    padding: 6px;
+}
+QPushButton:pressed {
+    background-color: grey;
+    border-style: inset;
+}</string>
+         </property>
+         <property name="text">
+          <string>Send</string>
+         </property>
+        </widget>
        </widget>
        <widget class="QGroupBox" name="SPI_Channel_1_groupBox">
         <property name="geometry">
          <rect>
-          <x>270</x>
-          <y>12</y>
+          <x>299</x>
+          <y>31</y>
           <width>251</width>
-          <height>251</height>
+          <height>301</height>
          </rect>
         </property>
         <property name="font">
@@ -1468,7 +2052,7 @@ QComboBox::drop-down {
          <property name="geometry">
           <rect>
            <x>159</x>
-           <y>220</y>
+           <y>265</y>
            <width>41</width>
            <height>16</height>
           </rect>
@@ -1486,7 +2070,7 @@ QComboBox::drop-down {
          <property name="geometry">
           <rect>
            <x>63</x>
-           <y>218</y>
+           <y>263</y>
            <width>41</width>
            <height>20</height>
           </rect>
@@ -1507,7 +2091,7 @@ QComboBox::drop-down {
          <property name="geometry">
           <rect>
            <x>112</x>
-           <y>218</y>
+           <y>263</y>
            <width>31</width>
            <height>22</height>
           </rect>
@@ -1590,7 +2174,7 @@ QSlider::handle:horizontal:hover {
          <property name="geometry">
           <rect>
            <x>16</x>
-           <y>145</y>
+           <y>190</y>
            <width>101</width>
            <height>21</height>
           </rect>
@@ -1657,7 +2241,7 @@ QSlider::handle:horizontal:hover {
          <property name="geometry">
           <rect>
            <x>13</x>
-           <y>170</y>
+           <y>215</y>
            <width>221</width>
            <height>31</height>
           </rect>
@@ -1778,14 +2362,62 @@ QLineEdit:read-only {
           <bool>true</bool>
          </property>
         </widget>
+        <widget class="QPushButton" name="SPI_Channel_1_SendData_pushButton">
+         <property name="geometry">
+          <rect>
+           <x>77</x>
+           <y>150</y>
+           <width>101</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Segoe UI</family>
+           <pointsize>8</pointsize>
+           <weight>50</weight>
+           <italic>false</italic>
+           <bold>false</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QPushButton {
+    color: white;
+	background-color: #05B8CC;
+	border: 2px solid grey;
+    border-width: 0px;
+    border-radius: 10px;    
+    padding: 6px;
+}
+QPushButton:pressed {
+    background-color: grey;
+    border-style: inset;
+}</string>
+         </property>
+         <property name="text">
+          <string>Send</string>
+         </property>
+        </widget>
        </widget>
        <widget class="QGroupBox" name="SPI_Channel_2_groupBox">
         <property name="geometry">
          <rect>
-          <x>535</x>
-          <y>12</y>
+          <x>584</x>
+          <y>31</y>
           <width>251</width>
-          <height>251</height>
+          <height>301</height>
          </rect>
         </property>
         <property name="font">
@@ -1799,8 +2431,8 @@ QLineEdit:read-only {
         <widget class="QLabel" name="SPI_Channel_2_Enable_label">
          <property name="geometry">
           <rect>
-           <x>159</x>
-           <y>220</y>
+           <x>163</x>
+           <y>265</y>
            <width>41</width>
            <height>16</height>
           </rect>
@@ -1817,8 +2449,8 @@ QLineEdit:read-only {
         <widget class="QLabel" name="SPI_Channel_2_Disable_label">
          <property name="geometry">
           <rect>
-           <x>63</x>
-           <y>218</y>
+           <x>67</x>
+           <y>263</y>
            <width>41</width>
            <height>20</height>
           </rect>
@@ -1838,8 +2470,8 @@ QLineEdit:read-only {
          </property>
          <property name="geometry">
           <rect>
-           <x>112</x>
-           <y>218</y>
+           <x>116</x>
+           <y>263</y>
            <width>31</width>
            <height>22</height>
           </rect>
@@ -1921,8 +2553,8 @@ QSlider::handle:horizontal:hover {
         <widget class="QLabel" name="SPI_Channel_2_DataReceived_label">
          <property name="geometry">
           <rect>
-           <x>16</x>
-           <y>145</y>
+           <x>20</x>
+           <y>190</y>
            <width>101</width>
            <height>21</height>
           </rect>
@@ -1988,8 +2620,8 @@ QSlider::handle:horizontal:hover {
          </property>
          <property name="geometry">
           <rect>
-           <x>13</x>
-           <y>170</y>
+           <x>17</x>
+           <y>215</y>
            <width>221</width>
            <height>31</height>
           </rect>
@@ -2107,6 +2739,54 @@ QLineEdit:read-only {
           <bool>true</bool>
          </property>
         </widget>
+        <widget class="QPushButton" name="SPI_Channel_2_SendData_pushButton">
+         <property name="geometry">
+          <rect>
+           <x>79</x>
+           <y>150</y>
+           <width>101</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Segoe UI</family>
+           <pointsize>8</pointsize>
+           <weight>50</weight>
+           <italic>false</italic>
+           <bold>false</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QPushButton {
+    color: white;
+	background-color: #05B8CC;
+	border: 2px solid grey;
+    border-width: 0px;
+    border-radius: 10px;    
+    padding: 6px;
+}
+QPushButton:pressed {
+    background-color: grey;
+    border-style: inset;
+}</string>
+         </property>
+         <property name="text">
+          <string>Send</string>
+         </property>
+        </widget>
        </widget>
       </widget>
       <widget class="QWidget" name="AutomotiveCommunication_tab">
@@ -2121,8 +2801,8 @@ QLineEdit:read-only {
          <rect>
           <x>10</x>
           <y>16</y>
-          <width>771</width>
-          <height>251</height>
+          <width>831</width>
+          <height>341</height>
          </rect>
         </property>
         <property name="font">
@@ -2159,8 +2839,8 @@ QLineEdit:read-only {
        <widget class="QLabel" name="label">
         <property name="geometry">
          <rect>
-          <x>80</x>
-          <y>62</y>
+          <x>110</x>
+          <y>94</y>
           <width>641</width>
           <height>91</height>
          </rect>
@@ -2186,8 +2866,8 @@ QLineEdit:read-only {
        <widget class="QLabel" name="label_2">
         <property name="geometry">
          <rect>
-          <x>210</x>
-          <y>194</y>
+          <x>240</x>
+          <y>226</y>
           <width>371</width>
           <height>51</height>
          </rect>
@@ -2216,52 +2896,506 @@ QLineEdit:read-only {
     <attribute name="title">
      <string>HIL</string>
     </attribute>
-    <widget class="QPushButton" name="TEST_pushButton">
+    <widget class="QGroupBox" name="HILModeFeatures_groupBox">
      <property name="geometry">
       <rect>
-       <x>654</x>
-       <y>184</y>
-       <width>120</width>
-       <height>120</height>
+       <x>4</x>
+       <y>12</y>
+       <width>871</width>
+       <height>411</height>
       </rect>
      </property>
      <property name="font">
       <font>
        <family>Segoe UI</family>
-       <pointsize>25</pointsize>
-       <weight>50</weight>
-       <italic>false</italic>
-       <bold>false</bold>
-       <underline>false</underline>
-       <strikeout>false</strikeout>
-       <kerning>false</kerning>
       </font>
      </property>
-     <property name="autoFillBackground">
-      <bool>false</bool>
-     </property>
      <property name="styleSheet">
-      <string notr="true">QPushButton::pressed {background-color: grey}
-QPushButton{border-radius : 60; border : 1px solid grey  ; background-color: rgb(227,34,39); color: white;}</string>
+      <string notr="true">QGroupBox {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                      stop: 0 #E0E0E0, stop: 1 #FFFFFF);
+    border: 2px solid gray;
+    border-radius: 5px;
+    margin-top: 1ex; /* leave space at the top for the title */
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top center; /* position at the top center */
+    padding: 0 3px;
+    background-color:  rgb(115,115,115);
+	 color: white;
+}</string>
      </property>
-     <property name="text">
-      <string>Test</string>
+     <property name="title">
+      <string>HIL Mode Features</string>
      </property>
-     <property name="checkable">
-      <bool>true</bool>
-     </property>
-     <property name="checked">
-      <bool>false</bool>
-     </property>
-     <property name="autoDefault">
-      <bool>false</bool>
-     </property>
-     <property name="default">
-      <bool>false</bool>
-     </property>
-     <property name="flat">
-      <bool>false</bool>
-     </property>
+     <widget class="QPushButton" name="Run_pushButton">
+      <property name="geometry">
+       <rect>
+        <x>654</x>
+        <y>350</y>
+        <width>178</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Segoe UI</family>
+        <pointsize>12</pointsize>
+        <weight>50</weight>
+        <italic>false</italic>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+    color: white;
+	background-color: #05B8CC;
+	border: 2px solid grey;
+    border-width: 2px;
+    border-radius: 10px;    
+     
+	min-width: 10em;
+    padding: 6px;
+}
+QPushButton:pressed {
+    background-color: grey;
+    border-style: inset;
+}</string>
+      </property>
+      <property name="text">
+       <string>Run</string>
+      </property>
+     </widget>
+     <widget class="QGroupBox" name="GenerateMode_groupBox">
+      <property name="geometry">
+       <rect>
+        <x>27</x>
+        <y>112</y>
+        <width>821</width>
+        <height>91</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Segoe UI</family>
+       </font>
+      </property>
+      <property name="title">
+       <string>Generate New Test Case</string>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+      <widget class="QLineEdit" name="GenerateMode_Path_lineEdit">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>42</y>
+         <width>331</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Segoe UI</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QLineEdit {
+    border: 2px solid gray;
+    border-radius: 10px;
+    padding: 0 8px;
+    background: white;
+    selection-background-color: darkgray;
+}
+</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="frame">
+        <bool>true</bool>
+       </property>
+       <property name="readOnly">
+        <bool>false</bool>
+       </property>
+       <property name="placeholderText">
+        <string>Path for the test case and the log files</string>
+       </property>
+       <property name="clearButtonEnabled">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QComboBox" name="GenerateTestCase_comboBox">
+       <property name="geometry">
+        <rect>
+         <x>370</x>
+         <y>42</y>
+         <width>211</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Segoe UI</family>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QComboBox {
+    border: 2px solid gray;
+    border-radius: 10px;
+    padding: 0 8px;
+    background: white;
+    selection-background-color: darkgray;
+}
+
+QComboBox::drop-down {
+	 border: 1px solid gray;
+	 border-radius: 8px;
+	 background-color: darkgray;
+}</string>
+       </property>
+       <item>
+        <property name="text">
+         <string>Empty (add your own content)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Blinky (blink a LED)</string>
+        </property>
+       </item>
+      </widget>
+      <widget class="QLabel" name="GeneratePath_label">
+       <property name="geometry">
+        <rect>
+         <x>27</x>
+         <y>16</y>
+         <width>24</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Segoe UI</family>
+        </font>
+       </property>
+       <property name="text">
+        <string>Path:</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="Generate_pushButton">
+       <property name="geometry">
+        <rect>
+         <x>618</x>
+         <y>32</y>
+         <width>178</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Segoe UI</family>
+         <pointsize>12</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton {
+    color: white;
+	background-color: darkgray;
+	border: 2px solid grey;
+    border-width: 2px;
+    border-radius: 10px;    
+     
+	min-width: 10em;
+    padding: 6px;
+}
+QPushButton:pressed {
+    background-color: grey;
+    border-style: inset;
+}</string>
+       </property>
+       <property name="text">
+        <string>Generate</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="LoadMode_groupBox">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>28</x>
+        <y>227</y>
+        <width>821</width>
+        <height>91</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Segoe UI</family>
+       </font>
+      </property>
+      <property name="title">
+       <string>Load Existing Test Case</string>
+      </property>
+      <property name="flat">
+       <bool>false</bool>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+      <widget class="QLineEdit" name="LoadMode_Path_lineEdit">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>43</y>
+         <width>561</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Segoe UI</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QLineEdit {
+    border: 2px solid gray;
+    border-radius: 10px;
+    padding: 0 8px;
+    background: white;
+    selection-background-color: darkgray;
+}
+</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="frame">
+        <bool>true</bool>
+       </property>
+       <property name="readOnly">
+        <bool>false</bool>
+       </property>
+       <property name="placeholderText">
+        <string>Path for the test case and the log files</string>
+       </property>
+       <property name="clearButtonEnabled">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QLabel" name="LoadPath_label">
+       <property name="geometry">
+        <rect>
+         <x>27</x>
+         <y>17</y>
+         <width>24</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Segoe UI</family>
+        </font>
+       </property>
+       <property name="text">
+        <string>Path:</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="Load_pushButton">
+       <property name="geometry">
+        <rect>
+         <x>620</x>
+         <y>33</y>
+         <width>178</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Segoe UI</family>
+         <pointsize>12</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton {
+    color: white;
+	background-color: darkgray;
+	border: 2px solid grey;
+    border-width: 2px;
+    border-radius: 10px;    
+     
+	min-width: 10em;
+    padding: 6px;
+}
+QPushButton:pressed {
+    background-color: grey;
+    border-style: inset;
+}</string>
+       </property>
+       <property name="text">
+        <string>Load</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="ModeSelect_groupBox">
+      <property name="geometry">
+       <rect>
+        <x>270</x>
+        <y>32</y>
+        <width>341</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <family>Segoe UI</family>
+       </font>
+      </property>
+      <property name="title">
+       <string>Mode Select</string>
+      </property>
+      <widget class="QLabel" name="label_21">
+       <property name="geometry">
+        <rect>
+         <x>16</x>
+         <y>24</y>
+         <width>117</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <family>Segoe UI</family>
+        </font>
+       </property>
+       <property name="text">
+        <string>Generate New Test Case</string>
+       </property>
+      </widget>
+      <widget class="QSlider" name="ModeSelect_horizontalSlider">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>155</x>
+         <y>22</y>
+         <width>31</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>31</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QSlider::groove:horizontal { 
+	background-color:rgb(215,215,215) ;
+	border: 0px solid #424242; 
+	height: 10px; 
+	border-radius: 5px;
+}
+
+QSlider::handle:horizontal { 
+	background-color: #05B8CC; 
+	border: 2px solid #05B8CC; 
+	width: 16px; 
+	height: 20px; 
+	line-height: 20px; 
+	margin-top: -5px; 
+	margin-bottom: -5px; 
+	border-radius: 10px; 
+}
+
+
+
+QSlider::handle:horizontal:hover { 
+	border-radius: 10px;
+}r</string>
+       </property>
+       <property name="maximum">
+        <number>1</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_22">
+       <property name="geometry">
+        <rect>
+         <x>206</x>
+         <y>24</y>
+         <width>112</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <family>Segoe UI</family>
+        </font>
+       </property>
+       <property name="text">
+        <string>Load Existing Test Case</string>
+       </property>
+      </widget>
+     </widget>
     </widget>
    </widget>
    <widget class="QWidget" name="Info_Tab">
@@ -2273,7 +3407,7 @@ QPushButton{border-radius : 60; border : 1px solid grey  ; background-color: rgb
   <widget class="QGroupBox" name="Conncetion_groupBox">
    <property name="geometry">
     <rect>
-     <x>81</x>
+     <x>115</x>
      <y>10</y>
      <width>681</width>
      <height>151</height>
@@ -2371,17 +3505,17 @@ QComboBox::drop-down {
      </property>
      <item>
       <property name="text">
-       <string>Server #1</string>
+       <string>Test Bench #1</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>Server #2</string>
+       <string>Test Bench #2</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>Server #3</string>
+       <string>Test Bench #3</string>
       </property>
      </item>
     </widget>
@@ -2664,34 +3798,34 @@ QPushButton:pressed {
  </resources>
  <connections>
   <connection>
-   <sender>Channel8_horizontalSlider</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>Channel8_lcdNumber</receiver>
+   <sender>Channel9_horizontalSlider</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>Channel9_lcdNumber</receiver>
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>657</x>
-     <y>449</y>
+     <x>167</x>
+     <y>538</y>
     </hint>
     <hint type="destinationlabel">
-     <x>713</x>
-     <y>445</y>
+     <x>406</x>
+     <y>550</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>Channel7_horizontalSlider</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>Channel7_lcdNumber</receiver>
+   <sender>Channel10_horizontalSlider</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>Channel10_lcdNumber</receiver>
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>679</x>
-     <y>350</y>
+     <x>756</x>
+     <y>549</y>
     </hint>
     <hint type="destinationlabel">
-     <x>713</x>
-     <y>350</y>
+     <x>800</x>
+     <y>548</y>
     </hint>
    </hints>
   </connection>
