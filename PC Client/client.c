@@ -388,7 +388,7 @@ void FRAME_GenerateDataFrame(uint8_t* DIO_Data, uint8_t* PWM_Config, uint8_t* UA
 	
 	/* Grouping for easier indexing */
 	uint32_t local_PeripheralID[NUM_OF_PERIPH] = {DIO_PERIPHERAL_ID, PWM_PERIPHERAL_ID, UART_PERIPHERAL_ID, SPI_CH1_PERIPHERAL_ID, SPI_CH2_PERIPHERAL_ID};
-	uint32_t local_PeripheralDataSize[NUM_OF_PERIPH] = {DIO_INPUT_PINS, PWM_CONFIG_SIZE, UART_CONFIG_SIZE, SPI_CH1_CONFIG_SIZE, SPI_CH2_CONFIG_SIZE};
+	uint32_t local_PeripheralDataSize[NUM_OF_PERIPH] = {DIO_OUTPUT_PINS, PWM_CONFIG_SIZE, UART_CONFIG_SIZE, SPI_CH1_CONFIG_SIZE, SPI_CH2_CONFIG_SIZE};
 	uint8_t *local_PeripheralData[NUM_OF_PERIPH] = {DIO_Data, PWM_Config, UART_Config, SPI_CH1_Config, SPI_CH2_Config};
 	
 	/* Alloctating the size of the frame to be sent */
@@ -492,9 +492,12 @@ uint32_t *FRAME_ReadingsFrame(void)
 	/* Scanning for sizes */
 	for(Iterator = 0; Iterator < NUM_RX_PERIPH; Iterator++)
 	{
+		printf("SIZE[%d]: %d\n", Iterator, ((FrameData_t *)TransitionPointer)->DataSize);
 		Rx_TotalDataSize += ((FrameData_t *)TransitionPointer)->DataSize;
 		TransitionPointer  += (PERIPH_HEADER_SIZE + ((FrameData_t *)TransitionPointer)->DataSize);
 	}
+	
+	printf("TOTAL SUM = %d\n", Rx_TotalDataSize);
 	
 	Rx_ReadingsFrame = (uint32_t *)calloc((Rx_TotalDataSize/sizeof(uint32_t)), sizeof(uint32_t));
 	
@@ -510,6 +513,11 @@ uint32_t *FRAME_ReadingsFrame(void)
 		ReadingPointer += ((FrameData_t *)TransitionPointer)->DataSize;
 	}
 	
+	printf("\n\n/*************** PRINTING IN PARSING ***************\n\n");
+	for(Iterator = 0; Iterator < 8; Iterator++)
+		printf("Reading[%d]: %d\n", Iterator, Rx_ReadingsFrame[Iterator]);
+	
+	printf("\n\n");
 	return Rx_ReadingsFrame;
 }
 
@@ -566,7 +574,7 @@ void FRAME_FreeBuffer(uint8_t Buffer)
 // {
 	// uint8_t PeripheralIndex = 0;
 	// /* Arrays holding the Readings to be passed to the GUI */
-	// uint8_t DIO_Readings[DIO_INPUT_PINS] = {0};
+	// uint8_t DIO_Readings[DIO_OUTPUT_PINS] = {0};
 	// uint8_t PWM_Readings[20] = {0};
 	//CHANGES IN PWM READINGS to 20
 	
@@ -589,7 +597,7 @@ void FRAME_FreeBuffer(uint8_t Buffer)
 	// }
 	// printf("FAR2\n");
 	
-	// for(Iterator = 0; Iterator < DIO_INPUT_PINS; Iterator++)
+	// for(Iterator = 0; Iterator < DIO_OUTPUT_PINS; Iterator++)
 	// {
 		// printf("DIO_READING[%d]: %d\n", Iterator, DIO_Readings[Iterator]);
 	// }
@@ -601,7 +609,7 @@ void FRAME_FreeBuffer(uint8_t Buffer)
 	// printf("FAR3\n");
 	/////////////////// CONVERTING TO INT /////////////////////
 	// uint8_t DIO_BitValue = 0;
-	// for(Iterator = 0; Iterator < DIO_INPUT_PINS; Iterator++)
+	// for(Iterator = 0; Iterator < DIO_OUTPUT_PINS; Iterator++)
 	// {
 		// DIO_BitValue |= (DIO_Readings[Iterator]<<Iterator);
 	// }

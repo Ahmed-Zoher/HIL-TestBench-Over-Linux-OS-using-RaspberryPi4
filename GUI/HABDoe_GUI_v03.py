@@ -593,23 +593,23 @@ class Ui_HABDoe(object):
 
         self.gridLayout_3.addWidget(self.Channel12_Frequency_label, 0, 0, 1, 1)
 
-        self.Channel7_Frequency_lcdNumber = QLCDNumber(self.Channel12_groupBox)
-        self.Channel7_Frequency_lcdNumber.setObjectName(u"Channel7_Frequency_lcdNumber")
-        sizePolicy2.setHeightForWidth(self.Channel7_Frequency_lcdNumber.sizePolicy().hasHeightForWidth())
-        self.Channel7_Frequency_lcdNumber.setSizePolicy(sizePolicy2)
-        self.Channel7_Frequency_lcdNumber.setMaximumSize(QSize(100, 16777215))
-        self.Channel7_Frequency_lcdNumber.setFont(font3)
-        self.Channel7_Frequency_lcdNumber.setStyleSheet(u"QLCDNumber {\n"
+        self.Channel12_Frequency_lcdNumber = QLCDNumber(self.Channel12_groupBox)
+        self.Channel12_Frequency_lcdNumber.setObjectName(u"Channel12_Frequency_lcdNumber")
+        sizePolicy2.setHeightForWidth(self.Channel12_Frequency_lcdNumber.sizePolicy().hasHeightForWidth())
+        self.Channel12_Frequency_lcdNumber.setSizePolicy(sizePolicy2)
+        self.Channel12_Frequency_lcdNumber.setMaximumSize(QSize(100, 16777215))
+        self.Channel12_Frequency_lcdNumber.setFont(font3)
+        self.Channel12_Frequency_lcdNumber.setStyleSheet(u"QLCDNumber {\n"
 "	border: 1px solid black;\n"
 "	border-radius: 5px;\n"
 "	background-color: white;\n"
 "	color: rgb(50, 50, 50);\n"
 "}")
-        self.Channel7_Frequency_lcdNumber.setDigitCount(8)
-        self.Channel7_Frequency_lcdNumber.setMode(QLCDNumber.Dec)
-        self.Channel7_Frequency_lcdNumber.setSegmentStyle(QLCDNumber.Flat)
+        self.Channel12_Frequency_lcdNumber.setDigitCount(8)
+        self.Channel12_Frequency_lcdNumber.setMode(QLCDNumber.Dec)
+        self.Channel12_Frequency_lcdNumber.setSegmentStyle(QLCDNumber.Flat)
 
-        self.gridLayout_3.addWidget(self.Channel7_Frequency_lcdNumber, 0, 1, 1, 1)
+        self.gridLayout_3.addWidget(self.Channel12_Frequency_lcdNumber, 0, 1, 1, 1)
 
         self.Channel12_DutyCycle_label = QLabel(self.Channel12_groupBox)
         self.Channel12_DutyCycle_label.setObjectName(u"Channel12_DutyCycle_label")
@@ -617,23 +617,23 @@ class Ui_HABDoe(object):
 
         self.gridLayout_3.addWidget(self.Channel12_DutyCycle_label, 1, 0, 1, 1)
 
-        self.Channel7_DutyCycle_lcdNumber = QLCDNumber(self.Channel12_groupBox)
-        self.Channel7_DutyCycle_lcdNumber.setObjectName(u"Channel7_DutyCycle_lcdNumber")
-        sizePolicy2.setHeightForWidth(self.Channel7_DutyCycle_lcdNumber.sizePolicy().hasHeightForWidth())
-        self.Channel7_DutyCycle_lcdNumber.setSizePolicy(sizePolicy2)
-        self.Channel7_DutyCycle_lcdNumber.setMaximumSize(QSize(100, 16777215))
-        self.Channel7_DutyCycle_lcdNumber.setFont(font3)
-        self.Channel7_DutyCycle_lcdNumber.setStyleSheet(u"QLCDNumber {\n"
+        self.Channel12_DutyCycle_lcdNumber = QLCDNumber(self.Channel12_groupBox)
+        self.Channel12_DutyCycle_lcdNumber.setObjectName(u"Channel12_DutyCycle_lcdNumber")
+        sizePolicy2.setHeightForWidth(self.Channel12_DutyCycle_lcdNumber.sizePolicy().hasHeightForWidth())
+        self.Channel12_DutyCycle_lcdNumber.setSizePolicy(sizePolicy2)
+        self.Channel12_DutyCycle_lcdNumber.setMaximumSize(QSize(100, 16777215))
+        self.Channel12_DutyCycle_lcdNumber.setFont(font3)
+        self.Channel12_DutyCycle_lcdNumber.setStyleSheet(u"QLCDNumber {\n"
 "	border: 1px solid black;\n"
 "	border-radius: 5px;\n"
 "	background-color: white;\n"
 "	color: rgb(50, 50, 50);\n"
 "}")
-        self.Channel7_DutyCycle_lcdNumber.setDigitCount(8)
-        self.Channel7_DutyCycle_lcdNumber.setMode(QLCDNumber.Dec)
-        self.Channel7_DutyCycle_lcdNumber.setSegmentStyle(QLCDNumber.Flat)
+        self.Channel12_DutyCycle_lcdNumber.setDigitCount(8)
+        self.Channel12_DutyCycle_lcdNumber.setMode(QLCDNumber.Dec)
+        self.Channel12_DutyCycle_lcdNumber.setSegmentStyle(QLCDNumber.Flat)
 
-        self.gridLayout_3.addWidget(self.Channel7_DutyCycle_lcdNumber, 1, 1, 1, 1)
+        self.gridLayout_3.addWidget(self.Channel12_DutyCycle_lcdNumber, 1, 1, 1, 1)
 
 
         self.verticalLayout.addWidget(self.Channel12_groupBox)
@@ -1796,18 +1796,25 @@ class Ui_HABDoe(object):
       
       PERIPH_ID_SIZE			= 4
       
+      DATA_FRAME				  = 0
+      SERIAL_FRAME			  = 1
+      SERIAL_RETURN_FRAME	= 2
+      READINGS_FRAME			= 3
+      
+      
       DIO_array = [int(self.Channel1_horizontalSlider.value()),
       int(self.Channel2_horizontalSlider.value()),
-      int(self.Channel3_horizontalSlider.value())]
+      int(self.Channel3_horizontalSlider.value()),
+      int(self.Channel4_horizontalSlider.value())]
       
       DIO_DATA = (c_int8 * len(DIO_array))(*DIO_array)
       
       ##PWM DATA
       PWM_mappingValue = 10000
-      PWM_array = [c_int32(self.Channel7_Frequency_spinBox.value()), 
-                    c_int32(self.Channel7_horizontalSlider.value() * PWM_mappingValue), 
-                    c_int32(self.Channel8_Frequency_spinBox.value()), 
-                    c_int32(self.Channel8_horizontalSlider.value() * PWM_mappingValue)]
+      PWM_array = [c_int32(self.Channel9_Frequency_spinBox.value()), 
+                    c_int32(self.Channel9_horizontalSlider.value() * PWM_mappingValue), 
+                    c_int32(self.Channel10_Frequency_spinBox.value()), 
+                    c_int32(self.Channel10_horizontalSlider.value() * PWM_mappingValue)]
       
       PWM_DATA = (c_int32 * len(PWM_array))(*PWM_array)
       
@@ -1850,7 +1857,8 @@ class Ui_HABDoe(object):
         print("ACK Received")
         #Sending Data Frame
         my_functions.UDP_ClientSend(MESSAGE_DATA_FRAME)
-        my_functions.FRAME_FreeData()      
+        my_functions.FRAME_FreeBuffer(DATA_FRAME)
+        
       elif (ReceiveStatus == 1): #NACK received
         print("NACK Received")
       
@@ -1866,19 +1874,40 @@ class Ui_HABDoe(object):
         #Receive Rx-Data
         my_functions.UDP_ClientReceive(MESSAGE_DATA_FRAME)
         
-        FRAME_return = my_functions.FRAME_ParsingDataFrame()
         
-        DIO_Readings = [int(d) for d in str(bin(FRAME_return))[2:]]
-        [DIO_Readings.insert(0,0) for i in range(3-len(str(bin(FRAME_return))[2:]))]
-
-        self.Channel4_lcdNumber.display(DIO_Readings[2])
-        self.Channel5_lcdNumber.display(DIO_Readings[1])
-        self.Channel6_lcdNumber.display(DIO_Readings[0])
+        ###### TO BE CHANGED >> my_functions.FRAME_ReadingsFrame()
+        my_functions.FRAME_ReadingsFrame.restype = POINTER(c_uint32)
+        FRAME_return = my_functions.FRAME_ReadingsFrame()
+        
+        #Displaying DIO Readings
+        print(FRAME_return[0])
+        print(FRAME_return[1])
+        print(FRAME_return[2])
+        print(FRAME_return[3])
+        print(FRAME_return[4])
+        print(FRAME_return[5])
+        print(FRAME_return[6])
+        print(FRAME_return[7])
+        
+        
+        self.Channel5_lcdNumber.display(FRAME_return[0])
+        self.Channel6_lcdNumber.display(FRAME_return[1])
+        self.Channel7_lcdNumber.display(FRAME_return[2])
+        self.Channel8_lcdNumber.display(FRAME_return[3])
+        
+        #Dipslaying PWM Readings
+        self.Channel11_DutyCycle_lcdNumber.display(FRAME_return[4])
+        self.Channel11_Frequency_lcdNumber.display(FRAME_return[5])
+        
+        self.Channel12_DutyCycle_lcdNumber.display(FRAME_return[6])
+        self.Channel12_Frequency_lcdNumber.display(FRAME_return[7])
+        
+        
         
         if(self.UART_horizontalSlider.value() == 1):
           ##Sending the serial frames
           #Generate UART Frame     
-          my_functions.FRAME_SerialFrameGenerate(UART_DATA, UART_config[2], SERIAL_UART)
+          my_functions.FRAME_GenerateSerialFrame(UART_DATA, UART_config[2], SERIAL_UART)
           
           #Sending UART Frame
           my_functions.UDP_ClientSend(MESSAGE_UART) 
@@ -1887,14 +1916,14 @@ class Ui_HABDoe(object):
           if(my_functions.UDP_ClientReceive(MESSAGE_SERIAL_SIZE) != MESSAGE_NACK):
             my_functions.UDP_ClientReceive(MESSAGE_UART)
             
-            my_functions.FRAME_ReturnSerial.restype = c_char_p
-            UART_ReadingArray = my_functions.FRAME_ReturnSerial()
+            my_functions.FRAME_SerialReturnFrame.restype = c_char_p
+            UART_ReadingArray = my_functions.FRAME_SerialReturnFrame()
             
             #Displaying the received frame frm PC
             tempUART_ReadingArray = str(UART_ReadingArray)
             NewUartReading = tempUART_ReadingArray[6:len(tempUART_ReadingArray)-1]
             self.UART_DataReceived_lineEdit.setText(tempUART_ReadingArray[6:len(tempUART_ReadingArray)-1])
-            my_functions.FRAME_ReturnSerialFree()
+            my_functions.FRAME_FreeBuffer(SERIAL_RETURN_FRAME)
    
           else:
             print("UART_SIZE_ERROR\n")

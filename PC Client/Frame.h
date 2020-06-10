@@ -3,7 +3,7 @@
 
 /******************** EXAMPLE ********************/
 #define DIO_PERIPHERAL_ID		0x01
-#define DIO_INPUT_PINS			3
+#define DIO_OUTPUT_PINS			4
 
 #define PWM_PERIPHERAL_ID		0x04
 #define PWM_CONFIG_SIZE			16
@@ -44,7 +44,7 @@ typedef struct
 }FrameData_t;
 
 void FRAME_GenerateDataFrame(uint8_t* DIO_Data, uint8_t* PWM_Config, uint8_t* UART_Config, uint8_t* SPI_CH1_Config, uint8_t* SPI_CH2_Config);
-void FRAME_SerialFrameGenerate(uint8_t *Serial_Data, uint32_t Serial_DataSize, uint8_t SerialIndex);
+void FRAME_GenerateSerialFrame(uint8_t *Serial_Data, uint32_t Serial_DataSize, uint8_t SerialIndex);
 uint8_t *FRAME_SerialReturnFrame(void);
 uint32_t *FRAME_ReadingsFrame(void);
 void FRAME_FreeBuffer(uint8_t Buffer);
