@@ -18,10 +18,12 @@
 #define OUT1			25
 #define OUT2			24
 #define OUT3			16
+#define OUT4			17
 
 #define INPUT1			2
 #define INPUT2			3
 #define INPUT3			5
+#define INPUT4			27
 
 #define PWM_GPIO		18
 #define PWM2_GPIO		13
@@ -73,6 +75,18 @@ static uint32_t Off_Time2 = 0;
 uint32_t DutyCycleReading2 = 0;
 uint32_t FrequencyReading2 = 0;
 
+
+///////////TO BE REMMOVED RX //////
+#define DIO_ID	0x03
+#define PWM_ID  0x04
+#define DIO_SIZE	16
+#define PWM_SIZE	16
+
+uint32_t DIO_Id = DIO_ID;
+uint32_t DIOSize= DIO_SIZE;
+uint32_t PWM_Id = PWM_ID;
+uint32_t PWMSize= PWM_SIZE;
+uint32_t zart[12] = {0};
 
 // Callback function for measuring PWM input
 void pwm1_cbfunc(int user_gpio, int level, uint32_t tick)
@@ -141,55 +155,60 @@ int main(void)
 	uint8_t FrameDataBuffer[512] = {0};
 	//FrameData_t *RxFrameData = (FrameData_t *)FrameDataBuffer;
 	
-	
 	/* Initializing the UDP connection*/
 	UDP_ServerInit(&sockfd, &servaddr, &cliaddr);
-	
 	
 	while(1)
 	{
 		if(UDP_ValidateKey(&sockfd, &servaddr, &cliaddr) == 1)
 		{
+			/* Initializing the GPIO for RPI */
+			if (gpioInitialise() < 0)
+			{
+				fprintf(stderr, "pigpio initialisation failed\n");
+				return ERROR_PIGPIO_INIT;
+			}
+			
+			/**************************** Initializations **********************************/
+			/* Setting Pin Modes */
+			gpioSetMode(OUT1, PI_OUTPUT);
+			gpioSetMode(OUT2, PI_OUTPUT);
+			gpioSetMode(OUT3, PI_OUTPUT);
+			gpioSetMode(OUT4, PI_OUTPUT);
+			
+			gpioSetMode(PWM_GPIO, PI_OUTPUT);
+			gpioSetMode(PWM2_GPIO, PI_OUTPUT);
+						
+			gpioSetMode(INPUT1, PI_INPUT);
+			gpioSetMode(INPUT2, PI_INPUT);
+			gpioSetMode(INPUT3, PI_INPUT);
+			gpioSetMode(INPUT4, PI_INPUT);
+						
+						
+			gpioSetMode(PWM_INPUT, PI_INPUT);
+			gpioSetMode(PWM2_INPUT, PI_INPUT);
+			
+			// Set up callback for PWM input 
+			gpioSetAlertFunc(PWM_INPUT, pwm1_cbfunc);
+			gpioSetAlertFunc(PWM2_INPUT, pwm2_cbfunc);
+
 			while(ClientAvailable)
 			{
-				/**************************** Initializations **********************************/
-				/* Initializing the GPIO for RPI */
-				if (gpioInitialise() < 0)
-				{
-				   fprintf(stderr, "pigpio initialisation failed\n");
-				   return ERROR_PIGPIO_INIT;
-				}
-				/* Setting Pin Modes */
-				gpioSetMode(OUT1, PI_OUTPUT);
-				gpioSetMode(OUT2, PI_OUTPUT);
-				gpioSetMode(OUT3, PI_OUTPUT);
-				
-				gpioSetMode(PWM_GPIO, PI_OUTPUT);
-				gpioSetMode(PWM2_GPIO, PI_OUTPUT);
-				
-				gpioSetMode(INPUT1, PI_INPUT);
-				gpioSetMode(INPUT2, PI_INPUT);
-				gpioSetMode(INPUT3, PI_INPUT);
-				
-				
-				gpioSetMode(PWM_INPUT, PI_INPUT);
-				gpioSetMode(PWM2_INPUT, PI_INPUT);
-				
-				
-				// Set up callback for PWM input 
-				gpioSetAlertFunc(PWM_INPUT, pwm1_cbfunc);
-				gpioSetAlertFunc(PWM2_INPUT, pwm2_cbfunc);
-				
-				
 				ProgramCounter++;
 				printf("\n***********Program Count: %d***********\n", ProgramCounter);
 				
 				/**************************** Receiving frames **********************************/
 				/* Receiving Header */
 				if(ClientAvailable)
+				{
 					UDP_ServerReceive(&sockfd, (uint8_t*)&RxFrameHeader, &cliaddr, (uint32_t *)&len, sizeof(FrameHeader_t));
+				}
 				else
+				{
+					ProgramCounter =0;
+					gpioTerminate();
 					break;
+				}
 				
 				
 				printf("RECEIVING RX HEADER\n");
@@ -209,9 +228,15 @@ int main(void)
 					printf("Total Data size(Rx_FrameHeader): %d\n", RxFrameHeader.TotalDataSize);		
 					
 					if(ClientAvailable)
+					{
 						UDP_ServerReceive(&sockfd, (uint8_t *)FrameDataBuffer, &cliaddr, (uint32_t *)&len, RxFrameHeader.TotalDataSize);
+					}
 					else
+					{
+						ProgramCounter=0;
+						gpioTerminate();
 						break;
+					}
 					
 					
 					for(index =0; index<RxFrameHeader.TotalDataSize; index++)
@@ -225,12 +250,13 @@ int main(void)
 					gpioWrite(OUT1, FrameDataBuffer[8]);
 					gpioWrite(OUT2, FrameDataBuffer[9]);
 					gpioWrite(OUT3, FrameDataBuffer[10]);
+					gpioWrite(OUT4, FrameDataBuffer[11]);
 					
-					uint32_t Frequency1 = *((uint32_t *)(FrameDataBuffer+19));
-					uint32_t DutyCycle1 = *((uint32_t *)(FrameDataBuffer+23));
+					uint32_t Frequency1 = *((uint32_t *)(FrameDataBuffer+20));
+					uint32_t DutyCycle1 = *((uint32_t *)(FrameDataBuffer+24));
 					
-					uint32_t Frequency2 = *((uint32_t *)(FrameDataBuffer+27));
-					uint32_t DutyCycle2 = *((uint32_t *)(FrameDataBuffer+31));
+					uint32_t Frequency2 = *((uint32_t *)(FrameDataBuffer+28));
+					uint32_t DutyCycle2 = *((uint32_t *)(FrameDataBuffer+32));
 					
 					printf("PWM Info read\n");
 					printf("Frequency1: %d\tDutyCycle1: %d\n", Frequency1, DutyCycle1);
@@ -242,23 +268,23 @@ int main(void)
 					/////////////////////// UART CHANNEL /////////////////////			
 					////////UART Info
 					printf("UART Info read\n");
-					UART_Info.SerialStatus = *((uint32_t *)(FrameDataBuffer+43));
-					UART_Info.SerialBaudrate = *((uint32_t *)(FrameDataBuffer+47));
-					UART_Info.SerialDataSize = *((uint32_t *)(FrameDataBuffer+51));
+					UART_Info.SerialStatus = *((uint32_t *)(FrameDataBuffer+44));
+					UART_Info.SerialBaudrate = *((uint32_t *)(FrameDataBuffer+48));
+					UART_Info.SerialDataSize = *((uint32_t *)(FrameDataBuffer+52));
 					
 					
 					/////////////////////// SPI CHANNELS /////////////////////
 					////////SPI_CH1 Info
 					printf("SPI_CH1 Info read\n");
-					SPI_CH1_Info.SerialStatus = *((uint32_t *)(FrameDataBuffer+59));
-					SPI_CH1_Info.SerialBaudrate = *((uint32_t *)(FrameDataBuffer+63));
-					SPI_CH1_Info.SerialDataSize = *((uint32_t *)(FrameDataBuffer+67));
+					SPI_CH1_Info.SerialStatus = *((uint32_t *)(FrameDataBuffer+60));
+					SPI_CH1_Info.SerialBaudrate = *((uint32_t *)(FrameDataBuffer+64));
+					SPI_CH1_Info.SerialDataSize = *((uint32_t *)(FrameDataBuffer+68));
 					
 					////////SPI_CH2 Info
 					printf("SPI_CH2 Info read\n");
-					SPI_CH2_Info.SerialStatus = *((uint32_t *)(FrameDataBuffer+75));
-					SPI_CH2_Info.SerialBaudrate = *((uint32_t *)(FrameDataBuffer+79));
-					SPI_CH2_Info.SerialBaudrate = *((uint32_t *)(FrameDataBuffer+83));
+					SPI_CH2_Info.SerialStatus = *((uint32_t *)(FrameDataBuffer+76));
+					SPI_CH2_Info.SerialBaudrate = *((uint32_t *)(FrameDataBuffer+80));
+					SPI_CH2_Info.SerialBaudrate = *((uint32_t *)(FrameDataBuffer+84));
 					
 				printf("\n\n");
 				}
@@ -278,7 +304,7 @@ int main(void)
 				{
 					.Signature 		= 	SIGNATURE,	
 					.NumOfCommands	= 	2,
-					.TotalDataSize	= 	31
+					.TotalDataSize	= 	48
 				};
 				
 				UDP_ServerSend(&sockfd, (uint8_t *)&temp_FrameHeader, &cliaddr, len, sizeof(FrameHeader_t));
@@ -290,54 +316,72 @@ int main(void)
 				}
 				
 				if(ClientAvailable)
+				{
 					UDP_ServerReceive(&sockfd, StatusBuffer, &cliaddr, (uint32_t *)&len, STATUS_SIZE);
+				
+				}
 				else
+				{
+					ProgramCounter = 0;
+					gpioTerminate();
 					break;
+				}
 				
 				if(StatusBuffer[0] == ACK)
 				{
 					printf("RECEIVED AN ACK FROM PC TO SEND RPI TX DATA\n");
 							
 					//Frame = FRAME_Generate();
-					DutyCycleReading1 = (On_Time1 / 1000000) * 100;
-					FrequencyReading1 = ((float)(1.0 / (On_Time1+Off_Time1))) * 1000000;
+					
+					printf("ON_TIME1: %d\t OFF_TIME1: %d\n", On_Time1, Off_Time1);
+					if((On_Time1 == 0) && (Off_Time1 == 0))
+					{
+						DutyCycleReading1 = 0;
+						FrequencyReading1 = 0;
+					}
+					else
+					{
+						DutyCycleReading1 = ((On_Time1 * 100) / (On_Time1+Off_Time1));
+						FrequencyReading1 = (1000000 / (On_Time1+Off_Time1)) ;
+					}
 					printf("DutyCycleReading1: %d\tFrequencyReading1: %d\n", 
 					DutyCycleReading1, FrequencyReading1);
 					
-					DutyCycleReading2 = (On_Time2 / 1000000) * 100;
-					FrequencyReading2 = ((float)(1.0 / (On_Time2+Off_Time2))) * 1000000;
+					printf("ON_TIME2: %d\t OFF_TIME2: %d\n", On_Time2, Off_Time2);
+					if((On_Time2 == 0) && (Off_Time2 == 0))
+					{
+						DutyCycleReading2 = 0;
+						FrequencyReading2 = 0;
+					}
+					else
+					{
+						DutyCycleReading2 = ((On_Time2 * 100)/ (On_Time2+Off_Time2)) ;
+						FrequencyReading2 = ((1000000 / (On_Time2+Off_Time2))) ;
+					}
 					printf("DutyCycleReading2: %d\tFrequencyReading2: %d\n", 
 					DutyCycleReading2, FrequencyReading2);
-					
-					uint8_t zart[31] = {0};
-					zart[0] = 0x15;
-					zart[1] = 0x45;
-					zart[2] = 0;
-					zart[3] = 0;
-					//Adding UART Readings
-					zart[4] = 3;
-					zart[5] = 0;
-					zart[6] = 0;
-					zart[7] = 0;
-					zart[8] = gpioRead(INPUT1);
-					zart[9] = gpioRead(INPUT2);
-					zart[10] = gpioRead(INPUT3);
-					//Adding PWM Readings
-					zart[11] = 4;
-					zart[12] = 0;
-					zart[13] = 0;
-					zart[14] = 0;
+
 								
-					memcpy(zart+15, &DutyCycleReading1, sizeof(uint32_t));
-					memcpy(zart+19, &FrequencyReading1, sizeof(uint32_t));
-					memcpy(zart+23, &DutyCycleReading2, sizeof(uint32_t));
-					memcpy(zart+27, &FrequencyReading2, sizeof(uint32_t));
+					memset(zart, 0, 12*sizeof(uint32_t));
+					zart[0] = DIO_Id;
+					zart[1] = DIOSize;
+					zart[2] = gpioRead(INPUT1);
+					zart[3] = gpioRead(INPUT2);
+					zart[4] = gpioRead(INPUT3);
+					zart[5] = gpioRead(INPUT4);
+					zart[6] = PWM_Id;
+					zart[7] = PWMSize;
+					zart[8] = DutyCycleReading1;
+					zart[9] = FrequencyReading1;
+					zart[10] = DutyCycleReading2;
+					zart[11] = FrequencyReading2;
+
 
 					UDP_ServerSend(&sockfd, (uint8_t*)zart, &cliaddr, len, temp_FrameHeader.TotalDataSize);
 					//UDP_ServerSend(&sockfd, (uint8_t*)Frame, &cliaddr, len, TxFrameHeader.TotalDataSize);
 					
 					printf("DATA FRAME SENT: \n");
-					for(uint32_t i = 0; i < temp_FrameHeader.TotalDataSize; i++)
+					for(uint32_t i = 0; i < temp_FrameHeader.TotalDataSize/4; i++)
 					{
 						printf("Tx_FrameData_Byte[%d]: %d\n", i, zart[i]);
 					}	
@@ -367,9 +411,16 @@ int main(void)
 					if(UART_Info.SerialDataSize > 0)
 					{
 						if(ClientAvailable)
+						{
 							UDP_ServerReceive(&sockfd, UART_Info.Buffer, &cliaddr, (uint32_t *)&len, UART_Info.SerialDataSize);
+						}
 						else
+						{
+							ProgramCounter = 0;
+							gpioTerminate();
 							break;
+						}
+							
 					}
 						
 					for(uint32_t i = 0; i < UART_Info.SerialDataSize ; i++)
@@ -411,11 +462,8 @@ int main(void)
 				}
 				if(UART_Info.SerialHandle > 0)
 					serClose(UART_Info.SerialHandle);
-				
-				gpioTerminate();
 			}
 		}
-		
 	}
 	
 	/*************************** Disconnecting the UDP connection *********************/
