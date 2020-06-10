@@ -19,6 +19,7 @@
 
 #define SIGNATURE				0x07775000
 #define NUM_OF_PERIPH			5
+#define NUM_RX_PERIPH			2
 #define PERIPH_HEADER_SIZE		8
 #define PERIPH_ID_SIZE			(sizeof(uint32_t))
 #define PERIPH_INFO_SIZE		(PERIPH_HEADER_SIZE * NUM_OF_PERIPH)
@@ -44,11 +45,10 @@ typedef struct
 
 void FRAME_GenerateDataFrame(uint8_t* DIO_Data, uint8_t* PWM_Config, uint8_t* UART_Config, uint8_t* SPI_CH1_Config, uint8_t* SPI_CH2_Config);
 void FRAME_SerialFrameGenerate(uint8_t *Serial_Data, uint32_t Serial_DataSize, uint8_t SerialIndex);
-uint8_t *FRAME_ReturnSerial(void);
-void FRAME_ReturnSerialFree(void);
-void FRAME_Print(void);
-uint8_t FRAME_ParsingDataFrame(void);
-void FRAME_FreeData(void);
+uint8_t *FRAME_SerialReturnFrame(void);
+uint32_t *FRAME_ReadingsFrame(void);
+void FRAME_FreeBuffer(uint8_t Buffer);
 
+void FRAME_Print(void);
 
 #endif /* FRAME_H */

@@ -16,18 +16,20 @@ typedef struct
 	uint8_t* Message;
 	uint8_t MessageSize;
 }MessageInfo_t;
-#define NUM_OF_MSGS			5
-#define IS_MSG_VALID(MSG)	((MSG == MESSAGE_ACK)				|| \
-						    (MSG == MESSAGE_NACK)   			|| \
-                            (MSG == MESSAGE_HEADER_FRAME)   	|| \
-                            (MSG == MESSAGE_DATA_FRAME)   		|| \
-                            (MSG == MESSAGE_CONNECTION_KEY))
+#define NUM_OF_MSGS				5
+#define IS_MSG_VALID(MSG)		((MSG == MESSAGE_ACK)				|| \
+								(MSG == MESSAGE_NACK)   			|| \
+								(MSG == MESSAGE_HEADER_FRAME)   	|| \
+								(MSG == MESSAGE_DATA_FRAME)   		|| \
+								(MSG == MESSAGE_CONNECTION_KEY))
 
-
+#define DATA_FRAME				0
+#define SERIAL_FRAME			1
+#define SERIAL_RETURN_FRAME		2
+#define READINGS_FRAME			3
 
 
 static void recv_print(uint32_t size);
-static void bin(unsigned n);
 
 /* CLIENT GLOBAL VARIABLES */
 
@@ -41,7 +43,15 @@ uint8_t Status = NACK;
 uint8_t recvBuf[512] = {0};
 
 /////////////////////////// FRAME GLOBALS //////////////////////////////
+
+/* Tx Data Frame */
 uint8_t *Frame = NULL;
+uint32_t FrameTotalSize = 0;
+//uint8_t TxFrameDataBuffer[512];
+
+/* Tx Serial Frame */
+uint8_t *SerialFrame = NULL;
+
 uint8_t *UART_Frame = NULL;
 uint32_t UART_FrameSize = 0;
 
@@ -54,10 +64,13 @@ uint32_t SPI_CH2_FrameSize = 0;
 uint32_t SerialSize = 0;
 uint8_t* SerialBuffer = NULL;
 
-uint8_t TxFrameDataBuffer[512];
+/* A buffer holding the Readings to be passed to the GUI */
+uint32_t *Rx_ReadingsFrame = NULL;
+
+/* Rx Data Frame */
 uint8_t RxFrameDataBuffer[512];
 
-FrameData_t *TxFrameData = (FrameData_t *)TxFrameDataBuffer;
+//FrameData_t *TxFrameData = (FrameData_t *)TxFrameDataBuffer;
 FrameData_t *RxFrameData = (FrameData_t *)RxFrameDataBuffer;
 
 FrameHeader_t TxFrameHeader = 
@@ -68,8 +81,6 @@ FrameHeader_t TxFrameHeader =
 };
 
 FrameHeader_t RxFrameHeader;
-
-uint32_t FrameTotalSize 	= 0;
 
 //>>PROBLEM IN ACK & NACK
 // MessageInfo_t MessageInfo[NUM_OF_MSGS] = {
@@ -406,16 +417,11 @@ void FRAME_GenerateDataFrame(uint8_t* DIO_Data, uint8_t* PWM_Config, uint8_t* UA
 	}
 }
 
-void FRAME_FreeData(void)
-{
-	free(Frame);
-}
-
-void FRAME_SerialFrameGenerate(uint8_t *Serial_Data, uint32_t Serial_DataSize, uint8_t SerialIndex)
+void FRAME_GenerateSerialFrame(uint8_t *Serial_Data, uint32_t Serial_DataSize, uint8_t SerialIndex)
 {
 	uint32_t local_PeripheralID = 0;
 	
-	uint8_t *SerialFrame = (uint8_t *)calloc((PERIPH_ID_SIZE + Serial_DataSize), sizeof(uint8_t));
+	SerialFrame = (uint8_t *)calloc((PERIPH_ID_SIZE + Serial_DataSize), sizeof(uint8_t));
 	memcpy((SerialFrame + PERIPH_ID_SIZE), Serial_Data, Serial_DataSize);
 	
 	switch(SerialIndex)
@@ -444,99 +450,14 @@ void FRAME_SerialFrameGenerate(uint8_t *Serial_Data, uint32_t Serial_DataSize, u
 	}
 	
 	printf("\n", Iterator);
-	for(uint32_t Iterator = 0; Iterator < Serial_DataSize; Iterator++)
+	for(Iterator = 0; Iterator < Serial_DataSize; Iterator++)
 	{
 		printf("Serial_Frame[%d]: %02X\n", Iterator, SerialFrame[Iterator]);
 	}
 }
 
-uint8_t FRAME_ParsingDataFrame(void)
+uint8_t *FRAME_SerialReturnFrame(void)
 {
-	uint8_t PeripheralIndex = 0;
-	/* Arrays holding the Readings to be passed to the GUI */
-	uint8_t DIO_Readings[DIO_INPUT_PINS] = {0};
-	uint8_t PWM_Readings[20] = {0};
-	////CHANGES IN PWM READINGS to 20
-	
-	/*Grouping for easier indexing */
-	uint8_t* Rx_Readings[NUM_OF_PERIPH] = {DIO_Readings, PWM_Readings};
-	
-	uint8_t *RxFrameData = (uint8_t *)RxFrameDataBuffer;
-	printf("FAR1\n");
-	
-	//FORCED TO GET DIO AND PWM ONLY  NUM_OF_PERIPH>>2 
-	printf("HABAL FEL GBAL: %d", PeripheralIndex);
-	for(PeripheralIndex = 0; PeripheralIndex < 2; PeripheralIndex++)
-	{
-		printf("STEP1\n");
-		memcpy(Rx_Readings[PeripheralIndex], &(((FrameData_t *)RxFrameData)->PeripheralData), ((FrameData_t *)RxFrameData)->DataSize);
-		printf("STEP2\n");
-		printf("REFAAAAAT'ssssss >>>> BYTE: %d", ((FrameData_t *)RxFrameData)->DataSize);
-		RxFrameData += (PERIPH_HEADER_SIZE + ((FrameData_t *)RxFrameData)->DataSize);
-		printf("STEP3\n");
-	}
-	printf("FAR2\n");
-	
-	for(Iterator = 0; Iterator < DIO_INPUT_PINS; Iterator++)
-	{
-		printf("DIO_READING[%d]: %d\n", Iterator, DIO_Readings[Iterator]);
-	}
-	
-	for(Iterator = 0; Iterator < PWM_CONFIG_SIZE; Iterator++)
-	{
-		printf("PWM_READING[%d]: %d\n", Iterator, PWM_Readings[Iterator]);
-	}
-	printf("FAR3\n");
-	///////////////////// CONVERTING TO INT /////////////////////
-	uint8_t DIO_BitValue = 0;
-	for(Iterator = 0; Iterator < DIO_INPUT_PINS; Iterator++)
-	{
-		DIO_BitValue |= (DIO_Readings[Iterator]<<Iterator);
-	}
-	printf("\n\nDIO_BitValue: ");
-	bin(DIO_BitValue);
-	
-	printf("\n\nDIO_RETURNNNN:%d", DIO_BitValue);
-	printf("FAR4\n");
-	return DIO_BitValue;
-}
-
-void FRAME_Print(void)
-{
-	uint16_t Iterator = 0;
-	for(Iterator = 0; Iterator < FrameTotalSize; Iterator++)
-	{
-		printf("Frame-Byte[%d]: %d\n", Iterator, Frame[Iterator]);
-	}
-}
-
-//////////////////////////////////////////////////////////////////////////
-static void recv_print(uint32_t size)
-{
-	uint32_t i = 0;
-	for(i = 0; i < size; i++)
-	{
-		printf("Byte[%d]: %d\n", i, RxFrameDataBuffer[i]);
-	}
-	printf("\n");
-}
-
-static void bin(unsigned n) 
-{ 
-    /* step 1 */
-    if (n > 1) 
-        bin(n/2); 
-  
-    /* step 2 */
-    printf("%d", n % 2); 
-}
-
-uint8_t *FRAME_ReturnSerial(void)
-{
-	
-	//uint8_t null = '\0';
-	uint32_t Iterator = 0;
-
 	SerialBuffer = (uint8_t *)calloc(SerialSize + 1, sizeof(uint8_t));
 
 	for (Iterator = 0; Iterator < SerialSize; Iterator++)
@@ -556,10 +477,139 @@ uint8_t *FRAME_ReturnSerial(void)
 	return SerialBuffer;
 }
 
-void FRAME_ReturnSerialFree(void)
+uint32_t *FRAME_ReadingsFrame(void)
 {
-	free(SerialBuffer);
+	uint32_t Rx_TotalDataSize = 0;
+	
+	/* A pointer to navigate through the Rx Buffer */
+	uint8_t *TransitionPointer = NULL;
+	
+	/* A pointer to navigate through the Readings Buffer */
+	uint8_t *ReadingPointer = NULL;
+
+	TransitionPointer = (uint8_t *)RxFrameDataBuffer;
+
+	/* Scanning for sizes */
+	for(Iterator = 0; Iterator < NUM_RX_PERIPH; Iterator++)
+	{
+		Rx_TotalDataSize += ((FrameData_t *)TransitionPointer)->DataSize;
+		TransitionPointer  += (PERIPH_HEADER_SIZE + ((FrameData_t *)TransitionPointer)->DataSize);
+	}
+	
+	Rx_ReadingsFrame = (uint32_t *)calloc((Rx_TotalDataSize/sizeof(uint32_t)), sizeof(uint32_t));
+	
+	ReadingPointer = (uint8_t *)Rx_ReadingsFrame;
+	
+	/* Returning the pointer to the initial position of the Rx buffer */
+	TransitionPointer = (uint8_t *)RxFrameDataBuffer;
+	
+	for(Iterator = 0; Iterator < NUM_RX_PERIPH; Iterator++)
+	{
+		memcpy(ReadingPointer, &(((FrameData_t *)TransitionPointer)->PeripheralData), ((FrameData_t *)TransitionPointer)->DataSize);
+		TransitionPointer += (PERIPH_HEADER_SIZE + ((FrameData_t *)TransitionPointer)->DataSize);
+		ReadingPointer += ((FrameData_t *)TransitionPointer)->DataSize;
+	}
+	
+	return Rx_ReadingsFrame;
 }
 
+void FRAME_Print(void)
+{
+	for(Iterator = 0; Iterator < FrameTotalSize; Iterator++)
+	{
+		printf("Frame-Byte[%d]: %d\n", Iterator, Frame[Iterator]);
+	}
+}
 
+//////////////////////////////////////////////////////////////////////////
+static void recv_print(uint32_t size)
+{
+	uint32_t Iterator = 0;
+	for(Iterator = 0; Iterator < size; Iterator++)
+	{
+		printf("Byte[%d]: %d\n", Iterator, RxFrameDataBuffer[Iterator]);
+	}
+	printf("\n");
+}
+
+void FRAME_FreeBuffer(uint8_t Buffer)
+{
+	switch(Buffer)
+	{
+		case DATA_FRAME				:	free(Frame);			break;
+		case SERIAL_FRAME			:	free(SerialFrame);		break;
+		case SERIAL_RETURN_FRAME	:	free(SerialBuffer);		break;
+		case READINGS_FRAME			:	free(Rx_ReadingsFrame);	break;
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// void FRAME_FreeData(void)
+// {
+	// free(Frame);
+// }
+
+// void FRAME_ReturnSerialFree(void)
+// {
+	// free(SerialBuffer);
+// }
+// void FRAME_FreeReadingsBuffer(void)
+// {
+	// free(Rx_ReadingsFrame);	
+// }
+
+////////////////////////////////////////////////////////////////////////////////
+
+
+
+// uint8_t FRAME_ParsingDataFrame(void)
+// {
+	// uint8_t PeripheralIndex = 0;
+	// /* Arrays holding the Readings to be passed to the GUI */
+	// uint8_t DIO_Readings[DIO_INPUT_PINS] = {0};
+	// uint8_t PWM_Readings[20] = {0};
+	//CHANGES IN PWM READINGS to 20
+	
+	// /*Grouping for easier indexing */
+	// uint8_t* Rx_Readings[NUM_OF_PERIPH] = {DIO_Readings, PWM_Readings};
+	
+	// uint8_t *RxFrameData = (uint8_t *)RxFrameDataBuffer;
+	// printf("FAR1\n");
+	
+	//FORCED TO GET DIO AND PWM ONLY  NUM_OF_PERIPH>>2 
+	// printf("HABAL FEL GBAL: %d", PeripheralIndex);
+	// for(PeripheralIndex = 0; PeripheralIndex < 2; PeripheralIndex++)
+	// {
+		// printf("STEP1\n");
+		// memcpy(Rx_Readings[PeripheralIndex], &(((FrameData_t *)RxFrameData)->PeripheralData), ((FrameData_t *)RxFrameData)->DataSize);
+		// printf("STEP2\n");
+		// printf("REFAAAAAT'ssssss >>>> BYTE: %d", ((FrameData_t *)RxFrameData)->DataSize);
+		// RxFrameData += (PERIPH_HEADER_SIZE + ((FrameData_t *)RxFrameData)->DataSize);
+		// printf("STEP3\n");
+	// }
+	// printf("FAR2\n");
+	
+	// for(Iterator = 0; Iterator < DIO_INPUT_PINS; Iterator++)
+	// {
+		// printf("DIO_READING[%d]: %d\n", Iterator, DIO_Readings[Iterator]);
+	// }
+	
+	// for(Iterator = 0; Iterator < PWM_CONFIG_SIZE; Iterator++)
+	// {
+		// printf("PWM_READING[%d]: %d\n", Iterator, PWM_Readings[Iterator]);
+	// }
+	// printf("FAR3\n");
+	/////////////////// CONVERTING TO INT /////////////////////
+	// uint8_t DIO_BitValue = 0;
+	// for(Iterator = 0; Iterator < DIO_INPUT_PINS; Iterator++)
+	// {
+		// DIO_BitValue |= (DIO_Readings[Iterator]<<Iterator);
+	// }
+	// printf("\n\nDIO_BitValue: ");
+	// bin(DIO_BitValue);
+	
+	// printf("\n\nDIO_RETURNNNN:%d", DIO_BitValue);
+	// printf("FAR4\n");
+	// return DIO_BitValue;
+// }
 
