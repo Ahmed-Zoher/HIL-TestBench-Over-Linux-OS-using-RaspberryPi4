@@ -25,6 +25,8 @@
 
 #define PWM_GPIO		18
 #define PWM2_GPIO		13
+#define PWM_INPUT		23
+#define PWM2_INPUT		6
 
 #define PIN_TX	14
 #define PIN_RX	15
@@ -50,6 +52,63 @@ extern uint8_t ClientAvailable;
 SerialInfo_t UART_Info;
 SerialInfo_t SPI_CH1_Info;
 SerialInfo_t SPI_CH2_Info;
+
+
+////////////PWM statics/////////
+static uint32_t rise_tick1 = 0;    // Pulse rise time tick value
+static uint32_t On_Time1 = 0;  // Last measured pulse width (us)
+
+static uint32_t falling_tick1 = 0;
+static uint32_t Off_Time1 = 0;
+
+uint32_t DutyCycleReading1 = 0;
+uint32_t FrequencyReading1 = 0;
+
+static uint32_t rise_tick2 = 0;    // Pulse rise time tick value
+static uint32_t On_Time2 = 0;  // Last measured pulse width (us)
+
+static uint32_t falling_tick2 = 0;
+static uint32_t Off_Time2 = 0;
+
+uint32_t DutyCycleReading2 = 0;
+uint32_t FrequencyReading2 = 0;
+
+
+// Callback function for measuring PWM input
+void pwm1_cbfunc(int user_gpio, int level, uint32_t tick)
+ {
+    if (level == 1) 
+	{  
+		// rising edge
+        rise_tick1 = tick;
+		Off_Time1 = tick - falling_tick1;
+    }
+    else if (level == 0) 
+	{  
+		// falling edge
+        On_Time1 = tick - rise_tick1;  // TODO: Handle 72 min wrap-around
+		falling_tick1 = tick;
+    }
+}
+
+void pwm2_cbfunc(int user_gpio, int level, uint32_t tick)
+ {
+    if (level == 1) 
+	{  
+		// rising edge
+        rise_tick2 = tick;
+		Off_Time2 = tick - falling_tick2;
+    }
+    else if (level == 0) 
+	{  
+		// falling edge
+        On_Time2 = tick - rise_tick2;  // TODO: Handle 72 min wrap-around
+		falling_tick2 = tick;
+    }
+}
+
+
+
 
 int main(void) 
 { 	
@@ -100,7 +159,7 @@ int main(void)
 				   fprintf(stderr, "pigpio initialisation failed\n");
 				   return ERROR_PIGPIO_INIT;
 				}
-				
+				/* Setting Pin Modes */
 				gpioSetMode(OUT1, PI_OUTPUT);
 				gpioSetMode(OUT2, PI_OUTPUT);
 				gpioSetMode(OUT3, PI_OUTPUT);
@@ -111,6 +170,16 @@ int main(void)
 				gpioSetMode(INPUT1, PI_INPUT);
 				gpioSetMode(INPUT2, PI_INPUT);
 				gpioSetMode(INPUT3, PI_INPUT);
+				
+				
+				gpioSetMode(PWM_INPUT, PI_INPUT);
+				gpioSetMode(PWM2_INPUT, PI_INPUT);
+				
+				
+				// Set up callback for PWM input 
+				gpioSetAlertFunc(PWM_INPUT, pwm1_cbfunc);
+				gpioSetAlertFunc(PWM2_INPUT, pwm2_cbfunc);
+				
 				
 				ProgramCounter++;
 				printf("\n***********Program Count: %d***********\n", ProgramCounter);
@@ -208,8 +277,8 @@ int main(void)
 				FrameHeader_t temp_FrameHeader = 
 				{
 					.Signature 		= 	SIGNATURE,	
-					.NumOfCommands	= 	1,
-					.TotalDataSize	= 	11
+					.NumOfCommands	= 	2,
+					.TotalDataSize	= 	31
 				};
 				
 				UDP_ServerSend(&sockfd, (uint8_t *)&temp_FrameHeader, &cliaddr, len, sizeof(FrameHeader_t));
@@ -230,12 +299,22 @@ int main(void)
 					printf("RECEIVED AN ACK FROM PC TO SEND RPI TX DATA\n");
 							
 					//Frame = FRAME_Generate();
-
-					uint8_t zart[11] = {0};
+					DutyCycleReading1 = (On_Time1 / 1000000) * 100;
+					FrequencyReading1 = ((float)(1.0 / (On_Time1+Off_Time1))) * 1000000;
+					printf("DutyCycleReading1: %d\tFrequencyReading1: %d\n", 
+					DutyCycleReading1, FrequencyReading1);
+					
+					DutyCycleReading2 = (On_Time2 / 1000000) * 100;
+					FrequencyReading2 = ((float)(1.0 / (On_Time2+Off_Time2))) * 1000000;
+					printf("DutyCycleReading2: %d\tFrequencyReading2: %d\n", 
+					DutyCycleReading2, FrequencyReading2);
+					
+					uint8_t zart[31] = {0};
 					zart[0] = 0x15;
 					zart[1] = 0x45;
 					zart[2] = 0;
 					zart[3] = 0;
+					//Adding UART Readings
 					zart[4] = 3;
 					zart[5] = 0;
 					zart[6] = 0;
@@ -243,8 +322,17 @@ int main(void)
 					zart[8] = gpioRead(INPUT1);
 					zart[9] = gpioRead(INPUT2);
 					zart[10] = gpioRead(INPUT3);
-					
-					
+					//Adding PWM Readings
+					zart[11] = 4;
+					zart[12] = 0;
+					zart[13] = 0;
+					zart[14] = 0;
+								
+					memcpy(zart+15, &DutyCycleReading1, sizeof(uint32_t));
+					memcpy(zart+19, &FrequencyReading1, sizeof(uint32_t));
+					memcpy(zart+23, &DutyCycleReading2, sizeof(uint32_t));
+					memcpy(zart+27, &FrequencyReading2, sizeof(uint32_t));
+
 					UDP_ServerSend(&sockfd, (uint8_t*)zart, &cliaddr, len, temp_FrameHeader.TotalDataSize);
 					//UDP_ServerSend(&sockfd, (uint8_t*)Frame, &cliaddr, len, TxFrameHeader.TotalDataSize);
 					

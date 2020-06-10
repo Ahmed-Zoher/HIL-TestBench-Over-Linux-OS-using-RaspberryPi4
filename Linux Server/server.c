@@ -8,7 +8,7 @@
 #define  TIMEOUT_ERROR		11
 
 uint8_t ClientAvailable = 0;
-uint32_t timeout = 10;
+uint32_t timeout = 30;
 
 /********** LINUX SERVER INTERFACES ***********/
 
