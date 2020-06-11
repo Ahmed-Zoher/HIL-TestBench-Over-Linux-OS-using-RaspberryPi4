@@ -245,11 +245,10 @@ uint8_t UDP_ClientReceive(uint8_t MessageType)
 		memset(RxFrameDataBuffer, 0, STATUS_SIZE);
 		if (recvfrom(ClientSocket, (uint8_t *)RxFrameDataBuffer, STATUS_SIZE, 0, (struct sockaddr *)&servaddr, &slen) == SOCKET_ERROR)
 		{
-			printf("HERE1\n");
 			printf("recvfrom() failed with error code : %d" , WSAGetLastError());
 			exit(EXIT_FAILURE);
 		}		
-		printf("ACKNOWLEDGMENT_STATUS: %d\n", RxFrameDataBuffer[0]);
+		// printf("ACKNOWLEDGMENT_STATUS: %d\n", RxFrameDataBuffer[0]);
 		if(RxFrameDataBuffer[0] == ACK)
 		{
 			returnType = MESSAGE_ACK;	
@@ -264,7 +263,6 @@ uint8_t UDP_ClientReceive(uint8_t MessageType)
 			memset(&RxFrameHeader, 0, sizeof(FrameHeader_t));
 			if (recvfrom(ClientSocket, (uint8_t*)&RxFrameHeader, sizeof(FrameHeader_t), 0, (struct sockaddr *)&servaddr, &slen) == SOCKET_ERROR)
 			{
-				printf("HERE2\n");
 				printf("recvfrom() failed with error code : %d" , WSAGetLastError());
 				exit(EXIT_FAILURE);
 			}			
@@ -276,26 +274,25 @@ uint8_t UDP_ClientReceive(uint8_t MessageType)
 			{
 				returnType = HEADER_INVALID;
 			}
-			for(Iterator = 0; Iterator < sizeof(FrameHeader_t); Iterator++)
-			{
-				printf("RX_HEADER_FRAME_BYTE[%d]: %d\n", Iterator, ((uint8_t*)&RxFrameHeader)[Iterator]);
-			}
-			printf("\n");
+			// for(Iterator = 0; Iterator < sizeof(FrameHeader_t); Iterator++)
+			// {
+				// printf("RX_HEADER_FRAME_BYTE[%d]: %d\n", Iterator, ((uint8_t*)&RxFrameHeader)[Iterator]);
+			// }
+			// printf("\n");
 			break;
 			
 		case MESSAGE_DATA_FRAME:
 			memset(RxFrameDataBuffer, 0, RxFrameHeader.TotalDataSize);
 			if (recvfrom(ClientSocket, RxFrameDataBuffer, RxFrameHeader.TotalDataSize, 0, (struct sockaddr *)&servaddr, &slen) == SOCKET_ERROR)
 			{
-				printf("HERE3\n");
 				printf("recvfrom() failed with error code : %d" , WSAGetLastError());
 				exit(EXIT_FAILURE);
 			}
-			for(Iterator = 0; Iterator < RxFrameHeader.TotalDataSize; Iterator++)
-			{
-				printf("RX_DATA_FRAME_BYTE[%d]: %d\n", Iterator, RxFrameDataBuffer[Iterator]);
-			}
-			printf("\n");
+			// for(Iterator = 0; Iterator < RxFrameHeader.TotalDataSize; Iterator++)
+			// {
+				// printf("RX_DATA_FRAME_BYTE[%d]: %d\n", Iterator, RxFrameDataBuffer[Iterator]);
+			// }
+			// printf("\n");
 			returnType = MESSAGE_DATA_FRAME;
 			break;
 	
@@ -303,7 +300,6 @@ uint8_t UDP_ClientReceive(uint8_t MessageType)
 		case MESSAGE_SERIAL_SIZE:
 			if (recvfrom(ClientSocket, (uint8_t *)&SerialSize, sizeof(uint32_t), 0, (struct sockaddr *)&servaddr, &slen) == SOCKET_ERROR)
 			{
-				printf("HERE4\n");
 				printf("recvfrom() failed with error code : %d" , WSAGetLastError());
 				exit(EXIT_FAILURE);
 			}
@@ -324,7 +320,6 @@ uint8_t UDP_ClientReceive(uint8_t MessageType)
 				memset(RxFrameDataBuffer, 0, SerialSize);
 				if (recvfrom(ClientSocket, RxFrameDataBuffer, SerialSize, 0, (struct sockaddr *)&servaddr, &slen) == SOCKET_ERROR)
 				{
-					printf("HERE5\n");
 					printf("recvfrom() failed with error code : %d" , WSAGetLastError());
 					exit(EXIT_FAILURE);
 				}
@@ -342,7 +337,6 @@ uint8_t UDP_ClientReceive(uint8_t MessageType)
 				memset(RxFrameDataBuffer, 0, SerialSize);
 				if (recvfrom(ClientSocket, RxFrameDataBuffer, SerialSize, 0, (struct sockaddr *)&servaddr, &slen) == SOCKET_ERROR)
 				{
-					printf("HERE6\n");
 					printf("recvfrom() failed with error code : %d" , WSAGetLastError());
 					exit(EXIT_FAILURE);
 				}	
@@ -357,7 +351,6 @@ uint8_t UDP_ClientReceive(uint8_t MessageType)
 				memset(RxFrameDataBuffer, 0, SerialSize);
 				if (recvfrom(ClientSocket, RxFrameDataBuffer, SerialSize, 0, (struct sockaddr *)&servaddr, &slen) == SOCKET_ERROR)
 				{
-					printf("HERE7\n");
 					printf("recvfrom() failed with error code : %d" , WSAGetLastError());
 					exit(EXIT_FAILURE);
 				}	
@@ -492,12 +485,12 @@ uint32_t *FRAME_ReadingsFrame(void)
 	/* Scanning for sizes */
 	for(Iterator = 0; Iterator < NUM_RX_PERIPH; Iterator++)
 	{
-		printf("SIZE[%d]: %d\n", Iterator, ((FrameData_t *)TransitionPointer)->DataSize);
+		// printf("SIZE[%d]: %d\n", Iterator, ((FrameData_t *)TransitionPointer)->DataSize);
 		Rx_TotalDataSize += ((FrameData_t *)TransitionPointer)->DataSize;
 		TransitionPointer  += (PERIPH_HEADER_SIZE + ((FrameData_t *)TransitionPointer)->DataSize);
 	}
 	
-	printf("TOTAL SUM = %d\n", Rx_TotalDataSize);
+	// printf("TOTAL SUM = %d\n", Rx_TotalDataSize);
 	
 	Rx_ReadingsFrame = (uint32_t *)calloc((Rx_TotalDataSize/sizeof(uint32_t)), sizeof(uint32_t));
 	
@@ -513,11 +506,11 @@ uint32_t *FRAME_ReadingsFrame(void)
 		ReadingPointer += ((FrameData_t *)TransitionPointer)->DataSize;
 	}
 	
-	printf("\n\n/*************** PRINTING IN PARSING ***************\n\n");
-	for(Iterator = 0; Iterator < 8; Iterator++)
-		printf("Reading[%d]: %d\n", Iterator, Rx_ReadingsFrame[Iterator]);
+	// printf("\n\n/*************** PRINTING IN PARSING ***************\n\n");
+	// for(Iterator = 0; Iterator < 8; Iterator++)
+		// printf("Reading[%d]: %d\n", Iterator, Rx_ReadingsFrame[Iterator]);
 	
-	printf("\n\n");
+	// printf("\n\n");
 	return Rx_ReadingsFrame;
 }
 

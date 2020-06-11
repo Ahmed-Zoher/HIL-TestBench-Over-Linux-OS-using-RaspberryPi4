@@ -1772,6 +1772,9 @@ class Ui_HABDoe(object):
     global ProgramStatus
     global path 
     global runFlag
+    runFlag = 1
+    
+    path = "."
     my_functions = CDLL(so_file)
     status = 0
     
@@ -1857,16 +1860,18 @@ class Ui_HABDoe(object):
       
       #Sending Data to generate the client frame
       my_functions.FRAME_GenerateDataFrame(DIO_DATA, PWM_DATA, UART_CONFIG, SPI_CH1_CONFIG, SPI_CH2_CONFIG)
-      my_functions.FRAME_Print()
+      #my_functions.FRAME_Print()
       
       ##RECIVING DATA FROM PC
       #Sending Tx-Header
+      Time1 = time.time()
+      print("TIME BEFORE HEADER: " + str(int(Time1 * 1000000)))
       my_functions.UDP_ClientSend(MESSAGE_HEADER_FRAME)
       #Receiving ACK on Tx Header
       ReceiveStatus = my_functions.UDP_ClientReceive(MESSAGE_ACK)  
       #Tx State
       if(ReceiveStatus == 0): #ACK received
-        print("ACK Received")
+        #print("ACK Received")
         #Sending Data Frame
         my_functions.UDP_ClientSend(MESSAGE_DATA_FRAME)
         my_functions.FRAME_FreeBuffer(DATA_FRAME)
@@ -1880,7 +1885,7 @@ class Ui_HABDoe(object):
       ReceiveStatus = my_functions.UDP_ClientReceive(MESSAGE_HEADER_FRAME)
       
       if(ReceiveStatus == 0): #Header Valid
-        print("HEADER FRAME VALID")
+        #print("HEADER FRAME VALID")
         #Sending ACK on FrameHeader
         my_functions.UDP_ClientSend(MESSAGE_ACK)
         #Receive Rx-Data
@@ -1891,15 +1896,19 @@ class Ui_HABDoe(object):
         my_functions.FRAME_ReadingsFrame.restype = POINTER(c_uint32)
         FRAME_return = my_functions.FRAME_ReadingsFrame()
         
+        Time2 = time.time()
+        print("TIME AFTER READINGS: " + str(int(Time2 * 1000000)))
+            
+        print("TIME DIFFERENCE: " + str(int((Time2-Time1) * 1000000)))
         #Displaying DIO Readings
-        print(FRAME_return[0])
-        print(FRAME_return[1])
-        print(FRAME_return[2])
-        print(FRAME_return[3])
-        print(FRAME_return[4])
-        print(FRAME_return[5])
-        print(FRAME_return[6])
-        print(FRAME_return[7])
+        # print(FRAME_return[0])
+        # print(FRAME_return[1])
+        # print(FRAME_return[2])
+        # print(FRAME_return[3])
+        # print(FRAME_return[4])
+        # print(FRAME_return[5])
+        # print(FRAME_return[6])
+        # print(FRAME_return[7])
         
         
         self.Channel5_lcdNumber.display(FRAME_return[0])
@@ -2083,13 +2092,14 @@ class Ui_HABDoe(object):
         self.GenerateMode_Path_lineEdit.setText("Invalid Path !")
       else:  
         runFlag = 1
-        path = self.GenerateMode_Path_lineEdit.displayText()
+        print("Path: " + self.GenerateMode_Path_lineEdit.displayText())
+        path = str(self.GenerateMode_Path_lineEdit.displayText())
         # Empty test case
         if (self.GenerateTestCase_comboBox.currentIndex() == 0):
-          os.system("GenerateTestScript.py 1 "+str(path))
+          os.system('GenerateTestScript.py 1 "'+str(path) +'"')
         # blinky
         else:
-          os.system("GenerateTestScript.py 2 "+str(path))
+          os.system('GenerateTestScript.py 2 "'+str(path) +'"')
     # GenerateTestCase_Func     
     
     
@@ -2105,7 +2115,7 @@ class Ui_HABDoe(object):
       else: 
         runFlag = 2   
         # load test case and save the path
-        path = self.LoadMode_Path_lineEdit.displayText()
+        path = str(self.LoadMode_Path_lineEdit.displayText())
     # LoadTestCase_Func     
     
     
@@ -2117,9 +2127,9 @@ class Ui_HABDoe(object):
       global runFlag
       # 
       if (runFlag == 1): 
-        os.system(path + "\TestCase.py")
+        os.system('"'+str(path) + "\TestCase.py"+'"')
       elif(runFlag == 2):
-        os.system(path)
+        os.system('"'+str(path)+'"')
     # setupUi
 
     def retranslateUi(self, HABDoe):
