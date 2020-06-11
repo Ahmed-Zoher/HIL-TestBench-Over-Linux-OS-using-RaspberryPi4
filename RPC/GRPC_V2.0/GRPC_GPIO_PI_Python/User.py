@@ -11,6 +11,11 @@ from GPIO_macros import *
 # 18 PWM1
 # 13 PWM2
 
+#define PWM_GPIO		18
+#define PWM2_GPIO		13
+#define PWM_INPUT		23
+#define PWM2_INPUT		6
+
 def Test_main ():
     
     ## Write Test cases starting from here ##
@@ -48,21 +53,43 @@ def Test_main ():
     value = TestBench.GPIO_Read(5)
     print ("Pin 5 reading : " + str(value) )
 
+    #PI PWM Output
     TestBench.GPIO_SetMode(18, ALT5)
     TestBench.PWM_Configure(18, 1, 500000)
     
+    TestBench.GPIO_SetMode(13, ALT5)
+    TestBench.PWM_Configure(13, 5000,300000)
+    
+    
+    #PI PWM Input
+    TestBench.PWM_InputInit(23)
+    TestBench.PWM_InputInit(6)
+    while(1):
+      time.sleep(0.5)
+      Dutycycle1 = TestBench.PWM_GetDutyCycle(23)
+      Frequency1 = TestBench.PWM_GetFrequency(23)
+      
+      Dutycycle2 = TestBench.PWM_GetDutyCycle(6)
+      Frequency2 = TestBench.PWM_GetFrequency(6)
+      
+      print("PWM_INPUT_DC1: " + str(Dutycycle1))
+      print("PWM_INPUT_F1: \n" + str(Frequency1))
+      
+      print("PWM_INPUT_DC2: " + str(Dutycycle2))
+      print("PWM_INPUT_F2: \n" + str(Frequency2))
+      
+    
+    
     ##TESTING SERIAL   
-    SerialHandle = TestBench.Serial_Open(HIGH_PERFORMANCE_SERIAL, BAUD_RATE, SERIAL_FLAGS)
-    
-    Message = b'MY NAME IS LORD VOLDMORT'
-    
-    TestBench.Serial_Write(SerialHandle, Message)
+    # SerialHandle = TestBench.Serial_Open(HIGH_PERFORMANCE_SERIAL, BAUD_RATE, SERIAL_FLAGS)
+    # Message = b'MY NAME IS LORD VOLDMORT'
+    # TestBench.Serial_Write(SerialHandle, Message)
     
 if __name__ == '__main__':
     global TestBench
     TestBench = GPIO_write_client.TestBench()
     Test_main()
-    TestBench.PIGPIO_Stop()
+    #TestBench.PIGPIO_Stop()
     
     
     

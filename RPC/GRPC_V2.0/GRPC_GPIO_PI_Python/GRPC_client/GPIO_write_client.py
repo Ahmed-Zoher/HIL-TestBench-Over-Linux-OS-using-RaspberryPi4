@@ -62,6 +62,28 @@ class TestBench(object):
         #make the call
         PWM_status = stub.hardware_PWM(PWM_Params)
         return PWM_status.PWM_return
+        
+    def PWM_InputInit (self,PWM_InputPin):
+        #create a valid request message
+        PWM_Pin = GPIO_write_pb2.PWM_Pin(pwm_pin = PWM_InputPin)
+        #create an empty message
+        EmptyResp = GPIO_write_pb2.Empty()
+        #make the call
+        EmptyResp = stub.PWM_InputInit(PWM_Pin)
+        
+    def PWM_GetDutyCycle (self,PWM_InputPin):
+        #create a valid request message
+        PWM_Pin = GPIO_write_pb2.PWM_Pin(pwm_pin = PWM_InputPin)
+        #make the call
+        Reading = stub.PWM_GetDutyCycle(PWM_Pin)
+        return Reading.reading
+        
+    def PWM_GetFrequency (self,PWM_InputPin):
+        #create a valid request message
+        PWM_Pin = GPIO_write_pb2.PWM_Pin(pwm_pin = PWM_InputPin)
+        #make the call
+        Reading = stub.PWM_GetFrequency(PWM_Pin)
+        return Reading.reading
     
     ## Serial functions ##
     def Serial_Open (self,TTY_Name, BaudRate ,SerialFlags):

@@ -24,9 +24,9 @@ def GenerateFile (option, path):
         f.write ("\tTestBench.GPIO_SetMode(25, OUTPUT) \n")
         f.write ("\twhile 1 :\n")
         f.write ("\t\tTestBench.GPIO_Write(25, HIGH) \n")
-        f.write ("\t\tTime.sleep(1)\n")
+        f.write ("\t\ttime.sleep(1)\n")
         f.write ("\t\tTestBench.GPIO_Write(25, LOW) \n")
-        f.write ("\t\tTime.sleep(1)\n")
+        f.write ("\t\ttime.sleep(1)\n")
         f.write ("\n\n\n\n")
         
     

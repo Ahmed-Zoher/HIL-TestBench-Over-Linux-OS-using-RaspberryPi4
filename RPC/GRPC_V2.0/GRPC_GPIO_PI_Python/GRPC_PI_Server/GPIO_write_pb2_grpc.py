@@ -38,6 +38,21 @@ class PI_GPIOStub(object):
                 request_serializer=GPIO__write__pb2.PWM_params.SerializeToString,
                 response_deserializer=GPIO__write__pb2.PWM_Status.FromString,
                 )
+        self.PWM_InputInit = channel.unary_unary(
+                '/PI_GPIO/PWM_InputInit',
+                request_serializer=GPIO__write__pb2.PWM_Pin.SerializeToString,
+                response_deserializer=GPIO__write__pb2.Empty.FromString,
+                )
+        self.PWM_GetDutyCycle = channel.unary_unary(
+                '/PI_GPIO/PWM_GetDutyCycle',
+                request_serializer=GPIO__write__pb2.PWM_Pin.SerializeToString,
+                response_deserializer=GPIO__write__pb2.Reading.FromString,
+                )
+        self.PWM_GetFrequency = channel.unary_unary(
+                '/PI_GPIO/PWM_GetFrequency',
+                request_serializer=GPIO__write__pb2.PWM_Pin.SerializeToString,
+                response_deserializer=GPIO__write__pb2.Reading.FromString,
+                )
         self.serial_open = channel.unary_unary(
                 '/PI_GPIO/serial_open',
                 request_serializer=GPIO__write__pb2.SerialOpenParams.SerializeToString,
@@ -106,6 +121,24 @@ class PI_GPIOServicer(object):
     def hardware_PWM(self, request, context):
         """************************* PWM RPCs ***************************
         """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def PWM_InputInit(self, request, context):
+        """Missing associated documentation comment in .proto file"""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def PWM_GetDutyCycle(self, request, context):
+        """Missing associated documentation comment in .proto file"""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def PWM_GetFrequency(self, request, context):
+        """Missing associated documentation comment in .proto file"""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -180,6 +213,21 @@ def add_PI_GPIOServicer_to_server(servicer, server):
                     servicer.hardware_PWM,
                     request_deserializer=GPIO__write__pb2.PWM_params.FromString,
                     response_serializer=GPIO__write__pb2.PWM_Status.SerializeToString,
+            ),
+            'PWM_InputInit': grpc.unary_unary_rpc_method_handler(
+                    servicer.PWM_InputInit,
+                    request_deserializer=GPIO__write__pb2.PWM_Pin.FromString,
+                    response_serializer=GPIO__write__pb2.Empty.SerializeToString,
+            ),
+            'PWM_GetDutyCycle': grpc.unary_unary_rpc_method_handler(
+                    servicer.PWM_GetDutyCycle,
+                    request_deserializer=GPIO__write__pb2.PWM_Pin.FromString,
+                    response_serializer=GPIO__write__pb2.Reading.SerializeToString,
+            ),
+            'PWM_GetFrequency': grpc.unary_unary_rpc_method_handler(
+                    servicer.PWM_GetFrequency,
+                    request_deserializer=GPIO__write__pb2.PWM_Pin.FromString,
+                    response_serializer=GPIO__write__pb2.Reading.SerializeToString,
             ),
             'serial_open': grpc.unary_unary_rpc_method_handler(
                     servicer.serial_open,
@@ -303,6 +351,54 @@ class PI_GPIO(object):
         return grpc.experimental.unary_unary(request, target, '/PI_GPIO/hardware_PWM',
             GPIO__write__pb2.PWM_params.SerializeToString,
             GPIO__write__pb2.PWM_Status.FromString,
+            options, channel_credentials,
+            call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def PWM_InputInit(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/PI_GPIO/PWM_InputInit',
+            GPIO__write__pb2.PWM_Pin.SerializeToString,
+            GPIO__write__pb2.Empty.FromString,
+            options, channel_credentials,
+            call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def PWM_GetDutyCycle(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/PI_GPIO/PWM_GetDutyCycle',
+            GPIO__write__pb2.PWM_Pin.SerializeToString,
+            GPIO__write__pb2.Reading.FromString,
+            options, channel_credentials,
+            call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def PWM_GetFrequency(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/PI_GPIO/PWM_GetFrequency',
+            GPIO__write__pb2.PWM_Pin.SerializeToString,
+            GPIO__write__pb2.Reading.FromString,
             options, channel_credentials,
             call_credentials, compression, wait_for_ready, timeout, metadata)
 

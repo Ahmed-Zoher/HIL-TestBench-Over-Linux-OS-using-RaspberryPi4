@@ -2,6 +2,7 @@
 from concurrent import futures
 import grpc
 import pigpio
+import PWM_Input
 
 #contatin the request and response classes
 import GPIO_write_pb2
@@ -39,6 +40,22 @@ class PI_GPIOServicer(GPIO_write_pb2_grpc.PI_GPIOServicer):
         response = GPIO_write_pb2.PWM_Status()
         response.PWM_return = pi1.hardware_PWM( request.gpio_pin , request.PWMfreq ,request.PWMduty )
         return response
+        
+    def PWM_InputInit (self, request, context):
+        response = GPIO_write_pb2.Empty()
+        PWM_Input.CalculatePWM_Init(request.pwm_pin)
+        return response
+
+    def PWM_GetDutyCycle (self, request, context):
+        response = GPIO_write_pb2.Reading()
+        response.reading = PWM_Input.GetDutyCycle(request.pwm_pin)
+        return response
+
+    def PWM_GetFrequency (self, request, context):
+        response = GPIO_write_pb2.Reading()
+        response.reading = PWM_Input.GetFrequency(request.pwm_pin)
+        return response
+
     
     ## Serial functions ##
     def serial_open (self, request, context):

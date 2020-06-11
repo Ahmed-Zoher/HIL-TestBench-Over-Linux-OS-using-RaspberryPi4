@@ -18,7 +18,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=b'\n\x10GPIO_write.proto\"6\n\x0fModeInputParams\x12\x10\n\x08gpio_pin\x18\x01 \x01(\r\x12\x11\n\tgpio_mode\x18\x02 \x01(\r\"6\n\x0eSetInputParams\x12\x10\n\x08gpio_pin\x18\x01 \x01(\r\x12\x12\n\ngpio_level\x18\x02 \x01(\r\"\x1d\n\tPinNumber\x12\x10\n\x08gpio_pin\x18\x01 \x01(\r\"$\n\nGPIO_Level\x12\x16\n\x0egpio_pin_level\x18\x01 \x01(\r\".\n\x08GPIO_PUD\x12\x10\n\x08gpio_pin\x18\x01 \x01(\r\x12\x10\n\x08gpio_pud\x18\x02 \x01(\r\"@\n\nPWM_params\x12\x10\n\x08gpio_pin\x18\x01 \x01(\r\x12\x0f\n\x07PWMfreq\x18\x02 \x01(\r\x12\x0f\n\x07PWMduty\x18\x03 \x01(\r\" \n\nPWM_Status\x12\x12\n\nPWM_return\x18\x01 \x01(\x05\"\x07\n\x05\x45mpty\"@\n\x10SerialOpenParams\x12\x0b\n\x03tty\x18\x01 \x01(\t\x12\x0c\n\x04\x62\x61ud\x18\x02 \x01(\x05\x12\x11\n\tser_flags\x18\x03 \x01(\x05\"+\n\x13SerialHandleMessage\x12\x14\n\x0cSerialHandle\x18\x01 \x01(\x05\"\x1e\n\nSerialByte\x12\x10\n\x08ReadByte\x18\x01 \x01(\x05\"9\n\x15SerialWriteByteParams\x12\x0e\n\x06handle\x18\x01 \x01(\x05\x12\x10\n\x08\x62yte_val\x18\x02 \x01(\x05\"1\n\x11SerialWriteParams\x12\x0e\n\x06handle\x18\x01 \x01(\x05\x12\x0c\n\x04\x64\x61ta\x18\x02 \x01(\x0c\"#\n\rNumberofBytes\x12\x12\n\nNumofBytes\x18\x01 \x01(\x05\x32\xb0\x04\n\x07PI_GPIO\x12&\n\x08set_mode\x12\x10.ModeInputParams\x1a\x06.Empty\"\x00\x12\"\n\x05write\x12\x0f.SetInputParams\x1a\x06.Empty\"\x00\x12!\n\x04read\x12\n.PinNumber\x1a\x0b.GPIO_Level\"\x00\x12\'\n\x10set_pull_up_down\x12\t.GPIO_PUD\x1a\x06.Empty\"\x00\x12*\n\x0chardware_PWM\x12\x0b.PWM_params\x1a\x0b.PWM_Status\"\x00\x12\x38\n\x0bserial_open\x12\x11.SerialOpenParams\x1a\x14.SerialHandleMessage\"\x00\x12.\n\x0cserial_close\x12\x14.SerialHandleMessage\x1a\x06.Empty\"\x00\x12\x37\n\x10serial_read_byte\x12\x14.SerialHandleMessage\x1a\x0b.SerialByte\"\x00\x12\x35\n\x11serial_write_byte\x12\x16.SerialWriteByteParams\x1a\x06.Empty\"\x00\x12,\n\x0cserial_write\x12\x12.SerialWriteParams\x1a\x06.Empty\"\x00\x12?\n\x15serial_data_available\x12\x14.SerialHandleMessage\x1a\x0e.NumberofBytes\"\x00\x12\x18\n\x04stop\x12\x06.Empty\x1a\x06.Empty\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\x10GPIO_write.proto\"6\n\x0fModeInputParams\x12\x10\n\x08gpio_pin\x18\x01 \x01(\r\x12\x11\n\tgpio_mode\x18\x02 \x01(\r\"6\n\x0eSetInputParams\x12\x10\n\x08gpio_pin\x18\x01 \x01(\r\x12\x12\n\ngpio_level\x18\x02 \x01(\r\"\x1d\n\tPinNumber\x12\x10\n\x08gpio_pin\x18\x01 \x01(\r\"$\n\nGPIO_Level\x12\x16\n\x0egpio_pin_level\x18\x01 \x01(\r\".\n\x08GPIO_PUD\x12\x10\n\x08gpio_pin\x18\x01 \x01(\r\x12\x10\n\x08gpio_pud\x18\x02 \x01(\r\"@\n\nPWM_params\x12\x10\n\x08gpio_pin\x18\x01 \x01(\r\x12\x0f\n\x07PWMfreq\x18\x02 \x01(\r\x12\x0f\n\x07PWMduty\x18\x03 \x01(\r\" \n\nPWM_Status\x12\x12\n\nPWM_return\x18\x01 \x01(\x05\"\x07\n\x05\x45mpty\"@\n\x10SerialOpenParams\x12\x0b\n\x03tty\x18\x01 \x01(\t\x12\x0c\n\x04\x62\x61ud\x18\x02 \x01(\x05\x12\x11\n\tser_flags\x18\x03 \x01(\x05\"+\n\x13SerialHandleMessage\x12\x14\n\x0cSerialHandle\x18\x01 \x01(\x05\"\x1e\n\nSerialByte\x12\x10\n\x08ReadByte\x18\x01 \x01(\x05\"9\n\x15SerialWriteByteParams\x12\x0e\n\x06handle\x18\x01 \x01(\x05\x12\x10\n\x08\x62yte_val\x18\x02 \x01(\x05\"1\n\x11SerialWriteParams\x12\x0e\n\x06handle\x18\x01 \x01(\x05\x12\x0c\n\x04\x64\x61ta\x18\x02 \x01(\x0c\"#\n\rNumberofBytes\x12\x12\n\nNumofBytes\x18\x01 \x01(\x05\"\x1a\n\x07PWM_Pin\x12\x0f\n\x07pwm_pin\x18\x01 \x01(\r\"\x1a\n\x07Reading\x12\x0f\n\x07reading\x18\x01 \x01(\r2\xa9\x05\n\x07PI_GPIO\x12&\n\x08set_mode\x12\x10.ModeInputParams\x1a\x06.Empty\"\x00\x12\"\n\x05write\x12\x0f.SetInputParams\x1a\x06.Empty\"\x00\x12!\n\x04read\x12\n.PinNumber\x1a\x0b.GPIO_Level\"\x00\x12\'\n\x10set_pull_up_down\x12\t.GPIO_PUD\x1a\x06.Empty\"\x00\x12*\n\x0chardware_PWM\x12\x0b.PWM_params\x1a\x0b.PWM_Status\"\x00\x12#\n\rPWM_InputInit\x12\x08.PWM_Pin\x1a\x06.Empty\"\x00\x12(\n\x10PWM_GetDutyCycle\x12\x08.PWM_Pin\x1a\x08.Reading\"\x00\x12(\n\x10PWM_GetFrequency\x12\x08.PWM_Pin\x1a\x08.Reading\"\x00\x12\x38\n\x0bserial_open\x12\x11.SerialOpenParams\x1a\x14.SerialHandleMessage\"\x00\x12.\n\x0cserial_close\x12\x14.SerialHandleMessage\x1a\x06.Empty\"\x00\x12\x37\n\x10serial_read_byte\x12\x14.SerialHandleMessage\x1a\x0b.SerialByte\"\x00\x12\x35\n\x11serial_write_byte\x12\x16.SerialWriteByteParams\x1a\x06.Empty\"\x00\x12,\n\x0cserial_write\x12\x12.SerialWriteParams\x1a\x06.Empty\"\x00\x12?\n\x15serial_data_available\x12\x14.SerialHandleMessage\x1a\x0e.NumberofBytes\"\x00\x12\x18\n\x04stop\x12\x06.Empty\x1a\x06.Empty\"\x00\x62\x06proto3'
 )
 
 
@@ -513,6 +513,68 @@ _NUMBEROFBYTES = _descriptor.Descriptor(
   serialized_end=646,
 )
 
+
+_PWM_PIN = _descriptor.Descriptor(
+  name='PWM_Pin',
+  full_name='PWM_Pin',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='pwm_pin', full_name='PWM_Pin.pwm_pin', index=0,
+      number=1, type=13, cpp_type=3, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=648,
+  serialized_end=674,
+)
+
+
+_READING = _descriptor.Descriptor(
+  name='Reading',
+  full_name='Reading',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='reading', full_name='Reading.reading', index=0,
+      number=1, type=13, cpp_type=3, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=676,
+  serialized_end=702,
+)
+
 DESCRIPTOR.message_types_by_name['ModeInputParams'] = _MODEINPUTPARAMS
 DESCRIPTOR.message_types_by_name['SetInputParams'] = _SETINPUTPARAMS
 DESCRIPTOR.message_types_by_name['PinNumber'] = _PINNUMBER
@@ -527,6 +589,8 @@ DESCRIPTOR.message_types_by_name['SerialByte'] = _SERIALBYTE
 DESCRIPTOR.message_types_by_name['SerialWriteByteParams'] = _SERIALWRITEBYTEPARAMS
 DESCRIPTOR.message_types_by_name['SerialWriteParams'] = _SERIALWRITEPARAMS
 DESCRIPTOR.message_types_by_name['NumberofBytes'] = _NUMBEROFBYTES
+DESCRIPTOR.message_types_by_name['PWM_Pin'] = _PWM_PIN
+DESCRIPTOR.message_types_by_name['Reading'] = _READING
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 ModeInputParams = _reflection.GeneratedProtocolMessageType('ModeInputParams', (_message.Message,), {
@@ -627,6 +691,20 @@ NumberofBytes = _reflection.GeneratedProtocolMessageType('NumberofBytes', (_mess
   })
 _sym_db.RegisterMessage(NumberofBytes)
 
+PWM_Pin = _reflection.GeneratedProtocolMessageType('PWM_Pin', (_message.Message,), {
+  'DESCRIPTOR' : _PWM_PIN,
+  '__module__' : 'GPIO_write_pb2'
+  # @@protoc_insertion_point(class_scope:PWM_Pin)
+  })
+_sym_db.RegisterMessage(PWM_Pin)
+
+Reading = _reflection.GeneratedProtocolMessageType('Reading', (_message.Message,), {
+  'DESCRIPTOR' : _READING,
+  '__module__' : 'GPIO_write_pb2'
+  # @@protoc_insertion_point(class_scope:Reading)
+  })
+_sym_db.RegisterMessage(Reading)
+
 
 
 _PI_GPIO = _descriptor.ServiceDescriptor(
@@ -635,8 +713,8 @@ _PI_GPIO = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  serialized_start=649,
-  serialized_end=1209,
+  serialized_start=705,
+  serialized_end=1386,
   methods=[
   _descriptor.MethodDescriptor(
     name='set_mode',
@@ -684,9 +762,36 @@ _PI_GPIO = _descriptor.ServiceDescriptor(
     serialized_options=None,
   ),
   _descriptor.MethodDescriptor(
+    name='PWM_InputInit',
+    full_name='PI_GPIO.PWM_InputInit',
+    index=5,
+    containing_service=None,
+    input_type=_PWM_PIN,
+    output_type=_EMPTY,
+    serialized_options=None,
+  ),
+  _descriptor.MethodDescriptor(
+    name='PWM_GetDutyCycle',
+    full_name='PI_GPIO.PWM_GetDutyCycle',
+    index=6,
+    containing_service=None,
+    input_type=_PWM_PIN,
+    output_type=_READING,
+    serialized_options=None,
+  ),
+  _descriptor.MethodDescriptor(
+    name='PWM_GetFrequency',
+    full_name='PI_GPIO.PWM_GetFrequency',
+    index=7,
+    containing_service=None,
+    input_type=_PWM_PIN,
+    output_type=_READING,
+    serialized_options=None,
+  ),
+  _descriptor.MethodDescriptor(
     name='serial_open',
     full_name='PI_GPIO.serial_open',
-    index=5,
+    index=8,
     containing_service=None,
     input_type=_SERIALOPENPARAMS,
     output_type=_SERIALHANDLEMESSAGE,
@@ -695,7 +800,7 @@ _PI_GPIO = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='serial_close',
     full_name='PI_GPIO.serial_close',
-    index=6,
+    index=9,
     containing_service=None,
     input_type=_SERIALHANDLEMESSAGE,
     output_type=_EMPTY,
@@ -704,7 +809,7 @@ _PI_GPIO = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='serial_read_byte',
     full_name='PI_GPIO.serial_read_byte',
-    index=7,
+    index=10,
     containing_service=None,
     input_type=_SERIALHANDLEMESSAGE,
     output_type=_SERIALBYTE,
@@ -713,7 +818,7 @@ _PI_GPIO = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='serial_write_byte',
     full_name='PI_GPIO.serial_write_byte',
-    index=8,
+    index=11,
     containing_service=None,
     input_type=_SERIALWRITEBYTEPARAMS,
     output_type=_EMPTY,
@@ -722,7 +827,7 @@ _PI_GPIO = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='serial_write',
     full_name='PI_GPIO.serial_write',
-    index=9,
+    index=12,
     containing_service=None,
     input_type=_SERIALWRITEPARAMS,
     output_type=_EMPTY,
@@ -731,7 +836,7 @@ _PI_GPIO = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='serial_data_available',
     full_name='PI_GPIO.serial_data_available',
-    index=10,
+    index=13,
     containing_service=None,
     input_type=_SERIALHANDLEMESSAGE,
     output_type=_NUMBEROFBYTES,
@@ -740,7 +845,7 @@ _PI_GPIO = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='stop',
     full_name='PI_GPIO.stop',
-    index=11,
+    index=14,
     containing_service=None,
     input_type=_EMPTY,
     output_type=_EMPTY,

@@ -81,6 +81,16 @@ message NumberofBytes
 	int32 NumofBytes = 1;
 }
 
+message PWM_Pin
+{
+	uint32 pwm_pin = 1 ;
+}
+
+message Reading
+{
+	uint32 reading = 1 ;
+}
+
 service PI_GPIO 
 {
 	/************************** GPIO RPCs ***************************/
@@ -91,6 +101,9 @@ service PI_GPIO
 	
 	/************************** PWM RPCs ****************************/
 	rpc hardware_PWM(PWM_params) returns (PWM_Status) {}
+	rpc PWM_InputInit (PWM_Pin) returns (Empty) {}
+	rpc PWM_GetDutyCycle (PWM_Pin) returns (Reading) {}
+	rpc PWM_GetFrequency (PWM_Pin) returns (Reading) {}
 	
 	/************************** Serial RPCs ****************************/
 	rpc serial_open (SerialOpenParams) returns (SerialHandleMessage) {}
@@ -100,5 +113,7 @@ service PI_GPIO
 	rpc serial_write(SerialWriteParams) returns (Empty) {}
 	rpc serial_data_available (SerialHandleMessage) returns (NumberofBytes) {}
 	rpc stop (Empty) returns (Empty) {}
+	
+	
 }
 
