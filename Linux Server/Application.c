@@ -211,21 +211,21 @@ int main(void)
 				}
 				
 				
-				printf("RECEIVING RX HEADER\n");
-				for(index =0; index<sizeof(FrameHeader_t); index++)
-				{
-					printf("Rx_FrameHeader_Byte[%d]: %d\n", index, ((uint8_t*)&RxFrameHeader)[index]);	
-				}
+				//~ printf("RECEIVING RX HEADER\n");
+				//~ for(index =0; index<sizeof(FrameHeader_t); index++)
+				//~ {
+					//~ printf("Rx_FrameHeader_Byte[%d]: %d\n", index, ((uint8_t*)&RxFrameHeader)[index]);	
+				//~ }
 				
 				
 				if(RxFrameHeader.Signature == 0x07775000)
 				{
 					Status = ACK;
 					UDP_ServerSend(&sockfd, &Status, &cliaddr, len, STATUS_SIZE);
-					printf("Sent Rx_FrameHeader Status: %d\n", Status);
-					printf("Signature is Valid\n");
+					//~ printf("Sent Rx_FrameHeader Status: %d\n", Status);
+					//~ printf("Signature is Valid\n");
 					
-					printf("Total Data size(Rx_FrameHeader): %d\n", RxFrameHeader.TotalDataSize);		
+					//~ printf("Total Data size(Rx_FrameHeader): %d\n", RxFrameHeader.TotalDataSize);		
 					
 					if(ClientAvailable)
 					{
@@ -239,14 +239,14 @@ int main(void)
 					}
 					
 					
-					for(index =0; index<RxFrameHeader.TotalDataSize; index++)
-					{
-						printf("Rx_DataFrame_Byte[%d]: %d\n", index, FrameDataBuffer[index]);	
-					}
+					//~ for(index =0; index<RxFrameHeader.TotalDataSize; index++)
+					//~ {
+						//~ printf("Rx_DataFrame_Byte[%d]: %d\n", index, FrameDataBuffer[index]);	
+					//~ }
 					
 					/********* UPDATING THE DIO PINS ********/
 					/****ASSIGNING DIO FRAME****/
-					printf("SETTING THE DIO PUTPUT\n");
+					//~ printf("SETTING THE DIO PUTPUT\n");
 					gpioWrite(OUT1, FrameDataBuffer[8]);
 					gpioWrite(OUT2, FrameDataBuffer[9]);
 					gpioWrite(OUT3, FrameDataBuffer[10]);
@@ -258,16 +258,16 @@ int main(void)
 					uint32_t Frequency2 = *((uint32_t *)(FrameDataBuffer+28));
 					uint32_t DutyCycle2 = *((uint32_t *)(FrameDataBuffer+32));
 					
-					printf("PWM Info read\n");
-					printf("Frequency1: %d\tDutyCycle1: %d\n", Frequency1, DutyCycle1);
-					printf("Frequency2: %d\tDutyCycle2: %d\n", Frequency2, DutyCycle2);		
+					//~ printf("PWM Info read\n");
+					//~ printf("Frequency1: %d\tDutyCycle1: %d\n", Frequency1, DutyCycle1);
+					//~ printf("Frequency2: %d\tDutyCycle2: %d\n", Frequency2, DutyCycle2);		
 					gpioHardwarePWM(PWM_GPIO, Frequency1, DutyCycle1);
 					gpioHardwarePWM(PWM2_GPIO, Frequency2, DutyCycle2);
 					
 					
 					/////////////////////// UART CHANNEL /////////////////////			
 					////////UART Info
-					printf("UART Info read\n");
+					//~ printf("UART Info read\n");
 					UART_Info.SerialStatus = *((uint32_t *)(FrameDataBuffer+44));
 					UART_Info.SerialBaudrate = *((uint32_t *)(FrameDataBuffer+48));
 					UART_Info.SerialDataSize = *((uint32_t *)(FrameDataBuffer+52));
@@ -275,30 +275,30 @@ int main(void)
 					
 					/////////////////////// SPI CHANNELS /////////////////////
 					////////SPI_CH1 Info
-					printf("SPI_CH1 Info read\n");
+					//~ printf("SPI_CH1 Info read\n");
 					SPI_CH1_Info.SerialStatus = *((uint32_t *)(FrameDataBuffer+60));
 					SPI_CH1_Info.SerialBaudrate = *((uint32_t *)(FrameDataBuffer+64));
 					SPI_CH1_Info.SerialDataSize = *((uint32_t *)(FrameDataBuffer+68));
 					
 					////////SPI_CH2 Info
-					printf("SPI_CH2 Info read\n");
+					//~ printf("SPI_CH2 Info read\n");
 					SPI_CH2_Info.SerialStatus = *((uint32_t *)(FrameDataBuffer+76));
 					SPI_CH2_Info.SerialBaudrate = *((uint32_t *)(FrameDataBuffer+80));
 					SPI_CH2_Info.SerialBaudrate = *((uint32_t *)(FrameDataBuffer+84));
 					
-				printf("\n\n");
+				//~ printf("\n\n");
 				}
 				else
 				{
 					Status = NACK;
 					UDP_ServerSend(&sockfd, &Status, &cliaddr, len, STATUS_SIZE);
-					printf("Sent Rx_FrameHeader Status: %d\n", Status);
+					//~ printf("Sent Rx_FrameHeader Status: %d\n", Status);
 					
-					printf("Signature Invalid\n");
+					//~ printf("Signature Invalid\n");
 				}
 				
 				/********** SENDING DATA TO PC ************/
-				printf("/*********** SENDING DATA FROM RASPBERRY PI TO PC ***************/\n\n");
+				//~ printf("/*********** SENDING DATA FROM RASPBERRY PI TO PC ***************/\n\n");
 				
 				FrameHeader_t temp_FrameHeader = 
 				{
@@ -310,10 +310,10 @@ int main(void)
 				UDP_ServerSend(&sockfd, (uint8_t *)&temp_FrameHeader, &cliaddr, len, sizeof(FrameHeader_t));
 				//UDP_ServerSend(&sockfd, (uint8_t *)&TxFrameHeader, &cliaddr, len, sizeof(FrameHeader_t));
 				
-				for(uint32_t i; i < sizeof(FrameHeader_t); i++)
-				{
-					printf("Tx_FrameHeader_Byte[%d]: %d\n", i, ((uint8_t *)&TxFrameHeader)[i]);
-				}
+				//~ for(uint32_t i; i < sizeof(FrameHeader_t); i++)
+				//~ {
+					//~ printf("Tx_FrameHeader_Byte[%d]: %d\n", i, ((uint8_t *)&TxFrameHeader)[i]);
+				//~ }
 				
 				if(ClientAvailable)
 				{
@@ -329,11 +329,11 @@ int main(void)
 				
 				if(StatusBuffer[0] == ACK)
 				{
-					printf("RECEIVED AN ACK FROM PC TO SEND RPI TX DATA\n");
+					//~ printf("RECEIVED AN ACK FROM PC TO SEND RPI TX DATA\n");
 							
 					//Frame = FRAME_Generate();
 					
-					printf("ON_TIME1: %d\t OFF_TIME1: %d\n", On_Time1, Off_Time1);
+					//~ printf("ON_TIME1: %d\t OFF_TIME1: %d\n", On_Time1, Off_Time1);
 					if((On_Time1 == 0) && (Off_Time1 == 0))
 					{
 						DutyCycleReading1 = 0;
@@ -344,10 +344,10 @@ int main(void)
 						DutyCycleReading1 = ((On_Time1 * 100) / (On_Time1+Off_Time1));
 						FrequencyReading1 = (1000000 / (On_Time1+Off_Time1)) ;
 					}
-					printf("DutyCycleReading1: %d\tFrequencyReading1: %d\n", 
-					DutyCycleReading1, FrequencyReading1);
+					//~ printf("DutyCycleReading1: %d\tFrequencyReading1: %d\n", 
+					//~ DutyCycleReading1, FrequencyReading1);
 					
-					printf("ON_TIME2: %d\t OFF_TIME2: %d\n", On_Time2, Off_Time2);
+					//~ printf("ON_TIME2: %d\t OFF_TIME2: %d\n", On_Time2, Off_Time2);
 					if((On_Time2 == 0) && (Off_Time2 == 0))
 					{
 						DutyCycleReading2 = 0;
@@ -358,8 +358,8 @@ int main(void)
 						DutyCycleReading2 = ((On_Time2 * 100)/ (On_Time2+Off_Time2)) ;
 						FrequencyReading2 = ((1000000 / (On_Time2+Off_Time2))) ;
 					}
-					printf("DutyCycleReading2: %d\tFrequencyReading2: %d\n", 
-					DutyCycleReading2, FrequencyReading2);
+					//~ printf("DutyCycleReading2: %d\tFrequencyReading2: %d\n", 
+					//~ DutyCycleReading2, FrequencyReading2);
 
 								
 					memset(zart, 0, 12*sizeof(uint32_t));
@@ -380,11 +380,11 @@ int main(void)
 					UDP_ServerSend(&sockfd, (uint8_t*)zart, &cliaddr, len, temp_FrameHeader.TotalDataSize);
 					//UDP_ServerSend(&sockfd, (uint8_t*)Frame, &cliaddr, len, TxFrameHeader.TotalDataSize);
 					
-					printf("DATA FRAME SENT: \n");
-					for(uint32_t i = 0; i < temp_FrameHeader.TotalDataSize/4; i++)
-					{
-						printf("Tx_FrameData_Byte[%d]: %d\n", i, zart[i]);
-					}	
+					//~ printf("DATA FRAME SENT: \n");
+					//~ for(uint32_t i = 0; i < temp_FrameHeader.TotalDataSize/4; i++)
+					//~ {
+						//~ printf("Tx_FrameData_Byte[%d]: %d\n", i, zart[i]);
+					//~ }	
 					
 					//~ for(uint32_t i; i < TxFrameHeader.TotalDataSize; i++)
 					//~ {
