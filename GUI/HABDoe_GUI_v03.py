@@ -1735,7 +1735,7 @@ class Ui_HABDoe(object):
 
         QMetaObject.connectSlotsByName(HABDoe)
         
-         # Connect pushButton
+        # Connect pushButton
         self.Connect_pushButton.clicked.connect(self.Connect_Func)
         
         # Disconnect pushButton
@@ -1753,13 +1753,25 @@ class Ui_HABDoe(object):
         # ModeSelect_horizontalSlider (at HIL mode)
         self.ModeSelect_horizontalSlider.valueChanged.connect(self.ModeSelect_horizontalSlider_Func)
         
+        # Generate pushButton
+        self.Generate_pushButton.clicked.connect(self.GenerateTestCase_Func)
+        
+        # Load pushButton
+        self.Load_pushButton.clicked.connect(self.LoadTestCase_Func)
+        
+        # Run pushButton
+        self.Run_pushButton.clicked.connect(self.RunTestCase_Func)
+        
+        
+        
     '''
     to be changed as per user demand  
     '''
     so_file = "./client.so"
     global my_functions 
     global ProgramStatus
-    
+    global path 
+    global runFlag
     my_functions = CDLL(so_file)
     status = 0
     
@@ -2057,8 +2069,57 @@ class Ui_HABDoe(object):
       else:
         self.GenerateMode_groupBox.setEnabled(False)
         self.LoadMode_groupBox.setEnabled(True)
-    # ModeSelect_horizontalSlider_Func 
+    # ModeSelect_horizontalSlider_Func     
     
+    
+    #########################################################
+    # Function Called By Generate_pushButton
+    # Responsible for Generating a new test case  
+    #########################################################
+    def GenerateTestCase_Func(self):
+      global path 
+      global runFlag
+      if (os.path.exists(self.GenerateMode_Path_lineEdit.displayText()) == False):
+        self.GenerateMode_Path_lineEdit.setText("Invalid Path !")
+      else:  
+        runFlag = 1
+        path = self.GenerateMode_Path_lineEdit.displayText()
+        # Empty test case
+        if (self.GenerateTestCase_comboBox.currentIndex() == 0):
+          os.system("GenerateTestScript.py 1 "+str(path))
+        # blinky
+        else:
+          os.system("GenerateTestScript.py 2 "+str(path))
+    # GenerateTestCase_Func     
+    
+    
+    #########################################################
+    # Function Called By Load_pushButton
+    # Responsible for loading a pre-existing test case  
+    #########################################################
+    def LoadTestCase_Func(self):
+      global path 
+      global runFlag
+      if (os.path.exists(self.LoadMode_Path_lineEdit.displayText()) == False):
+        self.LoadMode_Path_lineEdit.setText("Invalid Path !")
+      else: 
+        runFlag = 2   
+        # load test case and save the path
+        path = self.LoadMode_Path_lineEdit.displayText()
+    # LoadTestCase_Func     
+    
+    
+    #########################################################
+    # Function Called Run_pushButton
+    # Responsible for Running the loaded test case  
+    #########################################################
+    def RunTestCase_Func(self):
+      global runFlag
+      # 
+      if (runFlag == 1): 
+        os.system(path + "\TestCase.py")
+      elif(runFlag == 2):
+        os.system(path)
     # setupUi
 
     def retranslateUi(self, HABDoe):
@@ -2165,7 +2226,7 @@ class Ui_HABDoe(object):
         self.Run_pushButton.setText(QCoreApplication.translate("HABDoe", u"Run", None))
         self.GenerateMode_groupBox.setTitle(QCoreApplication.translate("HABDoe", u"Generate New Test Case", None))
         self.GenerateMode_Path_lineEdit.setText("")
-        self.GenerateMode_Path_lineEdit.setPlaceholderText(QCoreApplication.translate("HABDoe", u"Path for the test case and the log files", None))
+        self.GenerateMode_Path_lineEdit.setPlaceholderText(QCoreApplication.translate("HABDoe", u"Path for the test case and the log files [ i.e. C:\\Users ]", None))
         self.GenerateTestCase_comboBox.setItemText(0, QCoreApplication.translate("HABDoe", u"Empty (add your own content)", None))
         self.GenerateTestCase_comboBox.setItemText(1, QCoreApplication.translate("HABDoe", u"Blinky (blink a LED)", None))
 
@@ -2173,7 +2234,7 @@ class Ui_HABDoe(object):
         self.Generate_pushButton.setText(QCoreApplication.translate("HABDoe", u"Generate", None))
         self.LoadMode_groupBox.setTitle(QCoreApplication.translate("HABDoe", u"Load Existing Test Case", None))
         self.LoadMode_Path_lineEdit.setText("")
-        self.LoadMode_Path_lineEdit.setPlaceholderText(QCoreApplication.translate("HABDoe", u"Path for the test case and the log files", None))
+        self.LoadMode_Path_lineEdit.setPlaceholderText(QCoreApplication.translate("HABDoe", u"Path for the test case and the log files [ i.e. C:\\Users\\myTest.py ]", None))
         self.LoadPath_label.setText(QCoreApplication.translate("HABDoe", u"Path:", None))
         self.Load_pushButton.setText(QCoreApplication.translate("HABDoe", u"Load", None))
         self.ModeSelect_groupBox.setTitle(QCoreApplication.translate("HABDoe", u"Mode Select", None))
