@@ -1,4 +1,4 @@
-
+import time
 import grpc
 
 #contatin the request and response classes
@@ -23,6 +23,15 @@ class TestBench(object):
 
     ## Defining function wrappers for the user ##
     
+    ## Delay function -> ms ##
+    def DelayMS (self,Delay_ms):
+        t1 = time.perf_counter_ns()
+    
+        while True:
+            t2 = time.perf_counter_ns()
+            if ( ((t2 - t1) / (10 ** 6) ) >= (Delay_ms) ):
+                break
+
     ## GPIO functions ##
     def GPIO_SetMode (self,GPIO_PinNumber,GPIO_Mode):
         #create a valid request message
