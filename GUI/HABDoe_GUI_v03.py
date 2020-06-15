@@ -27,7 +27,10 @@ global file_path
 file_path = ""
 
 global folder_path
-file_path = ""
+folder_path = ""
+
+global runFlag
+runFlag = 0
 
 ##################################################################################
 ##################################################################################
@@ -43,6 +46,43 @@ def folder_explorer():
   root = tk.Tk()
   root.withdraw()
   folder_path = filedialog.askdirectory()
+  
+def showdialog():
+   global runFlag
+   msg = QMessageBox()
+   if( runFlag == 1) :
+    msg.setIcon(QMessageBox.Information)
+    msg.setText("Started Executing Test")
+    msg.setInformativeText("TestCase Path: " + str(folder_path) + "\TestCase.py")
+   elif (runFlag == 2): 
+    msg.setIcon(QMessageBox.Information)
+    msg.setText("Started Executing Test")
+    msg.setInformativeText("TestCase Path: " + str(file_path))
+   else :
+    msg.setIcon(QMessageBox.Warning)
+    msg.setText("No Test found")
+    msg.setDetailedText("Please generate or load a Test before pressing run")
+   msg.setWindowTitle("Test Execution")
+   msg.setStandardButtons(QMessageBox.Ok)
+   #msg.buttonClicked.connect(msgbtn)
+	
+   retval = msg.exec_()
+   #print("value of pressed message box button:", retval)
+   
+def MessageSent_dialog():
+   msg = QMessageBox()
+   msg.setIcon(QMessageBox.Information)
+   msg.setText("Message has been transmitted")
+   #msg.setDetailedText("Please generate or load a Test before pressing run")
+   msg.setWindowTitle("Message Transmission")
+   msg.setStandardButtons(QMessageBox.Ok)
+   #msg.buttonClicked.connect(msgbtn)
+	
+   retval = msg.exec_()
+   #print("value of pressed message box button:", retval)
+	
+#def msgbtn(i):
+ #  print("Button pressed is:",i.text())
 ##################################################################################
 ##################################################################################
 ##################################################################################
@@ -1977,6 +2017,7 @@ class Ui_HABDoe(object):
           
           #Sending UART Frame
           my_functions.UDP_ClientSend(MESSAGE_UART)
+          MessageSent_dialog()
           Tx_UART_Flag = 0
         
         if(self.UART_horizontalSlider.value() == 1): 
@@ -2181,12 +2222,13 @@ class Ui_HABDoe(object):
     # Responsible for Running the loaded test case  
     #########################################################
     def RunTestCase_Func(self):
+      showdialog()
       global runFlag
       # 
       if (runFlag == 1): 
-        os.system('"'+str(path) + "\TestCase.py"+'"')
+        os.system('"'+str(folder_path) + "\TestCase.py"+'"')
       elif(runFlag == 2):
-        os.system('"'+str(path)+'"')
+        os.system('"'+str(file_path)+'"')
     # setupUi
 
     def retranslateUi(self, HABDoe):
@@ -2327,7 +2369,8 @@ class Ui_HABDoe(object):
 
 
 def main():
- 
+  global runFlag 
+  runFlag = 0
   # Create the Qt Application
   app = QApplication(sys.argv)
   # Changing the window icon of the app.
