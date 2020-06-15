@@ -303,7 +303,9 @@ uint8_t UDP_ClientReceive(uint8_t MessageType)
 				printf("recvfrom() failed with error code : %d" , WSAGetLastError());
 				exit(EXIT_FAILURE);
 			}
-			printf("SerialSize: %d\n", SerialSize);
+			if(SerialSize > 0)
+				printf("SerialSize: %d\n", SerialSize);
+			
 			if(SerialSize != 0)
 			{
 				returnType = MESSAGE_SERIAL_SIZE;

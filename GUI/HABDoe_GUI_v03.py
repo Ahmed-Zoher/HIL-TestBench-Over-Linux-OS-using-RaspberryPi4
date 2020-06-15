@@ -1762,8 +1762,15 @@ class Ui_HABDoe(object):
         # Run pushButton
         self.Run_pushButton.clicked.connect(self.RunTestCase_Func)
         
-        
-        
+        # UART send Button
+        self.UART_SendData_pushButton.clicked.connect(self.UART_Tx)
+
+        # SPI_CH1 send Button
+        self.SPI_Channel_1_SendData_pushButton.clicked.connect(self.SPI_CH1_Tx)
+
+        # SPI_CH2 send Button
+        self.SPI_Channel_2_SendData_pushButton.clicked.connect(self.SPI_CH2_Tx)
+
     '''
     to be changed as per user demand  
     '''
@@ -1773,10 +1780,17 @@ class Ui_HABDoe(object):
     global path 
     global runFlag
     runFlag = 1
+    global Tx_UART_Flag
+    global Tx_SPI_CH1_Flag
+    global Tx_SPI_CH2_Flag
+    Tx_UART_Flag = 0
+    Tx_SPI_CH1_Flag = 0
+    Tx_SPI_CH2_Flag = 0
     
     path = "."
     my_functions = CDLL(so_file)
     status = 0
+
     
     #########################################################
     # Function Called By Connect_pushButton
@@ -1785,6 +1799,8 @@ class Ui_HABDoe(object):
     #########################################################
     def TEST_Func(self):
       
+      global Tx_UART_Flag
+
       #Message Definitions
       MESSAGE_ACK				      = 0
       MESSAGE_NACK			      = 1
@@ -1833,12 +1849,14 @@ class Ui_HABDoe(object):
       
       PWM_DATA = (c_int32 * len(PWM_array))(*PWM_array)
       
-    
-      
       ##UART CONFIG
       UART_config = [c_int32(self.UART_horizontalSlider.value()), 
-                    c_int32(int(self.UART_BaudRate_comboBox.currentText())),
-                    c_int32(len(self.UART_DataSend_lineEdit.displayText()) + PERIPH_ID_SIZE)]
+                    c_int32(int(self.UART_BaudRate_comboBox.currentText()))]
+                    
+      if(Tx_UART_Flag):      
+        UART_config.append(c_int32(len(self.UART_DataSend_lineEdit.displayText()) + PERIPH_ID_SIZE))
+      else:
+        UART_config.append(PERIPH_ID_SIZE)
       
       UART_CONFIG = (c_int32 * len(UART_config))(*UART_config)
       
@@ -1860,12 +1878,13 @@ class Ui_HABDoe(object):
       
       #Sending Data to generate the client frame
       my_functions.FRAME_GenerateDataFrame(DIO_DATA, PWM_DATA, UART_CONFIG, SPI_CH1_CONFIG, SPI_CH2_CONFIG)
+
       #my_functions.FRAME_Print()
       
       ##RECIVING DATA FROM PC
       #Sending Tx-Header
       Time1 = time.time()
-      print("TIME BEFORE HEADER: " + str(int(Time1 * 1000000)))
+      #print("TIME BEFORE HEADER: " + str(int(Time1 * 1000000)))
       my_functions.UDP_ClientSend(MESSAGE_HEADER_FRAME)
       #Receiving ACK on Tx Header
       ReceiveStatus = my_functions.UDP_ClientReceive(MESSAGE_ACK)  
@@ -1879,7 +1898,6 @@ class Ui_HABDoe(object):
       elif (ReceiveStatus == 1): #NACK received
         print("NACK Received")
       
-
       ##RECIVING DATA FROM RASPBERRY PI
       #Receiving Rx-Header 
       ReceiveStatus = my_functions.UDP_ClientReceive(MESSAGE_HEADER_FRAME)
@@ -1897,9 +1915,9 @@ class Ui_HABDoe(object):
         FRAME_return = my_functions.FRAME_ReadingsFrame()
         
         Time2 = time.time()
-        print("TIME AFTER READINGS: " + str(int(Time2 * 1000000)))
+        #print("TIME AFTER READINGS: " + str(int(Time2 * 1000000)))
             
-        print("TIME DIFFERENCE: " + str(int((Time2-Time1) * 1000000)))
+        #print("TIME DIFFERENCE: " + str(int((Time2-Time1) * 1000000)))
         #Displaying DIO Readings
         # print(FRAME_return[0])
         # print(FRAME_return[1])
@@ -1923,16 +1941,16 @@ class Ui_HABDoe(object):
         self.Channel12_DutyCycle_lcdNumber.display(FRAME_return[6])
         self.Channel12_Frequency_lcdNumber.display(FRAME_return[7])
         
-        
-        
-        if(self.UART_horizontalSlider.value() == 1):
+        if(Tx_UART_Flag == 1):
           ##Sending the serial frames
           #Generate UART Frame     
           my_functions.FRAME_GenerateSerialFrame(UART_DATA, UART_config[2], SERIAL_UART)
           
           #Sending UART Frame
-          my_functions.UDP_ClientSend(MESSAGE_UART) 
-          
+          my_functions.UDP_ClientSend(MESSAGE_UART)
+          Tx_UART_Flag = 0
+        
+        if(self.UART_horizontalSlider.value() == 1): 
           ##Receiving the serial frames
           if(my_functions.UDP_ClientReceive(MESSAGE_SERIAL_SIZE) != MESSAGE_NACK):
             my_functions.UDP_ClientReceive(MESSAGE_UART)
@@ -1943,11 +1961,14 @@ class Ui_HABDoe(object):
             #Displaying the received frame frm PC
             tempUART_ReadingArray = str(UART_ReadingArray)
             NewUartReading = tempUART_ReadingArray[6:len(tempUART_ReadingArray)-1]
+            
+            print("bteee5: " + str(NewUartReading))
+            
             self.UART_DataReceived_lineEdit.setText(tempUART_ReadingArray[6:len(tempUART_ReadingArray)-1])
             my_functions.FRAME_FreeBuffer(SERIAL_RETURN_FRAME)
    
-          else:
-            print("UART_SIZE_ERROR\n")
+          #else:
+            #print("UART_SIZE_ERROR\n")
             
         if(self.SPI_Channel_1_horizontalSlider.value() == 1):
           print("SPI_CH1 IS ENABLED")
@@ -1967,20 +1988,24 @@ class Ui_HABDoe(object):
     #########################################################
     def Connect_Func(self):
       global ProgramStatus
+      global Tx_UART_Flag
       
       status = my_functions.UDP_ClientConnect(b"192.168.5.10", 8080)
       if(status == 0):
         for i in range(0, 101, 5):
           self.Conncection_progressBar.setValue(i)
           time.sleep(0.01)
-        
+      
+        #Clearing flags
+        Tx_UART_Flag = 0
+      
         print("CONNECTION_OK\n")
         ProgramStatus = 1
         
         COUNTER = 0
         while(ProgramStatus):
           COUNTER += 1
-          print("PROGRAM COUNTER: " + str(COUNTER))
+          #print("PROGRAM COUNTER: " + str(COUNTER))
           self.TEST_Func()
           QCoreApplication.processEvents()
       
@@ -2001,6 +2026,17 @@ class Ui_HABDoe(object):
         
     # Connect_Func      
   
+    def UART_Tx(self):
+      global Tx_UART_Flag
+      Tx_UART_Flag = 1
+   
+    def SPI_CH1_Tx(self):
+      global Tx_SPI_CH1_Flag
+      Tx_SPI_CH1_Flag = 1
+  
+    def SPI_CH2_Tx(self):
+      global Tx_SPI_CH2_Flag
+      Tx_SPI_CH2_Flag = 1
     
     #########################################################
     # Function Called By Disconnect_pushButton
@@ -2025,10 +2061,8 @@ class Ui_HABDoe(object):
     #########################################################
     def SPI_Channel_1_horizontalSlider_Func(self):
       if int(self.SPI_Channel_1_horizontalSlider.value()) == 0:
-        self.SPI_Channel_1_DataSend_lineEdit.setReadOnly(False)
         self.SPI_Channel_1_BaudRate_spinBox.setEnabled(True)
       else:
-        self.SPI_Channel_1_DataSend_lineEdit.setReadOnly(True)
         self.SPI_Channel_1_BaudRate_spinBox.setEnabled(False)
     # SPI_Channel_1_horizontalSlider_Func     
     
@@ -2041,10 +2075,8 @@ class Ui_HABDoe(object):
     #########################################################
     def SPI_Channel_2_horizontalSlider_Func(self):
       if int(self.SPI_Channel_2_horizontalSlider.value()) == 0:
-        self.SPI_Channel_2_DataSend_lineEdit.setReadOnly(False)
         self.SPI_Channel_2_BaudRate_spinBox.setEnabled(True)
       else:
-        self.SPI_Channel_2_DataSend_lineEdit.setReadOnly(True)
         self.SPI_Channel_2_BaudRate_spinBox.setEnabled(False)
     # SPI_Channel_2_horizontalSlider_Func     
     
@@ -2057,10 +2089,8 @@ class Ui_HABDoe(object):
     #########################################################
     def UART_horizontalSlider_Func(self):
       if int(self.UART_horizontalSlider.value()) == 0:
-        self.UART_DataSend_lineEdit.setReadOnly(False)
         self.UART_BaudRate_comboBox.setEnabled(True)
       else:
-        self.UART_DataSend_lineEdit.setReadOnly(True)
         self.UART_BaudRate_comboBox.setEnabled(False)
     # UART_horizontalSlider_Func 
     
