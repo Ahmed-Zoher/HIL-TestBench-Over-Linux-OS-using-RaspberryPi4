@@ -9,9 +9,9 @@ def Test_main ():
 	TestBench.GPIO_SetMode(25, OUTPUT) 
 	while 1 :
 		TestBench.GPIO_Write(25, HIGH) 
-		Time.sleep(1)
+		time.sleep(1)
 		TestBench.GPIO_Write(25, LOW) 
-		Time.sleep(1)
+		time.sleep(1)
 
 
 

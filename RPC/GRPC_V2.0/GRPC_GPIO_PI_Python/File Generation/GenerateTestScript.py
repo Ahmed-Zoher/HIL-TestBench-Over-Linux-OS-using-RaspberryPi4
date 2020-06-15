@@ -4,7 +4,7 @@ def GenerateFile (option, path):
 
     f= open (path + "\TestCase.py","w+")
     ## File imports ##
-    f.write ("import time \n")
+    #f.write ("import time \n")
     f.write ("import GPIO_write_client \n")
     f.write ("from GPIO_macros import * \n")
     
@@ -21,12 +21,12 @@ def GenerateFile (option, path):
         f.write ("def Test_main (): \n")
         ## Blinky example ##
         f.write ("\t## Blinky example ##\n")
-        f.write ("\tTestBench.GPIO_SetMode(25, OUTPUT) \n")
+        f.write ("\tTestBench.GPIO_SetMode(18, OUTPUT) \n")
         f.write ("\twhile 1 :\n")
-        f.write ("\t\tTestBench.GPIO_Write(25, HIGH) \n")
-        f.write ("\t\ttime.sleep(1)\n")
-        f.write ("\t\tTestBench.GPIO_Write(25, LOW) \n")
-        f.write ("\t\ttime.sleep(1)\n")
+        f.write ("\t\tTestBench.GPIO_Write(18, HIGH) \n")
+        f.write ("\t\tTestBench.DelayMS(1000)\n")
+        f.write ("\t\tTestBench.GPIO_Write(18, LOW) \n")
+        f.write ("\t\tTestBench.DelayMS(1000)\n")
         f.write ("\n\n\n\n")
         
     
