@@ -2017,7 +2017,7 @@ class Ui_HABDoe(object):
           
           #Sending UART Frame
           my_functions.UDP_ClientSend(MESSAGE_UART)
-          MessageSent_dialog()
+          #MessageSent_dialog()
           Tx_UART_Flag = 0
         
         if(self.UART_horizontalSlider.value() == 1): 
@@ -2196,10 +2196,11 @@ class Ui_HABDoe(object):
       self.GenerateMode_Path_lineEdit.setText(str(folder_path))
       # Empty test case
       if (self.GenerateTestCase_comboBox.currentIndex() == 0):
-        os.system('"..\RPC\Current_Version\GRPC_V2.0\GRPC_GPIO_PI_Python\File Generation\GenerateTestScript.py" 1 '+str(folder_path))
+        #os.system(r'"..\RPC\Current_Version\GRPC_V2.0\GRPC_GPIO_PI_Python\File_Generation\GenerateTestScript.py" 1 %s' % (folder_path))
+        os.system(r'"..\RPC\Current_Version\GRPC_V2.0\GRPC_GPIO_PI_Python\File_Generation\GenerateTestScript.py" 1 ' + folder_path)
       # blinky
       else:
-        os.system("GenerateTestScript.py 2 "+str(folder_path))
+        os.system(r'"..\RPC\Current_Version\GRPC_V2.0\GRPC_GPIO_PI_Python\File_Generation\GenerateTestScript.py" 2 '+ r'"' + r'"%s"' % str(folder_path) +'"')
     # GenerateTestCase_Func     
     
     
