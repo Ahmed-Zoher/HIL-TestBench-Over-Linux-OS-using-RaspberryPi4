@@ -20,6 +20,35 @@ import time
 import os
 os.system('cls')
 
+import tkinter as tk
+from tkinter import filedialog
+
+global file_path
+file_path = ""
+
+global folder_path
+file_path = ""
+
+##################################################################################
+##################################################################################
+##################################################################################
+def file_explorer():
+  global file_path
+  root = tk.Tk()
+  root.withdraw()
+  file_path = filedialog.askopenfilename()
+  
+def folder_explorer():
+  global folder_path
+  root = tk.Tk()
+  root.withdraw()
+  folder_path = filedialog.askdirectory()
+##################################################################################
+##################################################################################
+##################################################################################
+
+
+
 class Ui_HABDoe(object):
     def setupUi(self, HABDoe):
         if HABDoe.objectName():
@@ -1393,7 +1422,7 @@ class Ui_HABDoe(object):
 "}\n"
 "")
         self.GenerateMode_Path_lineEdit.setFrame(True)
-        self.GenerateMode_Path_lineEdit.setReadOnly(False)
+        self.GenerateMode_Path_lineEdit.setReadOnly(True)
         self.GenerateMode_Path_lineEdit.setClearButtonEnabled(True)
         self.GenerateTestCase_comboBox = QComboBox(self.GenerateMode_groupBox)
         self.GenerateTestCase_comboBox.addItem("")
@@ -1458,7 +1487,7 @@ class Ui_HABDoe(object):
 "}\n"
 "")
         self.LoadMode_Path_lineEdit.setFrame(True)
-        self.LoadMode_Path_lineEdit.setReadOnly(False)
+        self.LoadMode_Path_lineEdit.setReadOnly(True)
         self.LoadMode_Path_lineEdit.setClearButtonEnabled(True)
         self.LoadPath_label = QLabel(self.LoadMode_groupBox)
         self.LoadPath_label.setObjectName(u"LoadPath_label")
@@ -2102,12 +2131,15 @@ class Ui_HABDoe(object):
     # are done only when UART is disabled)
     #########################################################
     def ModeSelect_horizontalSlider_Func(self):
+      global runFlag
       if int(self.ModeSelect_horizontalSlider.value()) == 0:
         self.GenerateMode_groupBox.setEnabled(True)
         self.LoadMode_groupBox.setEnabled(False)
+        runFlag = 1
       else:
         self.GenerateMode_groupBox.setEnabled(False)
         self.LoadMode_groupBox.setEnabled(True)
+        runFlag = 2
     # ModeSelect_horizontalSlider_Func     
     
     
@@ -2116,20 +2148,17 @@ class Ui_HABDoe(object):
     # Responsible for Generating a new test case  
     #########################################################
     def GenerateTestCase_Func(self):
-      global path 
+      global folder_path 
       global runFlag
-      if (os.path.exists(self.GenerateMode_Path_lineEdit.displayText()) == False):
-        self.GenerateMode_Path_lineEdit.setText("Invalid Path !")
-      else:  
-        runFlag = 1
-        print("Path: " + self.GenerateMode_Path_lineEdit.displayText())
-        path = str(self.GenerateMode_Path_lineEdit.displayText())
-        # Empty test case
-        if (self.GenerateTestCase_comboBox.currentIndex() == 0):
-          os.system('GenerateTestScript.py 1 "'+str(path) +'"')
-        # blinky
-        else:
-          os.system('GenerateTestScript.py 2 "'+str(path) +'"')
+      runFlag = 1
+      folder_explorer()
+      self.GenerateMode_Path_lineEdit.setText(str(folder_path))
+      # Empty test case
+      if (self.GenerateTestCase_comboBox.currentIndex() == 0):
+        os.system('"..\RPC\Current_Version\GRPC_V2.0\GRPC_GPIO_PI_Python\File Generation\GenerateTestScript.py" 1 '+str(folder_path))
+      # blinky
+      else:
+        os.system("GenerateTestScript.py 2 "+str(folder_path))
     # GenerateTestCase_Func     
     
     
@@ -2138,15 +2167,13 @@ class Ui_HABDoe(object):
     # Responsible for loading a pre-existing test case  
     #########################################################
     def LoadTestCase_Func(self):
-      global path 
+      file_explorer()
+      global folder_path
       global runFlag
-      if (os.path.exists(self.LoadMode_Path_lineEdit.displayText()) == False):
-        self.LoadMode_Path_lineEdit.setText("Invalid Path !")
-      else: 
-        runFlag = 2   
-        # load test case and save the path
-        path = str(self.LoadMode_Path_lineEdit.displayText())
-    # LoadTestCase_Func     
+      runFlag = 2   
+      # load test case and save the path
+      self.LoadMode_Path_lineEdit.setText(str(file_path))
+      # LoadTestCase_Func     
     
     
     #########################################################
