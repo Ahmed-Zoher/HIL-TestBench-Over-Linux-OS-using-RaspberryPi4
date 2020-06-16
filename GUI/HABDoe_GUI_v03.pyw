@@ -96,7 +96,8 @@ class Ui_HABDoe(object):
     def setupUi(self, HABDoe):
         if HABDoe.objectName():
             HABDoe.setObjectName(u"HABDoe")
-        HABDoe.resize(915, 624)
+        # HABDoe.resize(915, 624)
+        HABDoe.setFixedSize(915, 624)
         HABDoe.setMinimumSize(QSize(91, 0))
         font = QFont()
         font.setBold(False)
@@ -2442,8 +2443,10 @@ def main():
   app = QApplication(sys.argv)
   # Changing the window icon of the app.
   app.setWindowIcon(QIcon('Bug-Z_icon.png'))
+
   # Create the Qt Widget that will hold the Form/s
   widget = QWidget()
+  #widget.setWindowFlags(widget.windowFlags() & ~Qt.WindowMaximizeButtonHint)
   # Create and show the form
   form = Ui_HABDoe()
   form.setupUi(widget)
