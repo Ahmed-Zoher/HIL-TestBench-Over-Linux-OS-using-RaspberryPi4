@@ -18,6 +18,9 @@ from ctypes import *
 import sys
 import time
 import os
+from shutil import copy
+import subprocess
+
 os.system('cls')
 
 import tkinter as tk
@@ -1985,7 +1988,7 @@ class Ui_HABDoe(object):
         
         Time2 = time.time()
         #print("TIME AFTER READINGS: " + str(int(Time2 * 1000000)))
-            
+      
         #print("TIME DIFFERENCE: " + str(int((Time2-Time1) * 1000000)))
         #Displaying DIO Readings
         # print(FRAME_return[0])
@@ -2196,13 +2199,27 @@ class Ui_HABDoe(object):
       self.GenerateMode_Path_lineEdit.setText(str(folder_path))
       # Empty test case
       if (self.GenerateTestCase_comboBox.currentIndex() == 0):
-        #os.system(r'"..\RPC\Current_Version\GRPC_V2.0\GRPC_GPIO_PI_Python\File_Generation\GenerateTestScript.py" 1 %s' % (folder_path))
-        os.system(r'"..\RPC\Current_Version\GRPC_V2.0\GRPC_GPIO_PI_Python\File_Generation\GenerateTestScript.py" 1 ' + folder_path)
+        #Generating the file
+        GenerationPath = '"..\RPC\Current_Version\GRPC_V2.0\GRPC_GPIO_PI_Python\File_Generation\GenerateTestScript.py" 1 '+ '"' +str(folder_path) + '"'
+        os.system('"'+GenerationPath+'"')        
       # blinky
       else:
-        os.system(r'"..\RPC\Current_Version\GRPC_V2.0\GRPC_GPIO_PI_Python\File_Generation\GenerateTestScript.py" 2 '+ r'"' + r'"%s"' % str(folder_path) +'"')
+        GenerationPath = '"..\RPC\Current_Version\GRPC_V2.0\GRPC_GPIO_PI_Python\File_Generation\GenerateTestScript.py" 2 '+ '"' +str(folder_path) + '"'
+        os.system('"'+GenerationPath+'"')
+      
+      DestinationPath = folder_path
+      SourcePath = "..\RPC\Current_Version\GRPC_V2.0\GRPC_GPIO_PI_Python\GRPC_client\GPIO_write_client.py"
+      copy(SourcePath, DestinationPath)
+      
+      SourcePath = "..\RPC\Current_Version\GRPC_V2.0\GRPC_GPIO_PI_Python\GRPC_client\GPIO_macros.py"
+      copy(SourcePath, DestinationPath)
+      
+      SourcePath = "..\RPC\Current_Version\GRPC_V2.0\GRPC_GPIO_PI_Python\GRPC_client\GPIO_write_pb2.py"
+      copy(SourcePath, DestinationPath)
+      
+      SourcePath = "..\RPC\Current_Version\GRPC_V2.0\GRPC_GPIO_PI_Python\GRPC_client\GPIO_write_pb2_grpc.py"
+      copy(SourcePath, DestinationPath)
     # GenerateTestCase_Func     
-    
     
     #########################################################
     # Function Called By Load_pushButton
@@ -2212,9 +2229,27 @@ class Ui_HABDoe(object):
       file_explorer()
       global folder_path
       global runFlag
+      global file_path
       runFlag = 2   
       # load test case and save the path
       self.LoadMode_Path_lineEdit.setText(str(file_path))
+      
+      before_trunc = file_path.split('/')
+      DestinationPath = '/'.join(before_trunc[0:len(before_trunc)-1])
+      
+      SourcePath = "..\RPC\Current_Version\GRPC_V2.0\GRPC_GPIO_PI_Python\GRPC_client\GPIO_write_client.py"
+      copy(SourcePath, DestinationPath)
+      
+      SourcePath = "..\RPC\Current_Version\GRPC_V2.0\GRPC_GPIO_PI_Python\GRPC_client\GPIO_macros.py"
+      copy(SourcePath, DestinationPath)
+      
+      SourcePath = "..\RPC\Current_Version\GRPC_V2.0\GRPC_GPIO_PI_Python\GRPC_client\GPIO_write_pb2.py"
+      copy(SourcePath, DestinationPath)
+      
+      SourcePath = "..\RPC\Current_Version\GRPC_V2.0\GRPC_GPIO_PI_Python\GRPC_client\GPIO_write_pb2_grpc.py"
+      copy(SourcePath, DestinationPath)
+      
+      
       # LoadTestCase_Func     
     
     
@@ -2225,11 +2260,34 @@ class Ui_HABDoe(object):
     def RunTestCase_Func(self):
       showdialog()
       global runFlag
-      # 
+      global file_path
+      global folder_path
+      
+      before_trunc = file_path.split('/')
+      DestinationPath = '/'.join(before_trunc[0:len(before_trunc)-1])
+
       if (runFlag == 1): 
-        os.system('"'+str(folder_path) + "\TestCase.py"+'"')
+        #os.system('"'+str(folder_path) + "\TestCase.py"+'"')
+        #subprocess.call('"'+str(folder_path) + "\TestCase.py"+'"', shell=True)
+        #myoutput = open(folder_path + '\TestCase.log', 'w+')
+        #the_other_process = subprocess.Popen(['python', str(folder_path) + "\TestCase.py"], stdout=myoutput)
+        
+        os.system(  "start cmd.exe /c "+ ('"' +str(folder_path) + "\TestCase.py" + '"') )
+    
       elif(runFlag == 2):
-        os.system('"'+str(file_path)+'"')
+        #temp = 'START /B cmd /c'+ " "+ '"' +'"' +str(file_path) + '"' + ' > ' + '"' + str(DestinationPath) +'/TestCase.log'+ '"' + '"'
+        #os.system('"' + temp + '"')
+        
+        #os.system("START /B cmd /c"+ '"' + str(file_path) + '"' + " > " + '"' + DestinationPath +'/TestCase.log'+ '"')
+        #subprocess.call('"'+str(file_path)+'"', shell=True)
+        
+        #myoutput = open(DestinationPath + '\TestCase.log', 'w+')
+        #the_other_process = subprocess.Popen(['python', str(file_path)] , stdout=myoutput)
+        
+        os.system(  "start cmd.exe /c "+ ('"'+str(file_path)+'"') )
+
+        #+ " 1> " + ('"'+DestinationPath +'/TestCase.log'+'"')
+   
     # setupUi
 
     def retranslateUi(self, HABDoe):
