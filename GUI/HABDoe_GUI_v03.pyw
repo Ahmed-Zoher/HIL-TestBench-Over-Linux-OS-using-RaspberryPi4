@@ -107,7 +107,11 @@ class Ui_HABDoe(object):
         self.BenchMode_tabWidget.setGeometry(QRect(9, 169, 891, 451))
         font1 = QFont()
         font1.setFamily(u"Segoe UI")
-        self.BenchMode_tabWidget.setFont(font1)
+        font1.setPixelSize(12)
+        font8 = QFont()
+        font8.setFamily(u"Segoe UI")
+        font8.setPixelSize(14)
+        self.BenchMode_tabWidget.setFont(font8)
         self.BenchMode_tabWidget.setStyleSheet(u"QTabWidget::pane { /* The tab widget frame */\n"
 "    border-top: 2px solid #C2C7CB;\n"
 "    position: absolute;\n"
@@ -991,7 +995,8 @@ class Ui_HABDoe(object):
         self.UART_DataSend_label.setFont(font1)
         self.UART_DataReceived_label = QLabel(self.UART_groupBox)
         self.UART_DataReceived_label.setObjectName(u"UART_DataReceived_label")
-        self.UART_DataReceived_label.setGeometry(QRect(16, 190, 101, 21))
+        self.UART_DataReceived_label.setGeometry(QRect(16, 190, 111, 21))
+        # self.UART_DataReceived_label.setGeometry(QRect(16, 190, 101, 21))
         self.UART_DataReceived_label.setFont(font1)
         self.UART_DataSend_lineEdit = QLineEdit(self.UART_groupBox)
         '''
@@ -1039,7 +1044,7 @@ class Ui_HABDoe(object):
         self.UART_SendData_pushButton.setMinimumSize(QSize(0, 0))
         font4 = QFont()
         font4.setFamily(u"Segoe UI")
-        font4.setPointSize(8)
+        font4.setPointSize(7)
         font4.setBold(False)
         font4.setItalic(False)
         font4.setWeight(50);
@@ -1109,7 +1114,7 @@ class Ui_HABDoe(object):
         self.SPI_Channel_1_DataSend_label.setFont(font1)
         self.SPI_Channel_1_DataReceived_label = QLabel(self.SPI_Channel_1_groupBox)
         self.SPI_Channel_1_DataReceived_label.setObjectName(u"SPI_Channel_1_DataReceived_label")
-        self.SPI_Channel_1_DataReceived_label.setGeometry(QRect(16, 190, 101, 21))
+        self.SPI_Channel_1_DataReceived_label.setGeometry(QRect(16, 190, 111, 21))
         self.SPI_Channel_1_DataReceived_label.setFont(font1)
         self.SPI_Channel_1_DataSend_lineEdit = QLineEdit(self.SPI_Channel_1_groupBox)
         '''
@@ -1175,7 +1180,10 @@ class Ui_HABDoe(object):
         self.SPI_Channel_1_BaudRateRange_lineEdit = QLineEdit(self.SPI_Channel_1_groupBox)
         self.SPI_Channel_1_BaudRateRange_lineEdit.setObjectName(u"SPI_Channel_1_BaudRateRange_lineEdit")
         self.SPI_Channel_1_BaudRateRange_lineEdit.setGeometry(QRect(120, 56, 121, 20))
-        self.SPI_Channel_1_BaudRateRange_lineEdit.setFont(font1)
+        font66 = QFont()
+        font66.setFamily(u"Segoe UI")
+        font66.setPixelSize(11)
+        self.SPI_Channel_1_BaudRateRange_lineEdit.setFont(font66)
         self.SPI_Channel_1_BaudRateRange_lineEdit.setStyleSheet(u"QLineEdit {\n"
 "    border: 2px solid gray;\n"
 "    border-radius: 10px;\n"
@@ -1261,7 +1269,7 @@ class Ui_HABDoe(object):
         self.SPI_Channel_2_DataSend_label.setFont(font1)
         self.SPI_Channel_2_DataReceived_label = QLabel(self.SPI_Channel_2_groupBox)
         self.SPI_Channel_2_DataReceived_label.setObjectName(u"SPI_Channel_2_DataReceived_label")
-        self.SPI_Channel_2_DataReceived_label.setGeometry(QRect(20, 190, 101, 21))
+        self.SPI_Channel_2_DataReceived_label.setGeometry(QRect(20, 190, 111, 21))
         self.SPI_Channel_2_DataReceived_label.setFont(font1)
         self.SPI_Channel_2_DataSend_lineEdit = QLineEdit(self.SPI_Channel_2_groupBox)
         '''
@@ -1327,7 +1335,7 @@ class Ui_HABDoe(object):
         self.SPI_Channel_2_BaudRateRange_lineEdit = QLineEdit(self.SPI_Channel_2_groupBox)
         self.SPI_Channel_2_BaudRateRange_lineEdit.setObjectName(u"SPI_Channel_2_BaudRateRange_lineEdit")
         self.SPI_Channel_2_BaudRateRange_lineEdit.setGeometry(QRect(120, 56, 121, 20))
-        self.SPI_Channel_2_BaudRateRange_lineEdit.setFont(font1)
+        self.SPI_Channel_2_BaudRateRange_lineEdit.setFont(font66)
         self.SPI_Channel_2_BaudRateRange_lineEdit.setStyleSheet(u"QLineEdit {\n"
 "    border: 2px solid gray;\n"
 "    border-radius: 10px;\n"
@@ -2392,22 +2400,22 @@ class Ui_HABDoe(object):
         self.BenchMode_tabWidget.setTabText(self.BenchMode_tabWidget.indexOf(self.DirectMode_tab), QCoreApplication.translate("HABDoe", u"Direct", None))
         self.HILModeFeatures_groupBox.setTitle(QCoreApplication.translate("HABDoe", u"HIL Mode Features", None))
         self.Run_pushButton.setText(QCoreApplication.translate("HABDoe", u"Run", None))
-        self.GenerateMode_groupBox.setTitle(QCoreApplication.translate("HABDoe", u"Generate New Test Case", None))
+        self.GenerateMode_groupBox.setTitle(QCoreApplication.translate("HABDoe", u"Generate a New Test File", None))
         self.GenerateMode_Path_lineEdit.setText("")
-        self.GenerateMode_Path_lineEdit.setPlaceholderText(QCoreApplication.translate("HABDoe", u"Path for the test case and the log files [ i.e. C:\\Users ]", None))
+        self.GenerateMode_Path_lineEdit.setPlaceholderText(QCoreApplication.translate("HABDoe", u"Path of the loaded test file is displayed here", None))
         self.GenerateTestCase_comboBox.setItemText(0, QCoreApplication.translate("HABDoe", u"Empty (add your own content)", None))
         self.GenerateTestCase_comboBox.setItemText(1, QCoreApplication.translate("HABDoe", u"Blinky (blink a LED)", None))
 
         self.GeneratePath_label.setText(QCoreApplication.translate("HABDoe", u"Path:", None))
         self.Generate_pushButton.setText(QCoreApplication.translate("HABDoe", u"Generate", None))
-        self.LoadMode_groupBox.setTitle(QCoreApplication.translate("HABDoe", u"Load Existing Test Case", None))
+        self.LoadMode_groupBox.setTitle(QCoreApplication.translate("HABDoe", u"Load an Existing Test File", None))
         self.LoadMode_Path_lineEdit.setText("")
-        self.LoadMode_Path_lineEdit.setPlaceholderText(QCoreApplication.translate("HABDoe", u"Path for the test case and the log files [ i.e. C:\\Users\\myTest.py ]", None))
+        self.LoadMode_Path_lineEdit.setPlaceholderText(QCoreApplication.translate("HABDoe", u"Path of the generated test file is displayed here", None))
         self.LoadPath_label.setText(QCoreApplication.translate("HABDoe", u"Path:", None))
         self.Load_pushButton.setText(QCoreApplication.translate("HABDoe", u"Load", None))
         self.ModeSelect_groupBox.setTitle(QCoreApplication.translate("HABDoe", u"Mode Select", None))
-        self.label_21.setText(QCoreApplication.translate("HABDoe", u"Generate New Test Case", None))
-        self.label_22.setText(QCoreApplication.translate("HABDoe", u"Load Existing Test Case", None))
+        self.label_21.setText(QCoreApplication.translate("HABDoe", u"Generate a New Test", None))
+        self.label_22.setText(QCoreApplication.translate("HABDoe", u"Load an Existing Test", None))
         self.BenchMode_tabWidget.setTabText(self.BenchMode_tabWidget.indexOf(self.HIL_Mode_Tab), QCoreApplication.translate("HABDoe", u"HIL", None))
         self.BenchMode_tabWidget.setTabText(self.BenchMode_tabWidget.indexOf(self.Info_Tab), QCoreApplication.translate("HABDoe", u"System Information", None))
         self.Conncetion_groupBox.setTitle(QCoreApplication.translate("HABDoe", u"Connection", None))
