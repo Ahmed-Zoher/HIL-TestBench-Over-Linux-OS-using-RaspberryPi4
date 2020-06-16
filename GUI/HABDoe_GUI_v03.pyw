@@ -34,6 +34,9 @@ folder_path = ""
 
 global runFlag
 runFlag = 0
+  
+global Connection_Flag
+Connection_Flag = 0
 
 ##################################################################################
 ##################################################################################
@@ -72,12 +75,12 @@ def showdialog():
    retval = msg.exec_()
    #print("value of pressed message box button:", retval)
    
-def MessageSent_dialog():
+def DisconnectFirst_dialog():
    msg = QMessageBox()
-   msg.setIcon(QMessageBox.Information)
-   msg.setText("Message has been transmitted")
-   #msg.setDetailedText("Please generate or load a Test before pressing run")
-   msg.setWindowTitle("Message Transmission")
+   msg.setIcon(QMessageBox.Error)
+   msg.setText("Direct Mode is still running")
+   msg.setDetailedText("Please diconnect the direct mode and try again")
+   msg.setWindowTitle("Test Execution")
    msg.setStandardButtons(QMessageBox.Ok)
    #msg.buttonClicked.connect(msgbtn)
 	
@@ -982,9 +985,14 @@ class Ui_HABDoe(object):
 "}\n"
 "\n"
 "QComboBox::drop-down {\n"
-"	 border: 1px solid gray;\n"
-"	 border-radius: 8px;\n"
-"	 background-color: darkgray;\n"
+"   width: 15px;\n"
+"   border: 0px;\n"
+"}\n"
+"\n"
+"QComboBox::down-arrow {\n"
+"    image: url(Down-Arrow.png);\n"
+"    width: 14px;\n"
+"    height: 14px;\n"
 "}")
         self.UART_BaudRate_label = QLabel(self.UART_groupBox)
         self.UART_BaudRate_label.setObjectName(u"UART_BaudRate_label")
@@ -1491,9 +1499,14 @@ class Ui_HABDoe(object):
 "}\n"
 "\n"
 "QComboBox::drop-down {\n"
-"	 border: 1px solid gray;\n"
-"	 border-radius: 8px;\n"
-"	 background-color: darkgray;\n"
+"   width: 15px;\n"
+"   border: 0px;\n"
+"}\n"
+"\n"
+"QComboBox::down-arrow {\n"
+"    image: url(Down-Arrow.png);\n"
+"    width: 14px;\n"
+"    height: 14px;\n"
 "}")
         self.GeneratePath_label = QLabel(self.GenerateMode_groupBox)
         self.GeneratePath_label.setObjectName(u"GeneratePath_label")
@@ -1665,19 +1678,27 @@ class Ui_HABDoe(object):
         self.Server_Number_comboBox.addItem("")
         self.Server_Number_comboBox.setObjectName(u"Server_Number_comboBox")
         self.Server_Number_comboBox.setGeometry(QRect(80, 28, 101, 22))
-        self.Server_Number_comboBox.setFont(font1)
+        font77 = QFont()
+        font77.setFamily(u"Segoe UI")
+        font77.setPixelSize(12)        
+        self.Server_Number_comboBox.setFont(font77)
         self.Server_Number_comboBox.setStyleSheet(u"QComboBox {\n"
 "    border: 2px solid gray;\n"
 "    border-radius: 10px;\n"
-"    padding: 0 8px;\n"
+"    padding: 0 6px;\n"
 "    background: white;\n"
 "    selection-background-color: darkgray;\n"
 "}\n"
 "\n"
 "QComboBox::drop-down {\n"
-"	 border: 1px solid gray;\n"
-"	 border-radius: 8px;\n"
-"	 background-color: darkgray;\n"
+"   width: 15px;\n"
+"   border: 0px;\n"
+"}\n"
+"\n"
+"QComboBox::down-arrow {\n"
+"    image: url(Down-Arrow.png);\n"
+"    width: 14px;\n"
+"    height: 14px;\n"
 "}")
         self.Server_Number_label = QLabel(self.Server_Configurations_groupBox)
         self.Server_Number_label.setObjectName(u"Server_Number_label")
@@ -1851,6 +1872,10 @@ class Ui_HABDoe(object):
 
         # SPI_CH2 send Button
         self.SPI_Channel_2_SendData_pushButton.clicked.connect(self.SPI_CH2_Tx)
+        
+        self.BenchMode_tabWidget.currentChanged.connect(self.SwitchModes_Func)
+
+
 
     '''
     to be changed as per user demand  
@@ -1872,6 +1897,108 @@ class Ui_HABDoe(object):
     my_functions = CDLL(so_file)
     status = 0
 
+
+
+
+
+    def SwitchModes_Func(self):
+      if (self.BenchMode_tabWidget.currentIndex() == 0):
+        print(self.BenchMode_tabWidget.currentIndex())
+        # self.Conncetion_Access_groupBox.setEnabled(True)
+        self.Disconnect_pushButton.setEnabled(True)
+        self.Connect_pushButton.setEnabled(True)
+        self.Connect_pushButton.setStyleSheet(u"QPushButton {\n"
+        "    color: white;\n"
+        "	background-color: #05B8CC;\n"
+        "	border: 2px solid grey;\n"
+        "    border-width: 2px;\n"
+        "    border-radius: 10px;    \n"
+        "     \n"
+        "	min-width: 10em;\n"
+        "    padding: 6px;\n"
+        "}\n"
+        "QPushButton:pressed {\n"
+        "    background-color: grey;\n"
+        "    border-style: inset;\n"
+        "}")
+        self.Disconnect_pushButton.setStyleSheet(u"QPushButton {\n"
+        "    color: white;\n"
+        "	background-color: rgb(175,175,175);\n"
+        "	border: 2px solid grey;\n"
+        "    border-width: 2px;\n"
+        "    border-radius: 10px;    \n"
+        "	min-width: 10em;\n"
+        "    padding: 6px;\n"
+        "}\n"
+        "QPushButton:pressed {\n"
+        "    background-color: grey;\n"
+        "    border-style: inset;\n"
+        "}")
+        self.Conncection_progressBar.setStyleSheet(u"QProgressBar {\n"
+        "    border: 2px solid grey;\n"
+        "    border-radius: 5px;	\n"
+        "}\n"
+        "\n"
+        "QProgressBar::chunk {\n"
+        "    background-color: #05B8CC;\n"
+        "    width: 20px;\n"
+        "}\n"
+        "\n"
+        "QProgressBar {\n"
+        "    border: 2px solid grey;\n"
+        "    border-radius: 5px;\n"
+        "    text-align: center;\n"
+        "}")
+        # self.Conncetion_Access_groupBox.setVisible(True)
+      else:
+        print(self.BenchMode_tabWidget.currentIndex())
+        # self.Conncetion_Access_groupBox.setEnabled(False)
+        self.Disconnect_pushButton.setEnabled(False)
+        self.Connect_pushButton.setEnabled(False)
+        self.Connect_pushButton.setStyleSheet(u"QPushButton {\n"
+        "    color: white;\n"
+        "	background-color: rgb(175,175,175,30%);\n"
+        "	border: 2px solid grey;\n"
+        "    border-width: 2px;\n"
+        "    border-radius: 10px;    \n"
+        "     \n"
+        "	min-width: 10em;\n"
+        "    padding: 6px;\n"
+        "}\n"
+        "QPushButton:pressed {\n"
+        "    background-color: grey;\n"
+        "    border-style: inset;\n"
+        "}")
+        self.Disconnect_pushButton.setStyleSheet(u"QPushButton {\n"
+        "    color: white;\n"
+        "	background-color: rgb(175,175,175,30%);\n"
+        "	border: 2px solid grey;\n"
+        "    border-width: 2px;\n"
+        "    border-radius: 10px;    \n"
+        "	min-width: 10em;\n"
+        "    padding: 6px;\n"
+        "}\n"
+        "QPushButton:pressed {\n"
+        "    background-color: grey;\n"
+        "    border-style: inset;\n"
+        "}")
+        self.Conncection_progressBar.setStyleSheet(u"QProgressBar {\n"
+        "    border: 2px solid grey;\n"
+        "    border-radius: 5px;	\n"
+        "}\n"
+        "\n"
+        "QProgressBar::chunk {\n"
+        "    background-color: rgb(175,175,175,30%);\n"
+        "    width: 20px;\n"
+        "}\n"
+        "\n"
+        "QProgressBar {\n"
+        "    border: 2px solid grey;\n"
+        "    border-radius: 5px;\n"
+        "    text-align: center;\n"
+        "}")
+        # self.Conncetion_Access_groupBox.setVisible(False)
+    
     
     #########################################################
     # Function Called By Connect_pushButton
@@ -2071,6 +2198,7 @@ class Ui_HABDoe(object):
     def Connect_Func(self):
       global ProgramStatus
       global Tx_UART_Flag
+      global Connection_Flag
       
       status = my_functions.UDP_ClientConnect(b"192.168.5.10", 8080)
       if(status == 0):
@@ -2083,7 +2211,8 @@ class Ui_HABDoe(object):
       
         print("CONNECTION_OK\n")
         ProgramStatus = 1
-        
+        Connection_Flag = 1
+
         COUNTER = 0
         while(ProgramStatus):
           COUNTER += 1
@@ -2095,17 +2224,17 @@ class Ui_HABDoe(object):
         self.Conncection_progressBar.setValue(0)
         print("CONNECTION_WINSOCK_INIT_ERROR\n")
         ProgramStatus = 0
-        
+        Connection_Flag = 0
       elif(status == 2):
         self.Conncection_progressBar.setValue(0)
         print("CONNECTION_SOCKET_ERROR\n")
         ProgramStatus = 0
-        
+        Connection_Flag = 0
       elif(status == 3):
         self.Conncection_progressBar.setValue(0)
         print("CONENCTION_REQUEST_TIMEOUT\n")
         ProgramStatus = 0     
-        
+        Connection_Flag = 0
     # Connect_Func      
   
     def UART_Tx(self):
@@ -2126,8 +2255,10 @@ class Ui_HABDoe(object):
     # between Server and client
     #########################################################
     def Disconnect_Func(self):
+      global Connection_Flag
       global ProgramStatus
       ProgramStatus = 0
+      Connection_Flag = 0
       self.Conncection_progressBar.setValue(0)
       my_functions.UDP_ClientDisconnect()
       
@@ -2267,35 +2398,39 @@ class Ui_HABDoe(object):
     # Responsible for Running the loaded test case  
     #########################################################
     def RunTestCase_Func(self):
-      showdialog()
       global runFlag
       global file_path
       global folder_path
+      global Connection_Flag
       
       before_trunc = file_path.split('/')
       DestinationPath = '/'.join(before_trunc[0:len(before_trunc)-1])
-
-      if (runFlag == 1): 
-        #os.system('"'+str(folder_path) + "\TestCase.py"+'"')
-        #subprocess.call('"'+str(folder_path) + "\TestCase.py"+'"', shell=True)
-        #myoutput = open(folder_path + '\TestCase.log', 'w+')
-        #the_other_process = subprocess.Popen(['python', str(folder_path) + "\TestCase.py"], stdout=myoutput)
-        
-        os.system(  "start cmd.exe /c "+ ('"' +str(folder_path) + "\TestCase.py" + '"') )
-    
-      elif(runFlag == 2):
-        #temp = 'START /B cmd /c'+ " "+ '"' +'"' +str(file_path) + '"' + ' > ' + '"' + str(DestinationPath) +'/TestCase.log'+ '"' + '"'
-        #os.system('"' + temp + '"')
-        
-        #os.system("START /B cmd /c"+ '"' + str(file_path) + '"' + " > " + '"' + DestinationPath +'/TestCase.log'+ '"')
-        #subprocess.call('"'+str(file_path)+'"', shell=True)
-        
-        #myoutput = open(DestinationPath + '\TestCase.log', 'w+')
-        #the_other_process = subprocess.Popen(['python', str(file_path)] , stdout=myoutput)
-        
-        os.system(  "start cmd.exe /c "+ ('"'+str(file_path)+'"') )
-
-        #+ " 1> " + ('"'+DestinationPath +'/TestCase.log'+'"')
+      
+      if Connection_Flag == 1:
+        DisconnectFirst_dialog()
+      elif Connection_Flag == 0:
+        showdialog()
+        if (runFlag == 1): 
+          #os.system('"'+str(folder_path) + "\TestCase.py"+'"')
+          #subprocess.call('"'+str(folder_path) + "\TestCase.py"+'"', shell=True)
+          #myoutput = open(folder_path + '\TestCase.log', 'w+')
+          #the_other_process = subprocess.Popen(['python', str(folder_path) + "\TestCase.py"], stdout=myoutput)
+          
+          os.system(  "start cmd.exe /c "+ ('"' +str(folder_path) + "\TestCase.py" + '"') )
+      
+        elif(runFlag == 2):
+          #temp = 'START /B cmd /c'+ " "+ '"' +'"' +str(file_path) + '"' + ' > ' + '"' + str(DestinationPath) +'/TestCase.log'+ '"' + '"'
+          #os.system('"' + temp + '"')
+          
+          #os.system("START /B cmd /c"+ '"' + str(file_path) + '"' + " > " + '"' + DestinationPath +'/TestCase.log'+ '"')
+          #subprocess.call('"'+str(file_path)+'"', shell=True)
+          
+          #myoutput = open(DestinationPath + '\TestCase.log', 'w+')
+          #the_other_process = subprocess.Popen(['python', str(file_path)] , stdout=myoutput)
+          
+          os.system(  "start cmd.exe /c "+ ('"'+str(file_path)+'"') )
+  
+          #+ " 1> " + ('"'+DestinationPath +'/TestCase.log'+'"')
    
     # setupUi
 
@@ -2439,6 +2574,8 @@ class Ui_HABDoe(object):
 def main():
   global runFlag 
   runFlag = 0
+  global Connection_Flag
+  Connection_Flag = 0
   # Create the Qt Application
   app = QApplication(sys.argv)
   # Changing the window icon of the app.
