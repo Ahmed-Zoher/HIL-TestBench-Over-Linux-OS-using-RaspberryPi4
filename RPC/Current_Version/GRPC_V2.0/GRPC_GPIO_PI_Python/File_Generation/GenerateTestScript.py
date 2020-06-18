@@ -21,11 +21,15 @@ def GenerateFile (option, path):
         f.write ("def Test_main (): \n")
         ## Blinky example ##
         f.write ("\t## Blinky example ##\n")
-        f.write ("\tTestBench.GPIO_SetMode(18, OUTPUT) \n")
+        f.write ("\tprint(\"STARTING CODE\")\n")
+        f.write ("\tTestBench.GPIO_SetMode(12, OUTPUT) \n")
+        f.write ("\tprint(\"SETTING PIN 12 as OUTPUT\")\n")
         f.write ("\twhile 1 :\n")
-        f.write ("\t\tTestBench.GPIO_Write(18, HIGH) \n")
+        f.write ("\t\tTestBench.GPIO_Write(12, HIGH) \n")
+        f.write ("\t\tprint(\"PIN 12 - HIGH\")\n")
         f.write ("\t\tTestBench.DelayMS(1000)\n")
-        f.write ("\t\tTestBench.GPIO_Write(18, LOW) \n")
+        f.write ("\t\tTestBench.GPIO_Write(12, LOW) \n")
+        f.write ("\t\tprint(\"PIN 12 - LOW\")\n")
         f.write ("\t\tTestBench.DelayMS(1000)\n")
         f.write ("\n\n\n\n")
         
