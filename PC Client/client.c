@@ -274,11 +274,11 @@ uint8_t UDP_ClientReceive(uint8_t MessageType)
 			{
 				returnType = HEADER_INVALID;
 			}
-			// for(Iterator = 0; Iterator < sizeof(FrameHeader_t); Iterator++)
-			// {
-				// printf("RX_HEADER_FRAME_BYTE[%d]: %d\n", Iterator, ((uint8_t*)&RxFrameHeader)[Iterator]);
-			// }
-			// printf("\n");
+			for(Iterator = 0; Iterator < sizeof(FrameHeader_t); Iterator++)
+			{
+				printf("RX_HEADER_FRAME_BYTE[%d]: %d\n", Iterator, ((uint8_t*)&RxFrameHeader)[Iterator]);
+			}
+			printf("\n");
 			break;
 			
 		case MESSAGE_DATA_FRAME:
@@ -288,11 +288,11 @@ uint8_t UDP_ClientReceive(uint8_t MessageType)
 				printf("recvfrom() failed with error code : %d" , WSAGetLastError());
 				exit(EXIT_FAILURE);
 			}
-			// for(Iterator = 0; Iterator < RxFrameHeader.TotalDataSize; Iterator++)
-			// {
-				// printf("RX_DATA_FRAME_BYTE[%d]: %d\n", Iterator, RxFrameDataBuffer[Iterator]);
-			// }
-			// printf("\n");
+			for(Iterator = 0; Iterator < RxFrameHeader.TotalDataSize; Iterator++)
+			{
+				printf("RX_DATA_FRAME_BYTE[%d]: %d\n", Iterator, RxFrameDataBuffer[Iterator]);
+			}
+			printf("\n");
 			returnType = MESSAGE_DATA_FRAME;
 			break;
 	
@@ -342,7 +342,10 @@ uint8_t UDP_ClientReceive(uint8_t MessageType)
 					printf("recvfrom() failed with error code : %d" , WSAGetLastError());
 					exit(EXIT_FAILURE);
 				}	
-				recv_print(SerialSize);
+				for(Iterator = 0; Iterator < SerialSize; Iterator++)
+				{
+					printf("RX_SPI_CH1_MESSAGE_BYTE[%d]: %d\n", Iterator, RxFrameDataBuffer[Iterator]);
+				}
 			}
 			returnType = MESSAGE_SPI_CH1;
 			break;
@@ -356,7 +359,10 @@ uint8_t UDP_ClientReceive(uint8_t MessageType)
 					printf("recvfrom() failed with error code : %d" , WSAGetLastError());
 					exit(EXIT_FAILURE);
 				}	
-				recv_print(SerialSize);
+				for(Iterator = 0; Iterator < SerialSize; Iterator++)
+				{
+					printf("RX_SPI_CH2_MESSAGE_BYTE[%d]: %d\n", Iterator, RxFrameDataBuffer[Iterator]);
+				}
 			}
 			returnType = MESSAGE_SPI_CH2;
 			break;

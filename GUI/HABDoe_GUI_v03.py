@@ -34,9 +34,6 @@ folder_path = ""
 
 global runFlag
 runFlag = 0
-  
-global Connection_Flag
-Connection_Flag = 0
 
 ##################################################################################
 ##################################################################################
@@ -75,12 +72,12 @@ def showdialog():
    retval = msg.exec_()
    #print("value of pressed message box button:", retval)
    
-def DisconnectFirst_dialog():
+def MessageSent_dialog():
    msg = QMessageBox()
-   msg.setIcon(QMessageBox.Error)
-   msg.setText("Direct Mode is still running")
-   msg.setDetailedText("Please diconnect the direct mode and try again")
-   msg.setWindowTitle("Test Execution")
+   msg.setIcon(QMessageBox.Information)
+   msg.setText("Message has been transmitted")
+   #msg.setDetailedText("Please generate or load a Test before pressing run")
+   msg.setWindowTitle("Message Transmission")
    msg.setStandardButtons(QMessageBox.Ok)
    #msg.buttonClicked.connect(msgbtn)
 	
@@ -985,14 +982,9 @@ class Ui_HABDoe(object):
 "}\n"
 "\n"
 "QComboBox::drop-down {\n"
-"   width: 15px;\n"
-"   border: 0px;\n"
-"}\n"
-"\n"
-"QComboBox::down-arrow {\n"
-"    image: url(Down-Arrow.png);\n"
-"    width: 14px;\n"
-"    height: 14px;\n"
+"	 border: 1px solid gray;\n"
+"	 border-radius: 8px;\n"
+"	 background-color: darkgray;\n"
 "}")
         self.UART_BaudRate_label = QLabel(self.UART_groupBox)
         self.UART_BaudRate_label.setObjectName(u"UART_BaudRate_label")
@@ -1499,14 +1491,9 @@ class Ui_HABDoe(object):
 "}\n"
 "\n"
 "QComboBox::drop-down {\n"
-"   width: 15px;\n"
-"   border: 0px;\n"
-"}\n"
-"\n"
-"QComboBox::down-arrow {\n"
-"    image: url(Down-Arrow.png);\n"
-"    width: 14px;\n"
-"    height: 14px;\n"
+"	 border: 1px solid gray;\n"
+"	 border-radius: 8px;\n"
+"	 background-color: darkgray;\n"
 "}")
         self.GeneratePath_label = QLabel(self.GenerateMode_groupBox)
         self.GeneratePath_label.setObjectName(u"GeneratePath_label")
@@ -1678,27 +1665,19 @@ class Ui_HABDoe(object):
         self.Server_Number_comboBox.addItem("")
         self.Server_Number_comboBox.setObjectName(u"Server_Number_comboBox")
         self.Server_Number_comboBox.setGeometry(QRect(80, 28, 101, 22))
-        font77 = QFont()
-        font77.setFamily(u"Segoe UI")
-        font77.setPixelSize(12)        
-        self.Server_Number_comboBox.setFont(font77)
+        self.Server_Number_comboBox.setFont(font1)
         self.Server_Number_comboBox.setStyleSheet(u"QComboBox {\n"
 "    border: 2px solid gray;\n"
 "    border-radius: 10px;\n"
-"    padding: 0 6px;\n"
+"    padding: 0 8px;\n"
 "    background: white;\n"
 "    selection-background-color: darkgray;\n"
 "}\n"
 "\n"
 "QComboBox::drop-down {\n"
-"   width: 15px;\n"
-"   border: 0px;\n"
-"}\n"
-"\n"
-"QComboBox::down-arrow {\n"
-"    image: url(Down-Arrow.png);\n"
-"    width: 14px;\n"
-"    height: 14px;\n"
+"	 border: 1px solid gray;\n"
+"	 border-radius: 8px;\n"
+"	 background-color: darkgray;\n"
 "}")
         self.Server_Number_label = QLabel(self.Server_Configurations_groupBox)
         self.Server_Number_label.setObjectName(u"Server_Number_label")
@@ -1872,10 +1851,6 @@ class Ui_HABDoe(object):
 
         # SPI_CH2 send Button
         self.SPI_Channel_2_SendData_pushButton.clicked.connect(self.SPI_CH2_Tx)
-        
-        self.BenchMode_tabWidget.currentChanged.connect(self.SwitchModes_Func)
-
-
 
     '''
     to be changed as per user demand  
@@ -1897,108 +1872,6 @@ class Ui_HABDoe(object):
     my_functions = CDLL(so_file)
     status = 0
 
-
-
-
-
-    def SwitchModes_Func(self):
-      if (self.BenchMode_tabWidget.currentIndex() == 0):
-        print(self.BenchMode_tabWidget.currentIndex())
-        # self.Conncetion_Access_groupBox.setEnabled(True)
-        self.Disconnect_pushButton.setEnabled(True)
-        self.Connect_pushButton.setEnabled(True)
-        self.Connect_pushButton.setStyleSheet(u"QPushButton {\n"
-        "    color: white;\n"
-        "	background-color: #05B8CC;\n"
-        "	border: 2px solid grey;\n"
-        "    border-width: 2px;\n"
-        "    border-radius: 10px;    \n"
-        "     \n"
-        "	min-width: 10em;\n"
-        "    padding: 6px;\n"
-        "}\n"
-        "QPushButton:pressed {\n"
-        "    background-color: grey;\n"
-        "    border-style: inset;\n"
-        "}")
-        self.Disconnect_pushButton.setStyleSheet(u"QPushButton {\n"
-        "    color: white;\n"
-        "	background-color: rgb(175,175,175);\n"
-        "	border: 2px solid grey;\n"
-        "    border-width: 2px;\n"
-        "    border-radius: 10px;    \n"
-        "	min-width: 10em;\n"
-        "    padding: 6px;\n"
-        "}\n"
-        "QPushButton:pressed {\n"
-        "    background-color: grey;\n"
-        "    border-style: inset;\n"
-        "}")
-        self.Conncection_progressBar.setStyleSheet(u"QProgressBar {\n"
-        "    border: 2px solid grey;\n"
-        "    border-radius: 5px;	\n"
-        "}\n"
-        "\n"
-        "QProgressBar::chunk {\n"
-        "    background-color: #05B8CC;\n"
-        "    width: 20px;\n"
-        "}\n"
-        "\n"
-        "QProgressBar {\n"
-        "    border: 2px solid grey;\n"
-        "    border-radius: 5px;\n"
-        "    text-align: center;\n"
-        "}")
-        # self.Conncetion_Access_groupBox.setVisible(True)
-      else:
-        print(self.BenchMode_tabWidget.currentIndex())
-        # self.Conncetion_Access_groupBox.setEnabled(False)
-        self.Disconnect_pushButton.setEnabled(False)
-        self.Connect_pushButton.setEnabled(False)
-        self.Connect_pushButton.setStyleSheet(u"QPushButton {\n"
-        "    color: white;\n"
-        "	background-color: rgb(175,175,175,30%);\n"
-        "	border: 2px solid grey;\n"
-        "    border-width: 2px;\n"
-        "    border-radius: 10px;    \n"
-        "     \n"
-        "	min-width: 10em;\n"
-        "    padding: 6px;\n"
-        "}\n"
-        "QPushButton:pressed {\n"
-        "    background-color: grey;\n"
-        "    border-style: inset;\n"
-        "}")
-        self.Disconnect_pushButton.setStyleSheet(u"QPushButton {\n"
-        "    color: white;\n"
-        "	background-color: rgb(175,175,175,30%);\n"
-        "	border: 2px solid grey;\n"
-        "    border-width: 2px;\n"
-        "    border-radius: 10px;    \n"
-        "	min-width: 10em;\n"
-        "    padding: 6px;\n"
-        "}\n"
-        "QPushButton:pressed {\n"
-        "    background-color: grey;\n"
-        "    border-style: inset;\n"
-        "}")
-        self.Conncection_progressBar.setStyleSheet(u"QProgressBar {\n"
-        "    border: 2px solid grey;\n"
-        "    border-radius: 5px;	\n"
-        "}\n"
-        "\n"
-        "QProgressBar::chunk {\n"
-        "    background-color: rgb(175,175,175,30%);\n"
-        "    width: 20px;\n"
-        "}\n"
-        "\n"
-        "QProgressBar {\n"
-        "    border: 2px solid grey;\n"
-        "    border-radius: 5px;\n"
-        "    text-align: center;\n"
-        "}")
-        # self.Conncetion_Access_groupBox.setVisible(False)
-    
     
     #########################################################
     # Function Called By Connect_pushButton
@@ -2008,6 +1881,8 @@ class Ui_HABDoe(object):
     def TEST_Func(self):
       
       global Tx_UART_Flag
+      global Tx_SPI_CH1_Flag
+      global Tx_SPI_CH2_Flag
 
       #Message Definitions
       MESSAGE_ACK				      = 0
@@ -2072,22 +1947,42 @@ class Ui_HABDoe(object):
       UART_dataArray = [int(i, 16) for i in (self.UART_DataSend_lineEdit.displayText())]  
       UART_DATA = (c_int8 * len(UART_dataArray))(*UART_dataArray)
       
+      ##########################################CHANGES HERE############################33
       ##SPI_CH1 CONFIG
-      SPI_CH1_array = [ c_int32(self.SPI_Channel_1_horizontalSlider.value()), 
-                        c_int32(self.SPI_Channel_1_BaudRate_spinBox.value())]
+      SPI_CH1_config = [ c_int32(self.SPI_Channel_1_horizontalSlider.value()), 
+                        c_int32(int(self.SPI_Channel_1_BaudRate_spinBox.value()))]
+ 
+      if(Tx_SPI_CH1_Flag):      
+        SPI_CH1_config.append(c_int32(len(self.SPI_Channel_1_DataSend_lineEdit.displayText()) + PERIPH_ID_SIZE))
+      else:
+        SPI_CH1_config.append(PERIPH_ID_SIZE)
       
-      SPI_CH1_CONFIG = (c_int32 * len(SPI_CH1_array))(*SPI_CH1_array)
+      SPI_CH1_CONFIG = (c_int32 * len(SPI_CH1_config))(*SPI_CH1_config)
+      
+      ##SPI_CH1 DATA
+      SPI_CH1_dataArray = [int(i, 16) for i in (self.SPI_Channel_1_DataSend_lineEdit.displayText())]  
+      SPI_CH1_DATA = (c_int8 * len(SPI_CH1_dataArray))(*SPI_CH1_dataArray)
+      
       
       ##SPI_CH2 CONFIG
-      SPI_CH2_array = [ c_int32(self.SPI_Channel_2_horizontalSlider.value()), 
-                        c_int32(self.SPI_Channel_2_BaudRate_spinBox.value())]
+      SPI_CH2_config = [ c_int32(self.SPI_Channel_2_horizontalSlider.value()), 
+                        c_int32(int(self.SPI_Channel_2_BaudRate_spinBox.value()))]
+ 
+      if(Tx_SPI_CH2_Flag):      
+        SPI_CH2_config.append(c_int32(len(self.SPI_Channel_2_DataSend_lineEdit.displayText()) + PERIPH_ID_SIZE))
+      else:
+        SPI_CH2_config.append(PERIPH_ID_SIZE)
       
-      SPI_CH2_CONFIG = (c_int32 * len(SPI_CH2_array))(*SPI_CH2_array)
+      SPI_CH2_CONFIG = (c_int32 * len(SPI_CH2_config))(*SPI_CH2_config)
+      
+      ##SPI_CH2 DATA
+      SPI_CH2_dataArray = [int(i, 16) for i in (self.SPI_Channel_2_DataSend_lineEdit.displayText())]  
+      SPI_CH2_DATA = (c_int8 * len(SPI_CH2_dataArray))(*SPI_CH2_dataArray)
       
       #Sending Data to generate the client frame
       my_functions.FRAME_GenerateDataFrame(DIO_DATA, PWM_DATA, UART_CONFIG, SPI_CH1_CONFIG, SPI_CH2_CONFIG)
 
-      #my_functions.FRAME_Print()
+      my_functions.FRAME_Print()
       
       ##RECIVING DATA FROM PC
       #Sending Tx-Header
@@ -2117,8 +2012,6 @@ class Ui_HABDoe(object):
         #Receive Rx-Data
         my_functions.UDP_ClientReceive(MESSAGE_DATA_FRAME)
         
-        
-        ###### TO BE CHANGED >> my_functions.FRAME_ReadingsFrame()
         my_functions.FRAME_ReadingsFrame.restype = POINTER(c_uint32)
         FRAME_return = my_functions.FRAME_ReadingsFrame()
         
@@ -2127,14 +2020,14 @@ class Ui_HABDoe(object):
       
         #print("TIME DIFFERENCE: " + str(int((Time2-Time1) * 1000000)))
         #Displaying DIO Readings
-        # print(FRAME_return[0])
-        # print(FRAME_return[1])
-        # print(FRAME_return[2])
-        # print(FRAME_return[3])
-        # print(FRAME_return[4])
-        # print(FRAME_return[5])
-        # print(FRAME_return[6])
-        # print(FRAME_return[7])
+        print(FRAME_return[0])
+        print(FRAME_return[1])
+        print(FRAME_return[2])
+        print(FRAME_return[3])
+        print(FRAME_return[4])
+        print(FRAME_return[5])
+        print(FRAME_return[6])
+        print(FRAME_return[7])
         
         
         self.Channel5_lcdNumber.display(FRAME_return[0])
@@ -2160,7 +2053,7 @@ class Ui_HABDoe(object):
           Tx_UART_Flag = 0
         
         if(self.UART_horizontalSlider.value() == 1): 
-          ##Receiving the serial frames
+          ##Receiving the UART serial frames
           if(my_functions.UDP_ClientReceive(MESSAGE_SERIAL_SIZE) != MESSAGE_NACK):
             my_functions.UDP_ClientReceive(MESSAGE_UART)
             
@@ -2171,19 +2064,72 @@ class Ui_HABDoe(object):
             tempUART_ReadingArray = str(UART_ReadingArray)
             NewUartReading = tempUART_ReadingArray[6:len(tempUART_ReadingArray)-1]
             
-            print("bteee5: " + str(NewUartReading))
+            print("UART READING: " + str(NewUartReading))
             
             self.UART_DataReceived_lineEdit.setText(tempUART_ReadingArray[6:len(tempUART_ReadingArray)-1])
             my_functions.FRAME_FreeBuffer(SERIAL_RETURN_FRAME)
    
           #else:
             #print("UART_SIZE_ERROR\n")
-            
+        
+        if(Tx_SPI_CH1_Flag == 1):
+          ##Sending the SPI_CH1 serial frame
+          #Generate SPI_CH1 Frame     
+          my_functions.FRAME_GenerateSerialFrame(SPI_CH1_DATA, SPI_CH1_config[2], SERIAL_SPI_CH1)
+          
+          #Sending SPI_CH1 Frame
+          my_functions.UDP_ClientSend(MESSAGE_SPI_CH1)
+          #MessageSent_dialog()
+          Tx_SPI_CH1_Flag = 0
+        
         if(self.SPI_Channel_1_horizontalSlider.value() == 1):
           print("SPI_CH1 IS ENABLED")
+          ###################################
+          ##Receiving the SPI_CH1 serial frames
+          if(my_functions.UDP_ClientReceive(MESSAGE_SERIAL_SIZE) != MESSAGE_NACK):
+            print("REACHED HERE")
+            my_functions.UDP_ClientReceive(MESSAGE_SPI_CH1)
+            print("BUT NOT HERE")
+            my_functions.FRAME_SerialReturnFrame.restype = c_char_p
+            SPI_CH1_ReadingArray = my_functions.FRAME_SerialReturnFrame()
+          
+            #Displaying the received frame frm PC
+            tempSPI_CH1_ReadingArray = str(SPI_CH1_ReadingArray)
+            NewSPI_CH1_Reading = tempSPI_CH1_ReadingArray[6:len(tempSPI_CH1_ReadingArray)-1]
+            print("SPI_CH1 READING: " + str(NewSPI_CH1_Reading))
+            
+            self.SPI_Channel_1_DataReceived_lineEdit.setText(tempSPI_CH1_ReadingArray[6:len(tempSPI_CH1_ReadingArray)-1])
+            my_functions.FRAME_FreeBuffer(SERIAL_RETURN_FRAME)
+            
+    
+          ###################################
         
+        if(Tx_SPI_CH2_Flag == 1):
+          ##Sending the SPI_CH2 serial frame
+          #Generate SPI_CH2 Frame     
+          my_functions.FRAME_GenerateSerialFrame(SPI_CH2_DATA, SPI_CH2_config[2], SERIAL_SPI_CH2)
+          
+          #Sending SPI_CH2 Frame
+          my_functions.UDP_ClientSend(MESSAGE_SPI_CH2)
+          #MessageSent_dialog()
+          Tx_SPI_CH2_Flag = 0
+          
         if(self.SPI_Channel_2_horizontalSlider.value() == 1):
-          print("SPI_CH2 IS ENABLED")
+        
+          ##Receiving the SPI_CH2 serial frames
+          if(my_functions.UDP_ClientReceive(MESSAGE_SERIAL_SIZE) != MESSAGE_NACK):
+            my_functions.UDP_ClientReceive(MESSAGE_SPI_CH2)
+            
+            my_functions.FRAME_SerialReturnFrame.restype = c_char_p
+            SPI_CH2_ReadingArray = my_functions.FRAME_SerialReturnFrame()
+          
+            #Displaying the received frame frm PC
+            tempSPI_CH2_ReadingArray = str(SPI_CH2_ReadingArray)
+            NewSPI_CH2_Reading = tempSPI_CH2_ReadingArray[6:len(tempSPI_CH2_ReadingArray)-1]
+            print("SPI_CH2 READING: " + str(NewSPI_CH2_Reading))
+            
+            self.SPI_Channel_2_DataReceived_lineEdit.setText(tempSPI_CH2_ReadingArray[6:len(tempSPI_CH2_ReadingArray)-1])
+            my_functions.FRAME_FreeBuffer(SERIAL_RETURN_FRAME)
 
       elif(ReceiveStatus == 1): #Header Invalid
         print("HEADER FRAME INVALID")
@@ -2198,7 +2144,6 @@ class Ui_HABDoe(object):
     def Connect_Func(self):
       global ProgramStatus
       global Tx_UART_Flag
-      global Connection_Flag
       
       status = my_functions.UDP_ClientConnect(b"192.168.5.10", 8080)
       if(status == 0):
@@ -2211,12 +2156,11 @@ class Ui_HABDoe(object):
       
         print("CONNECTION_OK\n")
         ProgramStatus = 1
-        Connection_Flag = 1
-
+        
         COUNTER = 0
         while(ProgramStatus):
           COUNTER += 1
-          #print("PROGRAM COUNTER: " + str(COUNTER))
+          print("PROGRAM COUNTER: " + str(COUNTER))
           self.TEST_Func()
           QCoreApplication.processEvents()
       
@@ -2224,30 +2168,36 @@ class Ui_HABDoe(object):
         self.Conncection_progressBar.setValue(0)
         print("CONNECTION_WINSOCK_INIT_ERROR\n")
         ProgramStatus = 0
-        Connection_Flag = 0
+        
       elif(status == 2):
         self.Conncection_progressBar.setValue(0)
         print("CONNECTION_SOCKET_ERROR\n")
         ProgramStatus = 0
-        Connection_Flag = 0
+        
       elif(status == 3):
         self.Conncection_progressBar.setValue(0)
         print("CONENCTION_REQUEST_TIMEOUT\n")
         ProgramStatus = 0     
-        Connection_Flag = 0
+        
     # Connect_Func      
   
     def UART_Tx(self):
       global Tx_UART_Flag
-      Tx_UART_Flag = 1
+      
+      if(len(self.UART_DataSend_lineEdit.displayText()) > 0):
+        Tx_UART_Flag = 1
    
     def SPI_CH1_Tx(self):
       global Tx_SPI_CH1_Flag
-      Tx_SPI_CH1_Flag = 1
+      
+      if(len(self.SPI_Channel_1_DataSend_lineEdit.displayText()) > 0):
+        Tx_SPI_CH1_Flag = 1
   
     def SPI_CH2_Tx(self):
       global Tx_SPI_CH2_Flag
-      Tx_SPI_CH2_Flag = 1
+      
+      if(len(self.SPI_Channel_2_DataSend_lineEdit.displayText()) > 0):
+        Tx_SPI_CH2_Flag = 1
     
     #########################################################
     # Function Called By Disconnect_pushButton
@@ -2255,10 +2205,8 @@ class Ui_HABDoe(object):
     # between Server and client
     #########################################################
     def Disconnect_Func(self):
-      global Connection_Flag
       global ProgramStatus
       ProgramStatus = 0
-      Connection_Flag = 0
       self.Conncection_progressBar.setValue(0)
       my_functions.UDP_ClientDisconnect()
       
@@ -2305,7 +2253,7 @@ class Ui_HABDoe(object):
         self.UART_BaudRate_comboBox.setEnabled(True)
       else:
         self.UART_BaudRate_comboBox.setEnabled(False)
-    # UART_horizontalSlider_Func 
+    # UART_horizontalSlider_Func
     
     
     #########################################################
@@ -2398,39 +2346,35 @@ class Ui_HABDoe(object):
     # Responsible for Running the loaded test case  
     #########################################################
     def RunTestCase_Func(self):
+      showdialog()
       global runFlag
       global file_path
       global folder_path
-      global Connection_Flag
       
       before_trunc = file_path.split('/')
       DestinationPath = '/'.join(before_trunc[0:len(before_trunc)-1])
-      
-      if Connection_Flag == 1:
-        DisconnectFirst_dialog()
-      elif Connection_Flag == 0:
-        showdialog()
-        if (runFlag == 1): 
-          #os.system('"'+str(folder_path) + "\TestCase.py"+'"')
-          #subprocess.call('"'+str(folder_path) + "\TestCase.py"+'"', shell=True)
-          #myoutput = open(folder_path + '\TestCase.log', 'w+')
-          #the_other_process = subprocess.Popen(['python', str(folder_path) + "\TestCase.py"], stdout=myoutput)
-          
-          os.system(  "start cmd.exe /c "+ ('"' +str(folder_path) + "\TestCase.py" + '"') )
-      
-        elif(runFlag == 2):
-          #temp = 'START /B cmd /c'+ " "+ '"' +'"' +str(file_path) + '"' + ' > ' + '"' + str(DestinationPath) +'/TestCase.log'+ '"' + '"'
-          #os.system('"' + temp + '"')
-          
-          #os.system("START /B cmd /c"+ '"' + str(file_path) + '"' + " > " + '"' + DestinationPath +'/TestCase.log'+ '"')
-          #subprocess.call('"'+str(file_path)+'"', shell=True)
-          
-          #myoutput = open(DestinationPath + '\TestCase.log', 'w+')
-          #the_other_process = subprocess.Popen(['python', str(file_path)] , stdout=myoutput)
-          
-          os.system(  "start cmd.exe /c "+ ('"'+str(file_path)+'"') )
-  
-          #+ " 1> " + ('"'+DestinationPath +'/TestCase.log'+'"')
+
+      if (runFlag == 1): 
+        #os.system('"'+str(folder_path) + "\TestCase.py"+'"')
+        #subprocess.call('"'+str(folder_path) + "\TestCase.py"+'"', shell=True)
+        #myoutput = open(folder_path + '\TestCase.log', 'w+')
+        #the_other_process = subprocess.Popen(['python', str(folder_path) + "\TestCase.py"], stdout=myoutput)
+        
+        os.system(  "start cmd.exe /c "+ ('"' +str(folder_path) + "\TestCase.py" + '"') )
+    
+      elif(runFlag == 2):
+        #temp = 'START /B cmd /c'+ " "+ '"' +'"' +str(file_path) + '"' + ' > ' + '"' + str(DestinationPath) +'/TestCase.log'+ '"' + '"'
+        #os.system('"' + temp + '"')
+        
+        #os.system("START /B cmd /c"+ '"' + str(file_path) + '"' + " > " + '"' + DestinationPath +'/TestCase.log'+ '"')
+        #subprocess.call('"'+str(file_path)+'"', shell=True)
+        
+        #myoutput = open(DestinationPath + '\TestCase.log', 'w+')
+        #the_other_process = subprocess.Popen(['python', str(file_path)] , stdout=myoutput)
+        
+        os.system(  "start cmd.exe /c "+ ('"'+str(file_path)+'"') )
+
+        #+ " 1> " + ('"'+DestinationPath +'/TestCase.log'+'"')
    
     # setupUi
 
@@ -2574,8 +2518,6 @@ class Ui_HABDoe(object):
 def main():
   global runFlag 
   runFlag = 0
-  global Connection_Flag
-  Connection_Flag = 0
   # Create the Qt Application
   app = QApplication(sys.argv)
   # Changing the window icon of the app.
