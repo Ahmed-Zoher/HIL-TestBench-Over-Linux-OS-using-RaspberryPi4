@@ -148,7 +148,7 @@ static uint8_t SPI_CH2_Rx_Buffer[RX_BUFF_LEN] 	= {0};
 
 static SerialInfo_t UART_Info = {
 	.SerialStatus 		= 0,
-	.SerialBaudrate 	= 9600,
+	.SerialBaudrate 	= UART_INIT_BAUDRATE,
 	.SerialDataSize		= 0,
 	.SerialHandle		= -1,	
 	.Tx_Buffer			= UART_Tx_Buffer,
@@ -158,7 +158,7 @@ static SerialInfo_t UART_Info = {
 
 static SerialInfo_t SPI_CH1_Info = {
 	.SerialStatus 		= 0,
-	.SerialBaudrate 	= 32000,
+	.SerialBaudrate 	= SPI_CH1_INIT_BAUDRATE,
 	.SerialDataSize		= 0,
 	.SerialHandle		= -1,	
 	.Tx_Buffer			= SPI_CH1_Tx_Buffer,
@@ -167,7 +167,7 @@ static SerialInfo_t SPI_CH1_Info = {
 
 static SerialInfo_t SPI_CH2_Info = {
 	.SerialStatus 		= 0,
-	.SerialBaudrate 	= 32000,
+	.SerialBaudrate 	= SPI_CH2_INIT_BAUDRATE,
 	.SerialDataSize		= 0,
 	.SerialHandle		= -1,	
 	.Tx_Buffer			= SPI_CH2_Tx_Buffer,
@@ -372,13 +372,17 @@ int main(void)
 
 				/******************************************* UART *******************************************/
 
+				/* Opening the UART Serial Port */
+				UART_Info.SerialHandle = serOpen(DEFAULT_UART_HANDLER, UART_Info.SerialBaudrate, UART_FLAGS);
 				/* Check whether the UART Serial Port is opened or not */
 				if(UART_Info.SerialHandle < 0)
 				{
 					fprintf(stderr, "UART Serial port initialisation failed\n");
 					return ERROR_PIGPIO_UART_INIT;	
 				}
-
+#if TRACE_PRINT_ENABLE == 1
+				printf("OPENED HANDLER UART: %d\n", UART_Info.SerialHandle);
+#endif
 				/* Check whether the UART Tx is enabled or not */
 				if(UART_SIMPLEX_TX || UART_DUPLEX)
 				{
@@ -435,9 +439,28 @@ int main(void)
 					{
 						UDP_ServerSend(&sockfd, (uint8_t*)UART_Info.Rx_Buffer, &cliaddr, SocketSize, UART_Info.SerialDataSize);
 					}
-				}				
+				}
+				/* Closing the UART Serial Port */
+				if(UART_Info.SerialHandle >= 0)
+				{
+#if TRACE_PRINT_ENABLE == 1
+					printf("CLOSING HANDLER UART: %d\n", UART_Info.SerialHandle);
+#endif		
+					serClose(UART_Info.SerialHandle);
+					UART_Info.SerialHandle = -1;
+				}			
 				
 				/**************************************** SPI_CH1 ****************************************/
+				/* Opening the SPI_CH1 Serial Port */
+				SPI_CH1_Info.SerialHandle = spiOpen(SPI_CH1_CHANNEL, SPI_CH1_Info.SerialBaudrate, SPI_CH1_FLAGS);
+				if(SPI_CH1_Info.SerialHandle < 0)
+				{
+					fprintf(stderr, "SPI_CH1 port initialisation failed\n");
+					return ERROR_PIGPIO_SPI_CH1_INIT;	
+				}
+#if TRACE_PRINT_ENABLE == 1
+				printf("OPENED HANDLER SPI_CH1: %d\n", SPI_CH1_Info.SerialHandle);
+#endif
 				/* Check whether the SPI is enabled or not */
 				if(SPI_CH1_RX || SPI_CH1_TX)
 				{
@@ -448,11 +471,6 @@ int main(void)
 					{
 						if(ClientAvailable)
 						{
-							if(SPI_CH1_Info.SerialHandle < 0)
-							{
-								fprintf(stderr, "SPI_CH1 port initialisation failed\n");
-								return ERROR_PIGPIO_SPI_CH1_INIT;	
-							}
 							/* Receiving Data from PC to be sent over SPI_CH1 (Close Loop) */
 							UDP_ServerReceive(&sockfd, SPI_CH1_Info.Tx_Buffer, &cliaddr, (uint32_t *)&SocketSize, SPI_CH1_Info.SerialDataSize);
 #if TRACE_PRINT_ENABLE == 1	
@@ -474,6 +492,7 @@ int main(void)
 							
 							/* Sending Data Received over SPI_CH1 back to the client to be presented on GUI if size more than 0 */
 							UDP_ServerSend(&sockfd, (uint8_t*)SPI_CH1_Info.Rx_Buffer, &cliaddr, SocketSize, SPI_CH1_Info.SerialDataSize);
+							
 						}
 						else
 						{
@@ -487,9 +506,27 @@ int main(void)
 						UDP_ServerSend(&sockfd, (uint8_t*)&Rx_Counter, &cliaddr, SocketSize, sizeof(uint32_t));
 					}
 				}
-
+				/* Closing the SPI_CH1 Serial Port */
+				if(SPI_CH1_Info.SerialHandle >= 0)
+				{
+#if TRACE_PRINT_ENABLE == 1
+					printf("CLOSING HANDLER SPI_CH1: %d\n", SPI_CH1_Info.SerialHandle);
+#endif
+					spiClose(SPI_CH1_Info.SerialHandle);
+					SPI_CH1_Info.SerialHandle = -1;
+				}
 
 				/**************************************** SPI_CH2 ****************************************/
+				/* Opening the SPI_CH2 Serial Port */
+				SPI_CH2_Info.SerialHandle = spiOpen(SPI_CH2_CHANNEL, SPI_CH2_Info.SerialBaudrate, SPI_CH2_FLAGS);
+				if(SPI_CH2_Info.SerialHandle < 0)
+				{
+					fprintf(stderr, "SPI_CH2 port initialisation failed\n");
+					return ERROR_PIGPIO_SPI_CH2_INIT;	
+				}
+#if TRACE_PRINT_ENABLE == 1
+				printf("OPENED HANDLER SPI_CH2: %d\n", SPI_CH2_Info.SerialHandle);
+#endif
 				/* Check whether the SPI is enabled or not */
 				if(SPI_CH2_RX || SPI_CH2_TX)
 				{
@@ -500,12 +537,7 @@ int main(void)
 					{
 						if(ClientAvailable)
 						{
-							if(SPI_CH2_Info.SerialHandle < 0)
-							{
-								printf("BAD HANDLER SPI_CH2: %d\n", SPI_CH2_Info.SerialHandle);
-								fprintf(stderr, "SPI_CH2 port initialisation failed\n");
-								return ERROR_PIGPIO_SPI_CH2_INIT;	
-							}
+
 							/* Receiving Data from PC to be sent over SPI_CH2 (Close Loop) */
 							UDP_ServerReceive(&sockfd, SPI_CH2_Info.Tx_Buffer, &cliaddr, (uint32_t *)&SocketSize, SPI_CH2_Info.SerialDataSize);
 #if TRACE_PRINT_ENABLE == 1	
@@ -527,6 +559,7 @@ int main(void)
 							
 							/* Sending Data Received over SPI_CH2 back to the client to be presented on GUI if size more than 0 */
 							UDP_ServerSend(&sockfd, (uint8_t*)SPI_CH2_Info.Rx_Buffer, &cliaddr, SocketSize, SPI_CH2_Info.SerialDataSize);
+							
 						}
 						else
 						{
@@ -540,6 +573,15 @@ int main(void)
 						UDP_ServerSend(&sockfd, (uint8_t*)&Rx_Counter, &cliaddr, SocketSize, sizeof(uint32_t));
 					}
 				}
+				/* Closing the SPI_CH2 Serial Port */
+				if(SPI_CH2_Info.SerialHandle >= 0)
+				{
+#if TRACE_PRINT_ENABLE == 1
+					printf("CLOSING HANDLER SPI_CH2: %d\n", SPI_CH2_Info.SerialHandle);
+#endif
+					spiClose(SPI_CH2_Info.SerialHandle);
+					SPI_CH2_Info.SerialHandle = -1;
+				}
 			}
 		}
 	}
@@ -552,15 +594,12 @@ int main(void)
 
 /**
  *  @name  gpio_Init
- *  @brief This function shall initialize RPi GPIO and Serial Communications.
+ *  @brief This function shall initialize RPi GPIO.
  *  
  *  @return State of initialization.
  *  	Options:
  *  		PIGPIO_INIT_SUCCESSFUL		: Initialization sucessful.	
  *          ERROR_PIGPIO_INIT			: Library Initialization failure.
- *          ERROR_PIGPIO_UART_INIT		: UART Initialization failure.
- *          ERROR_PIGPIO_SPI_CH1_INIT	: SPI_CH1 Initialization failure.
- *          ERROR_PIGPIO_SPI_CH2_INIT	: SPI_CH2 Initialization failure.
  */
 static int gpio_Init(void)
 {
@@ -592,47 +631,13 @@ static int gpio_Init(void)
 	/* Set up callbacks for PWM input */
 	gpioSetAlertFunc(PWM0_INPUT, PWM0_CallbackFn);
 	gpioSetAlertFunc(PWM1_INPUT, PWM1_CallbackFn);
-	
-	/*************************** Opening Serial Communication Ports ***************************/
-	/* Opening the UART Serial Port */
-	UART_Info.SerialHandle = serOpen(DEFAULT_UART_HANDLER, UART_Info.SerialBaudrate, UART_FLAGS);
-	if(UART_Info.SerialHandle < 0)
-	{
-		fprintf(stderr, "UART Serial port initialisation failed\n");
-		return ERROR_PIGPIO_UART_INIT;	
-	}
-#if TRACE_PRINT_ENABLE == 1
-	printf("OPENED HANDLER UART: %d\n", UART_Info.SerialHandle);
-#endif
 
-	/* Opening the SPI_CH1 Serial Port */
-	SPI_CH1_Info.SerialHandle = spiOpen(SPI_CH1_CHANNEL, SPI_CH1_Info.SerialBaudrate, SPI_CH1_FLAGS);
-	if(SPI_CH1_Info.SerialHandle < 0)
-	{
-		fprintf(stderr, "SPI_CH1 port initialisation failed\n");
-		return ERROR_PIGPIO_SPI_CH1_INIT;	
-	}
-#if TRACE_PRINT_ENABLE == 1
-	printf("OPENED HANDLER SPI_CH1: %d\n", SPI_CH1_Info.SerialHandle);
-#endif
-	
-	/* Opening the SPI_CH2 Serial Port */
-	SPI_CH2_Info.SerialHandle = spiOpen(SPI_CH2_CHANNEL, SPI_CH2_Info.SerialBaudrate, SPI_CH2_FLAGS);
-	if(SPI_CH2_Info.SerialHandle < 0)
-	{
-		fprintf(stderr, "SPI_CH2 port initialisation failed\n");
-		return ERROR_PIGPIO_SPI_CH2_INIT;	
-	}
-#if TRACE_PRINT_ENABLE == 1
-	printf("OPENED HANDLER SPI_CH2: %d\n", SPI_CH2_Info.SerialHandle);
-#endif
-	
 	return PIGPIO_INIT_SUCCESSFUL;
 }
 
 /**
  *  @name  gpio_DeInit
- *  @brief This function shall de-initialize RPi GPIO and Serial Communications.
+ *  @brief This function shall de-initialize RPi GPIO.
  *
  *  @return void.
  */
@@ -641,38 +646,6 @@ static void gpio_DeInit(void)
 	/* Re-setting the program counter */
 	ProgramCounter = 0;
 	//gpioTerminate();
-	
-	/**************************** Closing Serial Communication Ports **********************************/
-	/* Closing the UART Serial Port */
-	if(UART_Info.SerialHandle >= 0)
-	{
-#if TRACE_PRINT_ENABLE == 1
-		printf("CLOSING HANDLER UART: %d\n", UART_Info.SerialHandle);
-#endif		
-		serClose(UART_Info.SerialHandle);
-		UART_Info.SerialHandle = -1;
-	}
-	
-	/* Closing the SPI_CH1 Serial Port */
-	if(SPI_CH1_Info.SerialHandle >= 0)
-	{
-#if TRACE_PRINT_ENABLE == 1
-		printf("CLOSING HANDLER SPI_CH1: %d\n", SPI_CH1_Info.SerialHandle);
-#endif
-		serClose(SPI_CH1_Info.SerialHandle);
-		SPI_CH1_Info.SerialHandle = -1;
-	}
-	
-	/* Closing the SPI_CH2 Serial Port */
-	if(SPI_CH2_Info.SerialHandle >= 0)
-	{
-#if TRACE_PRINT_ENABLE == 1
-		printf("CLOSING HANDLER SPI_CH2: %d\n", SPI_CH2_Info.SerialHandle);
-#endif
-		serClose(SPI_CH2_Info.SerialHandle);
-		SPI_CH2_Info.SerialHandle = -1;
-	}
-	
 }
 
 /**
