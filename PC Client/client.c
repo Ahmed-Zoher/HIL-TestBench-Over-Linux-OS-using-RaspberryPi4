@@ -1,9 +1,10 @@
 /**
  *  @file client.c
- *  @author May Alaa
- *  @brief PC client interfaces
+ *  @authors (May Alaa - Hazem Mekawy - Ahmed Zoher - Ahmed Refaat - Waleed Adel)
+ *  @brief PC Client Source File
  */
 
+/* File includes */
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -11,122 +12,120 @@
 #include "client.h"
 #include "Frame.h"
 
-typedef struct
-{
-	uint8_t* Message;
-	uint8_t MessageSize;
-}MessageInfo_t;
-#define NUM_OF_MSGS				5
-#define IS_MSG_VALID(MSG)		((MSG == MESSAGE_ACK)				|| \
-								(MSG == MESSAGE_NACK)   			|| \
-								(MSG == MESSAGE_HEADER_FRAME)   	|| \
-								(MSG == MESSAGE_DATA_FRAME)   		|| \
-								(MSG == MESSAGE_CONNECTION_KEY))
-
-#define DATA_FRAME				0
-#define SERIAL_FRAME			1
-#define SERIAL_RETURN_FRAME		2
-#define READINGS_FRAME			3
-
-
-static void recv_print(uint32_t size);
-
-/* CLIENT GLOBAL VARIABLES */
-
+/*****************************************************************************/
+/************************** CLIENT GLOBAL VARIABLES **************************/
+/*****************************************************************************/
+/* Server socket structure */
 struct sockaddr_in servaddr;
-uint32_t slen = sizeof(servaddr);
+
+/* Server Socket Size */
+uint32_t socketSize = sizeof(servaddr);
+
+/* Client Socket Handler*/
 uint32_t ClientSocket = 0;
+
+/* Client Connection key to be verified by the server upon connection*/
 uint32_t ConnectionKey = CONNECTION_KEY;
+
+/* General Index Iterator */
 uint16_t Iterator = 0;
+
+/* Server Connection Status */
 uint8_t Status = NACK;
 
-uint8_t recvBuf[512] = {0};
 
-/////////////////////////// FRAME GLOBALS //////////////////////////////
-
+/*****************************************************************************/
+/************************** FRAME GLOBAL VARIABLES ***************************/
+/*****************************************************************************/
 /* Tx Data Frame */
 uint8_t *Frame = NULL;
 uint32_t FrameTotalSize = 0;
-//uint8_t TxFrameDataBuffer[512];
 
-/* Tx Serial Frame */
+/* Serial Communication Frames */
+/* General Frame holding data to be sent to server */
 uint8_t *SerialFrame = NULL;
-
+uint32_t SerialSize = 0;
 uint8_t *UART_Frame = NULL;
 uint32_t UART_FrameSize = 0;
-
 uint8_t *SPI_CH1_Frame = NULL;
 uint32_t SPI_CH1_FrameSize = 0;
-
 uint8_t *SPI_CH2_Frame = NULL;
 uint32_t SPI_CH2_FrameSize = 0;
 
-uint32_t SerialSize = 0;
-uint8_t* SerialBuffer = NULL;
+/* General Frame holding data received from server */
+uint8_t* SerialReturnBuffer = NULL;
 
 /* A buffer holding the Readings to be passed to the GUI */
 uint32_t *Rx_ReadingsFrame = NULL;
 
-/* Rx Data Frame */
+/* Frame holding data received from server */
 uint8_t RxFrameDataBuffer[512];
 
-//FrameData_t *TxFrameData = (FrameData_t *)TxFrameDataBuffer;
+/* Pointer used to deal with the Buffer of received data as a FrameData_t struct */
 FrameData_t *RxFrameData = (FrameData_t *)RxFrameDataBuffer;
 
+/* Frame Header sent to the server */
 FrameHeader_t TxFrameHeader = 
 {
-	.Signature 		= 	SIGNATURE,	
-	.NumOfCommands	= 	NUM_OF_PERIPH,
-	.TotalDataSize	= 	0
+	.Signature 			= 	SIGNATURE,	
+	.NumOfPeripherals	= 	NUM_OF_PERIPH,
+	.TotalDataSize		= 	0
 };
 
+/* Frame Header received from the server */
 FrameHeader_t RxFrameHeader;
 
-//>>PROBLEM IN ACK & NACK
-// MessageInfo_t MessageInfo[NUM_OF_MSGS] = {
-	// {.Message = , .MessageSize = },
-	// {.Message = , .MessageSize = },
-	// {.Message = , .MessageSize = },
-	// {.Message = , .MessageSize = },
-	// {.Message = , .MessageSize = }
-	
-// };
 
-//////////////////////////////////////////////////////////////////////////
+/*****************************************************************************/
+/****************************** CLIENT INTERFACES ****************************/
+/*****************************************************************************/
 
+/**
+ *  @name  UDP_ClientConnect
+ *  @brief This API shall connect the client to server(RPi)
+ *  
+ *  @param [in] ServerIP:   Holds server's IP Address
+ *  @param [in] ServerPort: Holds server's Port Address
+ *  @return Connection Status 
+ *  	Options: 
+ *  		CONNECTION_WINSOCK_INIT_ERROR 	: Initialization of winsocket failed.
+ *  		CONNECTION_SOCKET_ERROR 		: Error in Client's socket.
+ *  		CONNECTION_OK					: Client connection successful.
+ *  		CONENCTION_REQUEST_TIMEOUT		: Connection to server timeout.
+ */
 uint8_t UDP_ClientConnect(uint8_t* ServerIP, uint16_t ServerPort)
 {
+	/* Counter for number of timed out tries */
 	uint8_t TimeoutCounter = 0;
 	WSADATA wsa;
-	//Initialise winsock
+	
+	/* Initialise winsock */
 	printf("\nInitialising Winsock...\n");
 	if (WSAStartup(MAKEWORD(2,2),&wsa) != 0)
 	{
 		printf("Initialization Failed. Error Code : %d\n",WSAGetLastError());
-		//exit(EXIT_FAILURE);
 		return CONNECTION_WINSOCK_INIT_ERROR;
 	}
 	printf("Initialised.\n");
 	
-	//create socket
+	/* Creating socket */
 	if ((ClientSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == SOCKET_ERROR)
 	{
 		printf("socket() Failed. Error Code : %d\n" , WSAGetLastError());
-		//exit(EXIT_FAILURE);
 		return CONNECTION_SOCKET_ERROR;
 	}
 
-	//setup address structure
+	/* Setup address structure */
 	memset((char *) &servaddr, 0, sizeof(struct sockaddr_in ));
 	servaddr.sin_family = AF_INET;
 	servaddr.sin_port = htons(ServerPort);
 	servaddr.sin_addr.S_un.S_addr = inet_addr(ServerIP); 
 	
 	
-	/*********** CONNECTION KEY VERIFICATION ***********/
+	/* Send the connection key to server */
 	UDP_ClientSend(MESSAGE_CONNECTION_KEY);
 	
-	while(TimeoutCounter < 5)
+	while(TimeoutCounter < CONNECTION_TIMEOUT_COUNT)
 	{
 		printf("Trial: %d\n", TimeoutCounter);
 		if(UDP_ClientReceive(MESSAGE_ACK) == MESSAGE_ACK)
@@ -139,31 +138,39 @@ uint8_t UDP_ClientConnect(uint8_t* ServerIP, uint16_t ServerPort)
 		{
 			printf("Connection Trial[%d] failed, Retrying......\n", TimeoutCounter);
 			TimeoutCounter++;
-			// if(TimeoutCounter == 4) 
-				// ConnectionKey = CONNECTION_KEY;
 			
+			/* Re-send the connection key after failing */
 			UDP_ClientSend(MESSAGE_CONNECTION_KEY);
 		}
 	}
 	return CONENCTION_REQUEST_TIMEOUT;
 }
 
+/**
+ *  @name  UDP_ClientSend
+ *  @brief This API shall send a message to server.
+ *  	
+ *  @param [in] MessageType: Type of message being sent to the server.
+ *  	Options:
+ *  		MESSAGE_ACK				: Send an ACK message.					
+ *          MESSAGE_NACK			: Send a NACK message.	
+ *          MESSAGE_HEADER_FRAME	: Send a Frame Header message.	
+ *          MESSAGE_DATA_FRAME		: Send a Frame Data message.
+ *          MESSAGE_CONNECTION_KEY	: Send a Connection Key message.
+ *          MESSAGE_UART			: Send an UART Data message.
+ *          MESSAGE_SPI_CH1			: Send an SPI_CH1 Data message.
+ *          MESSAGE_SPI_CH2			: Send an SPI_CH2 Data message.
+ *          MESSAGE_SERIAL_SIZE		: Send a Serial Size message.
+ *  
+ *  @return void.
+ */
 void UDP_ClientSend(uint8_t MessageType)
-{
-	// if(IS_MSG_VALID(MessageType))
-	// {
-		
-		
-	// }
-	// else
-	// {
-		// printf("MESSAGE_TYPE_ERROR\n");	
-	// }	
+{	
 	switch(MessageType)
 	{
 		case MESSAGE_ACK:
 			Status = ACK;
-			if (sendto(ClientSocket, (uint8_t *)&Status, STATUS_SIZE, 0, (struct sockaddr *)&servaddr, slen) == SOCKET_ERROR)
+			if (sendto(ClientSocket, (uint8_t *)&Status, STATUS_SIZE, 0, (struct sockaddr *)&servaddr, socketSize) == SOCKET_ERROR)
 			{
 				printf("sendto() failed with error code : %d" , WSAGetLastError());
 				exit(EXIT_FAILURE);
@@ -172,21 +179,23 @@ void UDP_ClientSend(uint8_t MessageType)
 
 		case MESSAGE_NACK:
 			Status = NACK;
-			if (sendto(ClientSocket, (uint8_t *)&Status, STATUS_SIZE, 0, (struct sockaddr *)&servaddr, slen) == SOCKET_ERROR)
+			if (sendto(ClientSocket, (uint8_t *)&Status, STATUS_SIZE, 0, (struct sockaddr *)&servaddr, socketSize) == SOCKET_ERROR)
 			{
 				printf("sendto() failed with error code : %d" , WSAGetLastError());
 				exit(EXIT_FAILURE);
 			}
 			break;
+			
 		case MESSAGE_HEADER_FRAME:
-			if (sendto(ClientSocket, (uint8_t *)&TxFrameHeader, sizeof(FrameHeader_t), 0, (struct sockaddr *)&servaddr, slen) == SOCKET_ERROR)
+			if (sendto(ClientSocket, (uint8_t *)&TxFrameHeader, sizeof(FrameHeader_t), 0, (struct sockaddr *)&servaddr, socketSize) == SOCKET_ERROR)
 			{
 				printf("sendto() failed with error code : %d" , WSAGetLastError());
 				exit(EXIT_FAILURE);
 			}
 			break;
+			
 		case MESSAGE_DATA_FRAME:	
-			if (sendto(ClientSocket, (uint8_t *)Frame, TxFrameHeader.TotalDataSize, 0, (struct sockaddr *)&servaddr, slen) == SOCKET_ERROR)
+			if (sendto(ClientSocket, (uint8_t *)Frame, TxFrameHeader.TotalDataSize, 0, (struct sockaddr *)&servaddr, socketSize) == SOCKET_ERROR)
 			{
 				printf("sendto() failed with error code : %d" , WSAGetLastError());
 				exit(EXIT_FAILURE);
@@ -194,7 +203,7 @@ void UDP_ClientSend(uint8_t MessageType)
 			break;
 			
 		case MESSAGE_CONNECTION_KEY:	
-			if (sendto(ClientSocket, (uint8_t *)&ConnectionKey, sizeof(uint32_t), 0, (struct sockaddr *)&servaddr, slen) == SOCKET_ERROR)
+			if (sendto(ClientSocket, (uint8_t *)&ConnectionKey, sizeof(uint32_t), 0, (struct sockaddr *)&servaddr, socketSize) == SOCKET_ERROR)
 			{
 				printf("sendto() failed with error code : %d" , WSAGetLastError());
 				exit(EXIT_FAILURE);
@@ -204,7 +213,7 @@ void UDP_ClientSend(uint8_t MessageType)
 		case MESSAGE_UART:
 			if(UART_FrameSize > 0)
 			{
-				if (sendto(ClientSocket, (uint8_t *)UART_Frame, UART_FrameSize, 0, (struct sockaddr *)&servaddr, slen) == SOCKET_ERROR)
+				if (sendto(ClientSocket, (uint8_t *)UART_Frame, UART_FrameSize, 0, (struct sockaddr *)&servaddr, socketSize) == SOCKET_ERROR)
 				{
 					printf("sendto() failed with error code : %d" , WSAGetLastError());
 					exit(EXIT_FAILURE);
@@ -213,7 +222,7 @@ void UDP_ClientSend(uint8_t MessageType)
 			break;
 			
 		case MESSAGE_SPI_CH1:	
-			if (sendto(ClientSocket, (uint8_t *)SPI_CH1_Frame, SPI_CH1_FrameSize, 0, (struct sockaddr *)&servaddr, slen) == SOCKET_ERROR)
+			if (sendto(ClientSocket, (uint8_t *)SPI_CH1_Frame, SPI_CH1_FrameSize, 0, (struct sockaddr *)&servaddr, socketSize) == SOCKET_ERROR)
 			{
 				printf("sendto() failed with error code : %d" , WSAGetLastError());
 				exit(EXIT_FAILURE);
@@ -221,7 +230,7 @@ void UDP_ClientSend(uint8_t MessageType)
 			break;
 			
 		case MESSAGE_SPI_CH2:	
-			if (sendto(ClientSocket, (uint8_t *)SPI_CH2_Frame, SPI_CH2_FrameSize, 0, (struct sockaddr *)&servaddr, slen) == SOCKET_ERROR)
+			if (sendto(ClientSocket, (uint8_t *)SPI_CH2_Frame, SPI_CH2_FrameSize, 0, (struct sockaddr *)&servaddr, socketSize) == SOCKET_ERROR)
 			{
 				printf("sendto() failed with error code : %d" , WSAGetLastError());
 				exit(EXIT_FAILURE);
@@ -229,39 +238,67 @@ void UDP_ClientSend(uint8_t MessageType)
 			break;
 			
 		default:
-			
 			break;
 	}
 }
 
+/**
+ *  @name  UDP_ClientReceive
+ *  @brief This API shall receive a message from server.
+ *  
+ *  @param [in] MessageType: Type of message received from server.
+ *  	Options:
+ *  		MESSAGE_ACK				: Receive an ACK message.					
+ *          MESSAGE_NACK			: Receive a NACK message.	
+ *          MESSAGE_HEADER_FRAME	: Receive a Frame Header message.	
+ *          MESSAGE_DATA_FRAME		: Receive a Frame Data message.
+ *          MESSAGE_CONNECTION_KEY	: Receive a Connection Key message.
+ *          MESSAGE_UART			: Receive an UART Data message.
+ *          MESSAGE_SPI_CH1			: Receive an SPI_CH1 Data message.
+ *          MESSAGE_SPI_CH2			: Receive an SPI_CH2 Data message.
+ *          MESSAGE_SERIAL_SIZE		: Receive a Serial Size message.
+ *  
+ *  @return Status of received message.
+ *  	Options:
+ *  		MESSAGE_ACK				: Received an ACK
+ *  		MESSAGE_NACK            : Received an NACK
+ *  		HEADER_VALID            : Received a valid Header Frame.
+ *  		HEADER_INVALID          : Received an invalid Header Frame.
+ *  		MESSAGE_DATA_FRAME      : Received an Data Frame.
+ *  		MESSAGE_SERIAL_SIZE     : Received a Serial Size.
+ *  		MESSAGE_UART			: Received an UART Frame.
+ *			MESSAGE_SPI_CH1         : Received an SPI_CH1 Frame.
+ *			MESSAGE_SPI_CH2         : Received an SPI_CH2 Frame.
+ */
 uint8_t UDP_ClientReceive(uint8_t MessageType)
 {
 	uint8_t returnType = 0;
-	//clear the buffer by filling null, it might have previously received data
 	
 	switch(MessageType)
 	{
 		case MESSAGE_ACK:
-		memset(RxFrameDataBuffer, 0, STATUS_SIZE);
-		if (recvfrom(ClientSocket, (uint8_t *)RxFrameDataBuffer, STATUS_SIZE, 0, (struct sockaddr *)&servaddr, &slen) == SOCKET_ERROR)
-		{
-			printf("recvfrom() failed with error code : %d" , WSAGetLastError());
-			exit(EXIT_FAILURE);
-		}		
-		// printf("ACKNOWLEDGMENT_STATUS: %d\n", RxFrameDataBuffer[0]);
-		if(RxFrameDataBuffer[0] == ACK)
-		{
-			returnType = MESSAGE_ACK;	
-		}
-		else
-		{
-			returnType = MESSAGE_NACK;
-		}
+			memset(RxFrameDataBuffer, 0, STATUS_SIZE);
+			if (recvfrom(ClientSocket, (uint8_t *)RxFrameDataBuffer, STATUS_SIZE, 0, (struct sockaddr *)&servaddr, &socketSize) == SOCKET_ERROR)
+			{
+				printf("recvfrom() failed with error code : %d" , WSAGetLastError());
+				exit(EXIT_FAILURE);
+			}	
+#if	(TRACE_PRINT_ENABLE == 1)			
+			printf("ACKNOWLEDGMENT_STATUS: %d\n", RxFrameDataBuffer[0]);
+#endif
+			if(RxFrameDataBuffer[0] == ACK)
+			{
+				returnType = MESSAGE_ACK;	
+			}
+			else
+			{
+				returnType = MESSAGE_NACK;
+			}
 		break;
 
 		case MESSAGE_HEADER_FRAME:
 			memset(&RxFrameHeader, 0, sizeof(FrameHeader_t));
-			if (recvfrom(ClientSocket, (uint8_t*)&RxFrameHeader, sizeof(FrameHeader_t), 0, (struct sockaddr *)&servaddr, &slen) == SOCKET_ERROR)
+			if (recvfrom(ClientSocket, (uint8_t*)&RxFrameHeader, sizeof(FrameHeader_t), 0, (struct sockaddr *)&servaddr, &socketSize) == SOCKET_ERROR)
 			{
 				printf("recvfrom() failed with error code : %d" , WSAGetLastError());
 				exit(EXIT_FAILURE);
@@ -274,38 +311,42 @@ uint8_t UDP_ClientReceive(uint8_t MessageType)
 			{
 				returnType = HEADER_INVALID;
 			}
+#if	(TRACE_PRINT_ENABLE == 1)	
 			for(Iterator = 0; Iterator < sizeof(FrameHeader_t); Iterator++)
 			{
 				printf("RX_HEADER_FRAME_BYTE[%d]: %d\n", Iterator, ((uint8_t*)&RxFrameHeader)[Iterator]);
 			}
 			printf("\n");
+#endif
 			break;
-			
+	
 		case MESSAGE_DATA_FRAME:
 			memset(RxFrameDataBuffer, 0, RxFrameHeader.TotalDataSize);
-			if (recvfrom(ClientSocket, RxFrameDataBuffer, RxFrameHeader.TotalDataSize, 0, (struct sockaddr *)&servaddr, &slen) == SOCKET_ERROR)
+			if (recvfrom(ClientSocket, RxFrameDataBuffer, RxFrameHeader.TotalDataSize, 0, (struct sockaddr *)&servaddr, &socketSize) == SOCKET_ERROR)
 			{
 				printf("recvfrom() failed with error code : %d" , WSAGetLastError());
 				exit(EXIT_FAILURE);
 			}
+#if	(TRACE_PRINT_ENABLE == 1)
 			for(Iterator = 0; Iterator < RxFrameHeader.TotalDataSize; Iterator++)
 			{
 				printf("RX_DATA_FRAME_BYTE[%d]: %d\n", Iterator, RxFrameDataBuffer[Iterator]);
 			}
 			printf("\n");
+#endif
 			returnType = MESSAGE_DATA_FRAME;
 			break;
-	
-		///////////////////////////CHANGES HERE		
+		
 		case MESSAGE_SERIAL_SIZE:
-			if (recvfrom(ClientSocket, (uint8_t *)&SerialSize, sizeof(uint32_t), 0, (struct sockaddr *)&servaddr, &slen) == SOCKET_ERROR)
+			if (recvfrom(ClientSocket, (uint8_t *)&SerialSize, sizeof(uint32_t), 0, (struct sockaddr *)&servaddr, &socketSize) == SOCKET_ERROR)
 			{
 				printf("recvfrom() failed with error code : %d" , WSAGetLastError());
 				exit(EXIT_FAILURE);
 			}
+#if	(TRACE_PRINT_ENABLE == 1)
 			if(SerialSize > 0)
 				printf("SerialSize: %d\n", SerialSize);
-			
+#endif			
 			if(SerialSize != 0)
 			{
 				returnType = MESSAGE_SERIAL_SIZE;
@@ -320,32 +361,36 @@ uint8_t UDP_ClientReceive(uint8_t MessageType)
 			if(SerialSize > 0)
 			{
 				memset(RxFrameDataBuffer, 0, SerialSize);
-				if (recvfrom(ClientSocket, RxFrameDataBuffer, SerialSize, 0, (struct sockaddr *)&servaddr, &slen) == SOCKET_ERROR)
+				if (recvfrom(ClientSocket, RxFrameDataBuffer, SerialSize, 0, (struct sockaddr *)&servaddr, &socketSize) == SOCKET_ERROR)
 				{
 					printf("recvfrom() failed with error code : %d" , WSAGetLastError());
 					exit(EXIT_FAILURE);
 				}
+#if	(TRACE_PRINT_ENABLE == 1)
 				for(Iterator = 0; Iterator < SerialSize; Iterator++)
 				{
 					printf("RX_UART_MESSAGE_BYTE[%d]: %d\n", Iterator, RxFrameDataBuffer[Iterator]);
 				}
+#endif
 			}
-			returnType = MESSAGE_DATA_FRAME;
+			returnType = MESSAGE_UART;
 			break;
 			
 		case MESSAGE_SPI_CH1:
 			if(SerialSize > 0)
 			{
 				memset(RxFrameDataBuffer, 0, SerialSize);
-				if (recvfrom(ClientSocket, RxFrameDataBuffer, SerialSize, 0, (struct sockaddr *)&servaddr, &slen) == SOCKET_ERROR)
+				if (recvfrom(ClientSocket, RxFrameDataBuffer, SerialSize, 0, (struct sockaddr *)&servaddr, &socketSize) == SOCKET_ERROR)
 				{
 					printf("recvfrom() failed with error code : %d" , WSAGetLastError());
 					exit(EXIT_FAILURE);
-				}	
+				}
+#if	(TRACE_PRINT_ENABLE == 1)				
 				for(Iterator = 0; Iterator < SerialSize; Iterator++)
 				{
 					printf("RX_SPI_CH1_MESSAGE_BYTE[%d]: %d\n", Iterator, RxFrameDataBuffer[Iterator]);
 				}
+#endif
 			}
 			returnType = MESSAGE_SPI_CH1;
 			break;
@@ -354,15 +399,17 @@ uint8_t UDP_ClientReceive(uint8_t MessageType)
 			if(SerialSize > 0)
 			{
 				memset(RxFrameDataBuffer, 0, SerialSize);
-				if (recvfrom(ClientSocket, RxFrameDataBuffer, SerialSize, 0, (struct sockaddr *)&servaddr, &slen) == SOCKET_ERROR)
+				if (recvfrom(ClientSocket, RxFrameDataBuffer, SerialSize, 0, (struct sockaddr *)&servaddr, &socketSize) == SOCKET_ERROR)
 				{
 					printf("recvfrom() failed with error code : %d" , WSAGetLastError());
 					exit(EXIT_FAILURE);
-				}	
+				}
+#if	(TRACE_PRINT_ENABLE == 1)				
 				for(Iterator = 0; Iterator < SerialSize; Iterator++)
 				{
 					printf("RX_SPI_CH2_MESSAGE_BYTE[%d]: %d\n", Iterator, RxFrameDataBuffer[Iterator]);
 				}
+#endif
 			}
 			returnType = MESSAGE_SPI_CH2;
 			break;
@@ -374,18 +421,38 @@ uint8_t UDP_ClientReceive(uint8_t MessageType)
 	return returnType;
 }
 
+/**
+ *  @name  UDP_ClientDisconnect
+ *  @brief This API shall disconnect the client from server.
+ *  
+ *  @return void.
+ */
 void UDP_ClientDisconnect(void)
 {
 	closesocket(ClientSocket);
 	WSACleanup();
 }
 
-////////////////////////////////////////////FRAME APIS////////////////////////////////////////
+
+/*****************************************************************************/
+/****************************** FRAME INTERFACES *****************************/
+/*****************************************************************************/
+
+/**
+ *  @name  FRAME_GenerateDataFrame
+ *  @brief This API shall generate the data frame to be sent to server.
+ *  
+ *  @param [in] DIO_Data		: DIO Data Buffer.
+ *  @param [in] PWM_Config		: PWM Configurations Buffer.
+ *  @param [in] UART_Config		: UART Configurations Buffer.
+ *  @param [in] SPI_CH1_Config	: SPI_CH1 Configurations Buffer.
+ *  @param [in] SPI_CH2_Config	: SPI_CH2 Configurations Buffer.
+ *  
+ *  @return void
+ */
 void FRAME_GenerateDataFrame(uint8_t* DIO_Data, uint8_t* PWM_Config, uint8_t* UART_Config, uint8_t* SPI_CH1_Config, uint8_t* SPI_CH2_Config)
 {
 	uint8_t PeripheralIndex = 0;
-	
-	// DIO_ID .. DIO_DATA_SIZE .. DIO_DATA .. PWM_ID .. PWM_DATA_SIZE .. PWM_DATA ... UART_ID .. UART_DATA_SIZE(1) .. UART_DATA(state)
 	
 	/* Grouping for easier indexing */
 	uint32_t local_PeripheralID[NUM_OF_PERIPH] = {DIO_PERIPHERAL_ID, PWM_PERIPHERAL_ID, UART_PERIPHERAL_ID, SPI_CH1_PERIPHERAL_ID, SPI_CH2_PERIPHERAL_ID};
@@ -418,6 +485,20 @@ void FRAME_GenerateDataFrame(uint8_t* DIO_Data, uint8_t* PWM_Config, uint8_t* UA
 	}
 }
 
+/**
+ *  @name  FRAME_GenerateSerialFrame
+ *  @brief This API shall generate the data to be sent over the selected serial channel.
+ *  
+ *  @param [in] Serial_Data		: Buffer holding serial data being sent.
+ *  @param [in] Serial_DataSize	: Size of the serial data being sent
+ *  @param [in] SerialIndex		: The Serial channel.
+ *  	Options:
+ *  		SERIAL_UART			: Generate UART Serial Frame.	
+ *          SERIAL_SPI_CH1      : Generate SPI_CH1 Serial Frame.
+ *          SERIAL_SPI_CH2      : Generate SPI_CH2 Serial Frame.
+ *  
+ *  @return void.
+ */
 void FRAME_GenerateSerialFrame(uint8_t *Serial_Data, uint32_t Serial_DataSize, uint8_t SerialIndex)
 {
 	uint32_t local_PeripheralID = 0;
@@ -446,38 +527,55 @@ void FRAME_GenerateSerialFrame(uint8_t *Serial_Data, uint32_t Serial_DataSize, u
 			SPI_CH2_Frame = SerialFrame;
 			break;
 		default:
-			printf("Physiiick .. U GOT THE RONG NUMBAH\n");
 			break;
 	}
-	
-	printf("\n", Iterator);
+#if	(TRACE_PRINT_ENABLE == 1)
+	printf("\n");
 	for(Iterator = 0; Iterator < Serial_DataSize; Iterator++)
 	{
 		printf("Serial_Frame[%d]: %02X\n", Iterator, SerialFrame[Iterator]);
 	}
+#endif
 }
 
+/**
+ *  @name  FRAME_SerialReturnFrame
+ *  @brief This API shall send the received serial data from server to GUI.
+ *  
+ *  @return Buffer of serial data received.
+ */
 uint8_t *FRAME_SerialReturnFrame(void)
 {
-	SerialBuffer = (uint8_t *)calloc(SerialSize + 1, sizeof(uint8_t));
+	SerialReturnBuffer = (uint8_t *)calloc(SerialSize + 1, sizeof(uint8_t));
 
 	for (Iterator = 0; Iterator < SerialSize; Iterator++)
 	{
+#if (TRACE_PRINT_ENABLE == 1)
 		printf("RX_FRAME_BUFFER_UART_BYTE[%d]: %02X\n", Iterator, RxFrameDataBuffer[Iterator]);
+#endif
 		if (RxFrameDataBuffer[Iterator] < 16)
 		{
-			sprintf(SerialBuffer + Iterator, "%01X", RxFrameDataBuffer[Iterator]);
+			sprintf(SerialReturnBuffer + Iterator, "%01X", RxFrameDataBuffer[Iterator]);
 		}
 		else
 		{
-			sprintf(SerialBuffer + Iterator * 2, "%02X", RxFrameDataBuffer[Iterator]);
+			sprintf(SerialReturnBuffer + Iterator * 2, "%02X", RxFrameDataBuffer[Iterator]);
 		}    
 	}
-	printf("BUFFER: %s\n", SerialBuffer);
+#if (TRACE_PRINT_ENABLE == 1)
+	printf("BUFFER: %s\n", SerialReturnBuffer);
+#endif
+
 	SerialSize = 0;
-	return SerialBuffer;
+	return SerialReturnBuffer;
 }
 
+/**
+ *  @name  FRAME_ReadingsFrame
+ *  @brief This API shall return the (DIO - PWM) Readings from the server to GUI.
+ *  
+ *  @return Buffer holding the readings.
+ */
 uint32_t *FRAME_ReadingsFrame(void)
 {
 	uint32_t Rx_TotalDataSize = 0;
@@ -493,12 +591,9 @@ uint32_t *FRAME_ReadingsFrame(void)
 	/* Scanning for sizes */
 	for(Iterator = 0; Iterator < NUM_RX_PERIPH; Iterator++)
 	{
-		// printf("SIZE[%d]: %d\n", Iterator, ((FrameData_t *)TransitionPointer)->DataSize);
 		Rx_TotalDataSize += ((FrameData_t *)TransitionPointer)->DataSize;
 		TransitionPointer  += (PERIPH_HEADER_SIZE + ((FrameData_t *)TransitionPointer)->DataSize);
 	}
-	
-	// printf("TOTAL SUM = %d\n", Rx_TotalDataSize);
 	
 	Rx_ReadingsFrame = (uint32_t *)calloc((Rx_TotalDataSize/sizeof(uint32_t)), sizeof(uint32_t));
 	
@@ -513,112 +608,55 @@ uint32_t *FRAME_ReadingsFrame(void)
 		TransitionPointer += (PERIPH_HEADER_SIZE + ((FrameData_t *)TransitionPointer)->DataSize);
 		ReadingPointer += ((FrameData_t *)TransitionPointer)->DataSize;
 	}
+
+#if (TRACE_PRINT_ENABLE == 1)
+	printf("\n\n/*************** PRINTING IN PARSING ***************\n\n");
+	for(Iterator = 0; Iterator < 8; Iterator++)
+		printf("Reading[%d]: %d\n", Iterator, Rx_ReadingsFrame[Iterator]);
 	
-	// printf("\n\n/*************** PRINTING IN PARSING ***************\n\n");
-	// for(Iterator = 0; Iterator < 8; Iterator++)
-		// printf("Reading[%d]: %d\n", Iterator, Rx_ReadingsFrame[Iterator]);
-	
-	// printf("\n\n");
+	printf("\n\n");
+#endif
+
 	return Rx_ReadingsFrame;
 }
 
-void FRAME_Print(void)
-{
-	for(Iterator = 0; Iterator < FrameTotalSize; Iterator++)
-	{
-		printf("Frame-Byte[%d]: %d\n", Iterator, Frame[Iterator]);
-	}
-}
-
-//////////////////////////////////////////////////////////////////////////
-static void recv_print(uint32_t size)
-{
-	uint32_t Iterator = 0;
-	for(Iterator = 0; Iterator < size; Iterator++)
-	{
-		printf("Byte[%d]: %d\n", Iterator, RxFrameDataBuffer[Iterator]);
-	}
-	printf("\n");
-}
-
+/**
+ *  @name  FRAME_FreeBuffer
+ *  @brief This API shall free the dynamically allocated data.
+ *  
+ *  @param [in] Buffer: Takes the Frame index to be freed.
+ *  	Options:
+ *  		DATA_FRAME				: Free the Data Frame.	
+ *          SERIAL_FRAME            : Free the Serial Frame.
+ *          SERIAL_RETURN_FRAME     : Free the Serial Return Frame.
+ *          READINGS_FRAME          : Free the Readings Frame.
+ *   
+ *  @return Return description
+ */
 void FRAME_FreeBuffer(uint8_t Buffer)
 {
 	switch(Buffer)
 	{
-		case DATA_FRAME				:	free(Frame);			break;
-		case SERIAL_FRAME			:	free(SerialFrame);		break;
-		case SERIAL_RETURN_FRAME	:	free(SerialBuffer);		break;
-		case READINGS_FRAME			:	free(Rx_ReadingsFrame);	break;
+		case DATA_FRAME				:	free(Frame);				break;
+		case SERIAL_FRAME			:	free(SerialFrame);			break;
+		case SERIAL_RETURN_FRAME	:	free(SerialReturnBuffer);	break;
+		case READINGS_FRAME			:	free(Rx_ReadingsFrame);		break;
 	}
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// void FRAME_FreeData(void)
-// {
-	// free(Frame);
-// }
-
-// void FRAME_ReturnSerialFree(void)
-// {
-	// free(SerialBuffer);
-// }
-// void FRAME_FreeReadingsBuffer(void)
-// {
-	// free(Rx_ReadingsFrame);	
-// }
-
-////////////////////////////////////////////////////////////////////////////////
-
-
-
-// uint8_t FRAME_ParsingDataFrame(void)
-// {
-	// uint8_t PeripheralIndex = 0;
-	// /* Arrays holding the Readings to be passed to the GUI */
-	// uint8_t DIO_Readings[DIO_OUTPUT_PINS] = {0};
-	// uint8_t PWM_Readings[20] = {0};
-	//CHANGES IN PWM READINGS to 20
-	
-	// /*Grouping for easier indexing */
-	// uint8_t* Rx_Readings[NUM_OF_PERIPH] = {DIO_Readings, PWM_Readings};
-	
-	// uint8_t *RxFrameData = (uint8_t *)RxFrameDataBuffer;
-	// printf("FAR1\n");
-	
-	//FORCED TO GET DIO AND PWM ONLY  NUM_OF_PERIPH>>2 
-	// printf("HABAL FEL GBAL: %d", PeripheralIndex);
-	// for(PeripheralIndex = 0; PeripheralIndex < 2; PeripheralIndex++)
-	// {
-		// printf("STEP1\n");
-		// memcpy(Rx_Readings[PeripheralIndex], &(((FrameData_t *)RxFrameData)->PeripheralData), ((FrameData_t *)RxFrameData)->DataSize);
-		// printf("STEP2\n");
-		// printf("REFAAAAAT'ssssss >>>> BYTE: %d", ((FrameData_t *)RxFrameData)->DataSize);
-		// RxFrameData += (PERIPH_HEADER_SIZE + ((FrameData_t *)RxFrameData)->DataSize);
-		// printf("STEP3\n");
-	// }
-	// printf("FAR2\n");
-	
-	// for(Iterator = 0; Iterator < DIO_OUTPUT_PINS; Iterator++)
-	// {
-		// printf("DIO_READING[%d]: %d\n", Iterator, DIO_Readings[Iterator]);
-	// }
-	
-	// for(Iterator = 0; Iterator < PWM_CONFIG_SIZE; Iterator++)
-	// {
-		// printf("PWM_READING[%d]: %d\n", Iterator, PWM_Readings[Iterator]);
-	// }
-	// printf("FAR3\n");
-	/////////////////// CONVERTING TO INT /////////////////////
-	// uint8_t DIO_BitValue = 0;
-	// for(Iterator = 0; Iterator < DIO_OUTPUT_PINS; Iterator++)
-	// {
-		// DIO_BitValue |= (DIO_Readings[Iterator]<<Iterator);
-	// }
-	// printf("\n\nDIO_BitValue: ");
-	// bin(DIO_BitValue);
-	
-	// printf("\n\nDIO_RETURNNNN:%d", DIO_BitValue);
-	// printf("FAR4\n");
-	// return DIO_BitValue;
-// }
+/**
+ *  @name  FRAME_Print
+ *  @brief This API shall print the data frame sent to the server.
+ *  
+ *  @return void.
+ */
+void FRAME_Print(void)
+{
+#if (TRACE_PRINT_ENABLE == 1)
+	for(Iterator = 0; Iterator < FrameTotalSize; Iterator++)
+	{
+		printf("Frame-Byte[%d]: %d\n", Iterator, Frame[Iterator]);
+	}
+#endif
+}
 

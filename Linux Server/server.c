@@ -1,32 +1,40 @@
-/**
+ /**
  *  @file server.c
- *  @author May Alaa
- *  @brief Linux Server Interfaces
+ *  @authors (May Alaa - Hazem Mekawy - Ahmed Zoher - Ahmed Refaat - Waleed Adel)
+ *  @brief Linux Server Source File
  */
- 
+
+/* File includes */
 #include "server.h"
-#define  TIMEOUT_ERROR		11
 
+/*****************************************************************************/
+/************************** SERVER GLOBAL VARIABLES **************************/
+/*****************************************************************************/
+
+/* Client availability status */
 uint8_t ClientAvailable = 0;
-uint32_t timeout = 10;
 
-/********** LINUX SERVER INTERFACES ***********/
+/*****************************************************************************/
+/****************************** SERVER INTERFACES ****************************/
+/*****************************************************************************/
 
 /**
+ *  @name  UDP_ServerInit
  *  @brief This API shall initialize the Linux UDP link.
  *  
- *  @param [in] sockfd   Socket number
- *  @param [in] servaddr Server address
- *  @param [in] cliaddr  Client address
- *  @return void 
+ *  @param [in] ServerSocket: Server Socket Number.
+ *  @param [in] servaddr	: Server Socket Address.
+ *  @param [in] cliaddr		: Client Socket Address.
+ *  
+ *  @return void.
  */
 void UDP_ServerInit(uint32_t *ServerSocket, struct sockaddr_in *servaddr, struct sockaddr_in *cliaddr)
-{
-	//uint32_t keyFrame = 0;
-	//uint8_t ConnectionStatus = 0;
-	//uint32_t len = sizeof(struct sockaddr_in);
-	
-	// Creating socket file descriptor 
+{	
+	struct timeval tv;
+	tv.tv_sec 	= TIMEOUT_DURATION_SEC;
+	tv.tv_usec 	= 0;
+
+	/* Creating socket file descriptor */
     if ( (*ServerSocket = socket(AF_INET, SOCK_DGRAM, 0)) < 0 ) 
 	{ 
         perror("socket creation failed"); 
@@ -37,18 +45,14 @@ void UDP_ServerInit(uint32_t *ServerSocket, struct sockaddr_in *servaddr, struct
     memset(servaddr, 0, sizeof(struct sockaddr_in)); 
     memset(cliaddr, 0, sizeof(struct sockaddr_in)); 
     
-    // Filling server information 
-    servaddr->sin_family    = AF_INET; // IPv4 
-    servaddr->sin_addr.s_addr = inet_addr(SERVER); 
-    servaddr->sin_port = htons(PORT); 
+    /* Filling server information */
+    servaddr->sin_family    	= AF_INET; // IPv4 
+    servaddr->sin_addr.s_addr 	= inet_addr(SERVER); 
+    servaddr->sin_port 			= htons(PORT); 
     
-    struct timeval tv;
-	tv.tv_sec = timeout;
-	tv.tv_usec = 0;
-
     setsockopt(*ServerSocket, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(struct timeval));
     
-    // Bind the socket with the server address 
+    /* Bind the socket with the server address */
     if ( bind(*ServerSocket, (const struct sockaddr *)servaddr, sizeof(struct sockaddr_in)) < 0 ) 
     { 
         perror("bind failed\n"); 
@@ -58,30 +62,37 @@ void UDP_ServerInit(uint32_t *ServerSocket, struct sockaddr_in *servaddr, struct
 }
 
 /**
- *  @brief This API shall send an acknoledgement upon receiving data.
+ *  @name  UDP_ServerSend
+ *  @brief This API shall send a message to the client.
  *  
- *  @param [in] sockfd  Socket number
- *  @param [in] cliaddr Client address
- *  @param [in] len     Length of data being received
- *  @return void
+ *  @param [in] ServerSocket: Server Socket Number.
+ *  @param [in] Buffer		: Data buffer to be sent to the client.
+ *  @param [in] cliaddr		: Client Socket Address.
+ *  @param [in] SocketSize	: Size of socket structure.
+ *  @param [in] FrameSize	: Size of the data buffer being sent.
+ *  
+ *  @return void.
  */
-void UDP_ServerSend(uint32_t *ServerSocket, uint8_t* Buffer, struct sockaddr_in * cliaddr, uint32_t len, uint16_t FrameSize)
+void UDP_ServerSend(uint32_t *ServerSocket, uint8_t* Buffer, struct sockaddr_in * cliaddr, uint32_t SocketSize, uint16_t FrameSize)
 {
-	sendto(*ServerSocket, Buffer, FrameSize, MSG_CONFIRM, (const struct sockaddr *)cliaddr, len); 
+	sendto(*ServerSocket, Buffer, FrameSize, MSG_CONFIRM, (const struct sockaddr *)cliaddr, SocketSize); 
 }
 
 /**
- *  @brief This API shall recieve a data frame.
+ *  @name  UDP_ServerReceive
+ *  @brief This API shall recieve a a message from the client.
  *  
- *  @param [in] sockfd  Socket number
- *  @param [in] frame   The frame being received
- *  @param [in] cliaddr Client address
- *  @param [in] len     Length of data being received
- *  @return void
+ *  @param [in] ServerSocket: Server Socket Number.
+ *  @param [in] frame		: Data buffer to hold the received data from the client.
+ *  @param [in] cliaddr		: Client Socket Address.
+ *  @param [in] SocketSize	: Size of socket structure.
+ *  @param [in] FrameSize	: Size of the data to be received.
+ *  
+ *  @return void.
  */
-void UDP_ServerReceive(uint32_t *ServerSocket, uint8_t* frame, struct sockaddr_in*  cliaddr, uint32_t* len, uint16_t FrameSize)
+void UDP_ServerReceive(uint32_t *ServerSocket, uint8_t* frame, struct sockaddr_in*  cliaddr, uint32_t* SocketSize, uint16_t FrameSize)
 {	
-	if((recvfrom(*ServerSocket, (uint8_t*)frame, FrameSize,  MSG_WAITALL, (struct sockaddr *)cliaddr, len) < 0))
+	if((recvfrom(*ServerSocket, (uint8_t*)frame, FrameSize,  MSG_WAITALL, (struct sockaddr *)cliaddr, SocketSize) < 0))
 	{
 		printf("Receive from failed\n");
 		if(errno == TIMEOUT_ERROR)
@@ -96,40 +107,57 @@ void UDP_ServerReceive(uint32_t *ServerSocket, uint8_t* frame, struct sockaddr_i
 }
 
 /**
- *  @brief This API shall terminate the Linux Socket UDP connection
+ *  @name  UDP_ServerDisconnect
+ *  @brief This API shall terminate the Linux Socket UDP connection.
  *  
- *  @param [in] sockfd Socket number
- *  @return void
+ *  @param [in] ServerSocket: Server Socket Number.
+ *  
+ *  @return void.
  */
 void UDP_ServerDisconnect(uint32_t *ServerSocket)
 {
 	close(*ServerSocket);
 }
 
+/**
+ *  @name  UDP_ValidateKey
+ *  @brief This API shall validate the connection key from the client.
+ *  
+ *  @param [in] ServerSocket: Server Socket Number.
+ *  @param [in] servaddr	: Server Socket Address.
+ *  @param [in] cliaddr		: Client Socket Address.
+ *  
+ *  @return Return description
+ */
 uint8_t UDP_ValidateKey(uint32_t *ServerSocket, struct sockaddr_in *servaddr, struct sockaddr_in *cliaddr)
 {
-	uint32_t keyFrame = 0;
-	uint8_t ConnectionStatus = 0;
-	uint32_t len = sizeof(struct sockaddr_in);
-	uint8_t validation =0;
+	uint8_t validation 			= 0;
+	uint8_t ConnectionStatus 	= 0;
+	uint32_t keyFrame 			= 0;
+	uint32_t SocketSize 		= sizeof(struct sockaddr_in);
+	
 	printf("Waiting for Initialization key....\n");
-		
-	UDP_ServerReceive(ServerSocket, (uint8_t*)&keyFrame, cliaddr, &len, sizeof(uint32_t));
-		
+
+	/* Wait on the connection key to be received to be validated */
+	UDP_ServerReceive(ServerSocket, (uint8_t*)&keyFrame, cliaddr, &SocketSize, sizeof(uint32_t));
+
+	/* Checking whether the connection key is valid or not */
 	if(keyFrame == CONNECTION_KEY)
 	{
 		printf("CONNECTION KEY SUCCESS....\n");
 		ClientAvailable = 1;
 		validation = 1;
 		ConnectionStatus = ACK;
-		UDP_ServerSend(ServerSocket, (uint8_t*)&ConnectionStatus, cliaddr, len, sizeof(uint8_t));
+		/* Send an ACK to the client */
+		UDP_ServerSend(ServerSocket, (uint8_t*)&ConnectionStatus, cliaddr, SocketSize, sizeof(uint8_t));
 	}
 	else
 	{
 		printf("CONNECTION KEY FAILURE....\n");
 		validation = 0;
 		ConnectionStatus = NACK;
-		UDP_ServerSend(ServerSocket, (uint8_t*)&ConnectionStatus, cliaddr, len, sizeof(uint8_t));
+		/* Send an NACK to the client */
+		UDP_ServerSend(ServerSocket, (uint8_t*)&ConnectionStatus, cliaddr, SocketSize, sizeof(uint8_t));
 	}
 	
 	return validation;
