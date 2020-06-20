@@ -130,6 +130,10 @@ static void RPi_WriteOutputs(void);
 /* External variable from server.c file showing the client availability */
 extern uint8_t ClientAvailable;
 
+
+/* Buffer holding the messages from the client */
+static uint8_t FrameDataBuffer[FRAME_DATA_LEN] = {0};
+
 /* RaspberryPi Serial Communication Buffers */
 static uint8_t UART_Tx_Buffer[RX_BUFF_LEN] 		= {0};
 static uint8_t UART_Rx_Buffer[RX_BUFF_LEN] 		= {0};
@@ -237,8 +241,6 @@ int main(void)
 	uint32_t Rx_Counter = 0;
 	/* Received Client Frame Header */
 	FrameHeader_t RxFrameHeader;
-	/* Buffer holding the messages from the client */
-	uint8_t FrameDataBuffer[FRAME_DATA_LEN] = {0};
 	
 	/************************** Server Initializations **************************/
 	/* Initializing pigpio */
