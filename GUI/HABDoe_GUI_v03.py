@@ -2444,24 +2444,24 @@ class Ui_HABDoe(object):
       # Empty test case
       if (self.GenerateTestCase_comboBox.currentIndex() == 0):
         #Generating the file
-        GenerationPath = '"..\RPC\Current_Version\GRPC_V2.0\GRPC_GPIO_PI_Python\File_Generation\GenerateTestScript.py" 1 '+ '"' +str(folder_path) + '"'
+        GenerationPath = '"..\RPC\File_Generation\GenerateTestScript.py" 1 '+ '"' +str(folder_path) + '"'
         os.system('"'+GenerationPath+'"')        
       # blinky
       else:
-        GenerationPath = '"..\RPC\Current_Version\GRPC_V2.0\GRPC_GPIO_PI_Python\File_Generation\GenerateTestScript.py" 2 '+ '"' +str(folder_path) + '"'
+        GenerationPath = '"..\RPC\File_Generation\GenerateTestScript.py" 2 '+ '"' +str(folder_path) + '"'
         os.system('"'+GenerationPath+'"')
       
       DestinationPath = folder_path
-      SourcePath = "..\RPC\Current_Version\GRPC_V2.0\GRPC_GPIO_PI_Python\GRPC_client\GPIO_write_client.py"
+      SourcePath = "..\RPC\GRPC_client\GPIO_write_client.py"
       copy(SourcePath, DestinationPath)
       
-      SourcePath = "..\RPC\Current_Version\GRPC_V2.0\GRPC_GPIO_PI_Python\GRPC_client\GPIO_macros.py"
+      SourcePath = "..\RPC\GRPC_client\GPIO_macros.py"
       copy(SourcePath, DestinationPath)
       
-      SourcePath = "..\RPC\Current_Version\GRPC_V2.0\GRPC_GPIO_PI_Python\GRPC_client\GPIO_write_pb2.py"
+      SourcePath = "..\RPC\GRPC_client\GPIO_write_pb2.py"
       copy(SourcePath, DestinationPath)
       
-      SourcePath = "..\RPC\Current_Version\GRPC_V2.0\GRPC_GPIO_PI_Python\GRPC_client\GPIO_write_pb2_grpc.py"
+      SourcePath = "..\RPC\GRPC_client\GPIO_write_pb2_grpc.py"
       copy(SourcePath, DestinationPath)
     # GenerateTestCase_Func     
     
@@ -2481,16 +2481,16 @@ class Ui_HABDoe(object):
       before_trunc = file_path.split('/')
       DestinationPath = '/'.join(before_trunc[0:len(before_trunc)-1])
       
-      SourcePath = "..\RPC\Current_Version\GRPC_V2.0\GRPC_GPIO_PI_Python\GRPC_client\GPIO_write_client.py"
+      SourcePath = "..\RPC\GRPC_client\GPIO_write_client.py"
       copy(SourcePath, DestinationPath)
       
-      SourcePath = "..\RPC\Current_Version\GRPC_V2.0\GRPC_GPIO_PI_Python\GRPC_client\GPIO_macros.py"
+      SourcePath = "..\RPC\GRPC_client\GPIO_macros.py"
       copy(SourcePath, DestinationPath)
       
-      SourcePath = "..\RPC\Current_Version\GRPC_V2.0\GRPC_GPIO_PI_Python\GRPC_client\GPIO_write_pb2.py"
+      SourcePath = "..\RPC\GRPC_client\GPIO_write_pb2.py"
       copy(SourcePath, DestinationPath)
       
-      SourcePath = "..\RPC\Current_Version\GRPC_V2.0\GRPC_GPIO_PI_Python\GRPC_client\GPIO_write_pb2_grpc.py"
+      SourcePath = "..\RPC\GRPC_client\GPIO_write_pb2_grpc.py"
       copy(SourcePath, DestinationPath)
       
       
