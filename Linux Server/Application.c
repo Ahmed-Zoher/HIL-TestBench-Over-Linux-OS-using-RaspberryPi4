@@ -61,16 +61,19 @@
 #define UART_SIMPLEX_RX			((UART_Info.SerialStatus == 1))
 #define UART_SIMPLEX_TX			((UART_Info.SerialStatus == 2))
 #define UART_DUPLEX				((UART_Info.SerialStatus == 3))
+#define UART_INIT_BAUDRATE		9600
 
 #define SPI_CH1_CHANNEL			0
 #define SPI_CH1_FLAGS			0x00
 #define SPI_CH1_RX				((SPI_CH1_Info.SerialStatus == 1))
 #define SPI_CH1_TX				((SPI_CH1_Info.SerialStatus == 2))
+#define SPI_CH1_INIT_BAUDRATE	32000
 
 #define SPI_CH2_CHANNEL			1
 #define SPI_CH2_FLAGS			0x1E0
 #define SPI_CH2_RX				((SPI_CH2_Info.SerialStatus == 1))
 #define SPI_CH2_TX				((SPI_CH2_Info.SerialStatus == 2))
+#define SPI_CH2_INIT_BAUDRATE	32000
 
 /*****************************************************************************/
 /************************ RASPBERRYPI TYPE DEFINITIONS ***********************/
@@ -145,7 +148,7 @@ static uint8_t SPI_CH2_Rx_Buffer[RX_BUFF_LEN] 	= {0};
 
 static SerialInfo_t UART_Info = {
 	.SerialStatus 		= 0,
-	.SerialBaudrate 	= 0,
+	.SerialBaudrate 	= 9600,
 	.SerialDataSize		= 0,
 	.SerialHandle		= -1,	
 	.Tx_Buffer			= UART_Tx_Buffer,
@@ -155,7 +158,7 @@ static SerialInfo_t UART_Info = {
 
 static SerialInfo_t SPI_CH1_Info = {
 	.SerialStatus 		= 0,
-	.SerialBaudrate 	= 0,
+	.SerialBaudrate 	= 32000,
 	.SerialDataSize		= 0,
 	.SerialHandle		= -1,	
 	.Tx_Buffer			= SPI_CH1_Tx_Buffer,
@@ -164,7 +167,7 @@ static SerialInfo_t SPI_CH1_Info = {
 
 static SerialInfo_t SPI_CH2_Info = {
 	.SerialStatus 		= 0,
-	.SerialBaudrate 	= 0,
+	.SerialBaudrate 	= 32000,
 	.SerialDataSize		= 0,
 	.SerialHandle		= -1,	
 	.Tx_Buffer			= SPI_CH2_Tx_Buffer,
