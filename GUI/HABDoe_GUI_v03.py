@@ -2643,7 +2643,7 @@ class Ui_HABDoe(object):
         self.Run_pushButton.setText(QCoreApplication.translate("HABDoe", u"Run", None))
         self.GenerateMode_groupBox.setTitle(QCoreApplication.translate("HABDoe", u"Generate a New Test File", None))
         self.GenerateMode_Path_lineEdit.setText("")
-        self.GenerateMode_Path_lineEdit.setPlaceholderText(QCoreApplication.translate("HABDoe", u"Path of the loaded test file is displayed here", None))
+        self.GenerateMode_Path_lineEdit.setPlaceholderText(QCoreApplication.translate("HABDoe", u"Path of the generated test file is displayed here", None))
         self.GenerateTestCase_comboBox.setItemText(0, QCoreApplication.translate("HABDoe", u"Empty (add your own content)", None))
         self.GenerateTestCase_comboBox.setItemText(1, QCoreApplication.translate("HABDoe", u"Blinky (blink a LED)", None))
 
@@ -2651,7 +2651,7 @@ class Ui_HABDoe(object):
         self.Generate_pushButton.setText(QCoreApplication.translate("HABDoe", u"Generate", None))
         self.LoadMode_groupBox.setTitle(QCoreApplication.translate("HABDoe", u"Load an Existing Test File", None))
         self.LoadMode_Path_lineEdit.setText("")
-        self.LoadMode_Path_lineEdit.setPlaceholderText(QCoreApplication.translate("HABDoe", u"Path of the generated test file is displayed here", None))
+        self.LoadMode_Path_lineEdit.setPlaceholderText(QCoreApplication.translate("HABDoe", u"Path of the loaded test file is displayed here", None))
         self.LoadPath_label.setText(QCoreApplication.translate("HABDoe", u"Path:", None))
         self.Load_pushButton.setText(QCoreApplication.translate("HABDoe", u"Load", None))
         self.ModeSelect_groupBox.setTitle(QCoreApplication.translate("HABDoe", u"Mode Select", None))
