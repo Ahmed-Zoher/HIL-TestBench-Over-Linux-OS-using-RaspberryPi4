@@ -225,9 +225,6 @@ int main(void)
 	/*****************************************************************************/
 	/************************ RASPBERRYPI LOCAL VARIABLES ************************/
 	/*****************************************************************************/
-
-	/* pigpio Library Initialization Status */
-	uint8_t gpioInit_state = 0;
 	
 	/* Server socket structure */
 	struct sockaddr_in servaddr;
@@ -246,13 +243,22 @@ int main(void)
 	FrameHeader_t RxFrameHeader;
 	
 	/************************** Server Initializations **************************/
-	/* Initializing pigpio */
-	gpioInit_state = gpio_Init();
+	/* Initializing pigpio and pin modes */
+	if(gpio_Init() != PIGPIO_INIT_SUCCESSFUL)
+		return ERROR_PIGPIO_INIT;
+	
+	//~ /* Running the RPC Pyhton Script in background */
+	//~ printf("BEFORE INVOKE\n");
+	//system("python ../RPC/GRPC_PI_Server/GPIO_write_server.py");
+	//system(". ../Run_Server.sh");
+	//~ execl("../RPC/GRPC_PI_Server", "sh", "-c", "python GPIO_write_server.py &", (char *)0);
+	//~ printf("AFTER INVOKE\n");
 	
 	/* Initializing the UDP connection*/
 	UDP_ServerInit(&sockfd, &servaddr, &cliaddr);
 	
-	while(gpioInit_state == 0)
+	/* RaspberryPi Application super loop */
+	while(1)
 	{
 		/************************** Client Key Validation **************************/
 		if(UDP_ValidateKey(&sockfd, &servaddr, &cliaddr) == 1)
