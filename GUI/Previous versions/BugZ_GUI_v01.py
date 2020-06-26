@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'HABDoe.ui'
+## Form generated from reading UI file 'BugZ.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.14.0
 ##
@@ -20,16 +20,16 @@ from ctypes import *
 import sys
 import time
 
-class Ui_HABDoe(object):
-    def setupUi(self, HABDoe):
-        if HABDoe.objectName():
-            HABDoe.setObjectName(u"HABDoe")
-        HABDoe.resize(791, 566)
+class Ui_BugZ(object):
+    def setupUi(self, BugZ):
+        if BugZ.objectName():
+            BugZ.setObjectName(u"BugZ")
+        BugZ.resize(791, 566)
         font = QFont()
         font.setBold(False)
         font.setWeight(50);
-        HABDoe.setFont(font)
-        self.Conncetion_groupBox = QGroupBox(HABDoe)
+        BugZ.setFont(font)
+        self.Conncetion_groupBox = QGroupBox(BugZ)
         self.Conncetion_groupBox.setObjectName(u"Conncetion_groupBox")
         self.Conncetion_groupBox.setGeometry(QRect(177, 10, 441, 111))
         font1 = QFont()
@@ -115,7 +115,7 @@ class Ui_HABDoe(object):
 "}")
         self.Conncection_progressBar.setValue(0)
         self.Conncection_progressBar.setTextVisible(True)
-        self.Peripherals_groupBox = QGroupBox(HABDoe)
+        self.Peripherals_groupBox = QGroupBox(BugZ)
         self.Peripherals_groupBox.setObjectName(u"Peripherals_groupBox")
         self.Peripherals_groupBox.setGeometry(QRect(19, 130, 751, 281))
         font4 = QFont()
@@ -350,7 +350,7 @@ class Ui_HABDoe(object):
         self.UART = QWidget()
         self.UART.setObjectName(u"UART")
         self.Peripherals_tabWidget.addTab(self.UART, "UART_tab")
-        self.TEST_pushButton = QPushButton(HABDoe)
+        self.TEST_pushButton = QPushButton(BugZ)
         self.TEST_pushButton.setObjectName(u"TEST_pushButton")
         self.TEST_pushButton.setGeometry(QRect(640, 429, 120, 120))
         font5 = QFont()
@@ -371,12 +371,12 @@ class Ui_HABDoe(object):
         self.TEST_pushButton.setAutoDefault(False)
         self.TEST_pushButton.setFlat(False)
 
-        self.retranslateUi(HABDoe)
+        self.retranslateUi(BugZ)
 
         self.Peripherals_tabWidget.setCurrentIndex(0)
         self.TEST_pushButton.setDefault(False)
 
-        QMetaObject.connectSlotsByName(HABDoe)
+        QMetaObject.connectSlotsByName(BugZ)
         
         # Connect pushButton
         self.Connect_pushButton.clicked.connect(self.Connect_Func)
@@ -490,35 +490,35 @@ class Ui_HABDoe(object):
     
     # setupUi
 
-    def retranslateUi(self, HABDoe):
-        HABDoe.setWindowTitle(QCoreApplication.translate("HABDoe", u"Form", None))
-        self.Conncetion_groupBox.setTitle(QCoreApplication.translate("HABDoe", u"Connection", None))
-        self.Connect_pushButton.setText(QCoreApplication.translate("HABDoe", u"Connect", None))
-        self.Disconnect_pushButton.setText(QCoreApplication.translate("HABDoe", u"Disconnect", None))
-        self.Peripherals_groupBox.setTitle(QCoreApplication.translate("HABDoe", u"Peripherals", None))
-        self.OutPins_groupBox.setTitle(QCoreApplication.translate("HABDoe", u"O/P PINS", None))
-        self.OUT_Channel_10_checkBox.setText(QCoreApplication.translate("HABDoe", u"Channel_10", None))
-        self.OUT_Channel_11_checkBox.setText(QCoreApplication.translate("HABDoe", u"Channel_11", None))
-        self.OUT_Channel_12_checkBox.setText(QCoreApplication.translate("HABDoe", u"Channel_12", None))
-        self.OUT_Channel_13_checkBox.setText(QCoreApplication.translate("HABDoe", u"Channel_13", None))
-        self.OUT_Channel_14_checkBox.setText(QCoreApplication.translate("HABDoe", u"Channel_14", None))
-        self.InPins_groupBox_2.setTitle(QCoreApplication.translate("HABDoe", u"I/P PINS", None))
-        self.Channel_20_groupBox.setTitle(QCoreApplication.translate("HABDoe", u"Channel_20", None))
-        self.IN_Channel_20_checkBox.setText(QCoreApplication.translate("HABDoe", u"Read", None))
-        self.label.setText(QCoreApplication.translate("HABDoe", u"0", None))
-        self.label_2.setText(QCoreApplication.translate("HABDoe", u"1", None))
-        self.Channel_21_groupBox.setTitle(QCoreApplication.translate("HABDoe", u"Channel_21", None))
-        self.IN_Channel_21_checkBox.setText(QCoreApplication.translate("HABDoe", u"Read", None))
-        self.label_3.setText(QCoreApplication.translate("HABDoe", u"0", None))
-        self.label_4.setText(QCoreApplication.translate("HABDoe", u"1", None))
-        self.Channel_22_groupBox.setTitle(QCoreApplication.translate("HABDoe", u"Channel_22", None))
-        self.IN_Channel_22_checkBox.setText(QCoreApplication.translate("HABDoe", u"Read", None))
-        self.label_5.setText(QCoreApplication.translate("HABDoe", u"0", None))
-        self.label_6.setText(QCoreApplication.translate("HABDoe", u"1", None))
-        self.Peripherals_tabWidget.setTabText(self.Peripherals_tabWidget.indexOf(self.DIO_tab), QCoreApplication.translate("HABDoe", u"DIO", None))
-        self.Peripherals_tabWidget.setTabText(self.Peripherals_tabWidget.indexOf(self.ADC_tab), QCoreApplication.translate("HABDoe", u"ADC", None))
-        self.Peripherals_tabWidget.setTabText(self.Peripherals_tabWidget.indexOf(self.UART), QCoreApplication.translate("HABDoe", u"UART", None))
-        self.TEST_pushButton.setText(QCoreApplication.translate("HABDoe", u"Test", None))
+    def retranslateUi(self, BugZ):
+        BugZ.setWindowTitle(QCoreApplication.translate("BugZ", u"Form", None))
+        self.Conncetion_groupBox.setTitle(QCoreApplication.translate("BugZ", u"Connection", None))
+        self.Connect_pushButton.setText(QCoreApplication.translate("BugZ", u"Connect", None))
+        self.Disconnect_pushButton.setText(QCoreApplication.translate("BugZ", u"Disconnect", None))
+        self.Peripherals_groupBox.setTitle(QCoreApplication.translate("BugZ", u"Peripherals", None))
+        self.OutPins_groupBox.setTitle(QCoreApplication.translate("BugZ", u"O/P PINS", None))
+        self.OUT_Channel_10_checkBox.setText(QCoreApplication.translate("BugZ", u"Channel_10", None))
+        self.OUT_Channel_11_checkBox.setText(QCoreApplication.translate("BugZ", u"Channel_11", None))
+        self.OUT_Channel_12_checkBox.setText(QCoreApplication.translate("BugZ", u"Channel_12", None))
+        self.OUT_Channel_13_checkBox.setText(QCoreApplication.translate("BugZ", u"Channel_13", None))
+        self.OUT_Channel_14_checkBox.setText(QCoreApplication.translate("BugZ", u"Channel_14", None))
+        self.InPins_groupBox_2.setTitle(QCoreApplication.translate("BugZ", u"I/P PINS", None))
+        self.Channel_20_groupBox.setTitle(QCoreApplication.translate("BugZ", u"Channel_20", None))
+        self.IN_Channel_20_checkBox.setText(QCoreApplication.translate("BugZ", u"Read", None))
+        self.label.setText(QCoreApplication.translate("BugZ", u"0", None))
+        self.label_2.setText(QCoreApplication.translate("BugZ", u"1", None))
+        self.Channel_21_groupBox.setTitle(QCoreApplication.translate("BugZ", u"Channel_21", None))
+        self.IN_Channel_21_checkBox.setText(QCoreApplication.translate("BugZ", u"Read", None))
+        self.label_3.setText(QCoreApplication.translate("BugZ", u"0", None))
+        self.label_4.setText(QCoreApplication.translate("BugZ", u"1", None))
+        self.Channel_22_groupBox.setTitle(QCoreApplication.translate("BugZ", u"Channel_22", None))
+        self.IN_Channel_22_checkBox.setText(QCoreApplication.translate("BugZ", u"Read", None))
+        self.label_5.setText(QCoreApplication.translate("BugZ", u"0", None))
+        self.label_6.setText(QCoreApplication.translate("BugZ", u"1", None))
+        self.Peripherals_tabWidget.setTabText(self.Peripherals_tabWidget.indexOf(self.DIO_tab), QCoreApplication.translate("BugZ", u"DIO", None))
+        self.Peripherals_tabWidget.setTabText(self.Peripherals_tabWidget.indexOf(self.ADC_tab), QCoreApplication.translate("BugZ", u"ADC", None))
+        self.Peripherals_tabWidget.setTabText(self.Peripherals_tabWidget.indexOf(self.UART), QCoreApplication.translate("BugZ", u"UART", None))
+        self.TEST_pushButton.setText(QCoreApplication.translate("BugZ", u"Test", None))
     # retranslateUi
 
 
@@ -529,7 +529,7 @@ def main():
   # Create the Qt Widget that will hold the Form/s
   widget = QWidget()
   # Create and show the form
-  form = Ui_HABDoe()
+  form = Ui_BugZ()
   form.setupUi(widget)
   # Show what's inside the widget
   widget.show()
